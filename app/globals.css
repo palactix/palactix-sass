@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary: #2ea44f;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f6f8fa;
+  --color-secondary-foreground: #0c0d0e;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-muted: #f6f8fa;
+  --color-muted-foreground: #656d76;
+  --color-accent: #f6f8fa;
+  --color-accent-foreground: #0c0d0e;
+  --color-card: #ffffff;
+  --color-card-foreground: #0c0d0e;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0c0d0e;
+  --color-border: #d0d7de;
+  --color-input: #f6f8fa;
+  --color-ring: #2ea44f;
+  --color-background: #ffffff;
+  --color-foreground: #0c0d0e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .dark {
+    --color-background: #0c0d0e;
+    --color-foreground: #ffffff;
+    --color-card: #161719;
+    --color-card-foreground: #ffffff;
+    --color-popover: #161719;
+    --color-popover-foreground: #ffffff;
+    --color-secondary: #1f2124;
+    --color-secondary-foreground: #ffffff;
+    --color-muted: #1f2124;
+    --color-muted-foreground: #9198a1;
+    --color-accent: #1f2124;
+    --color-accent-foreground: #ffffff;
+    --color-destructive: #dc2626;
+    --color-border: #30363d;
+    --color-input: #30363d;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
 }
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
