@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Zap, Key, ShieldCheck, TrendingUp } from "lucide-react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 export function HowItWorksSection() {
   const steps = [

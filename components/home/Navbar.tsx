@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import { Container } from "./Container";
+import { Button } from "../ui/button";
+import { Container } from "../Container";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);

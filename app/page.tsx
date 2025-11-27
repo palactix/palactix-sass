@@ -1,13 +1,13 @@
-import { Navbar } from "@/components/Navbar";
-import { HeroSection } from "@/components/HeroSection";
-import { PlatformsSection } from "@/components/PlatformsSection";
-import { PainPointSection } from "@/components/PainPointSection";
-import { ComparisonTable } from "@/components/ComparisonTable";
-import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { PricingSection } from "@/components/PricingSection";
-import { HonestySection } from "@/components/HonestySection";
-import { FAQSection } from "@/components/FAQSection";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/home/Navbar";
+import { HeroSection } from "@/components/home/HeroSection";
+import { PlatformsSection } from "@/components/home/PlatformsSection";
+import { PainPointSection } from "@/components/home/PainPointSection";
+import { ComparisonTable } from "@/components/home/ComparisonTable";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
+import { PricingSection } from "@/components/home/PricingSection";
+import { HonestySection } from "@/components/home/HonestySection";
+import { FAQSection } from "@/components/home/FAQSection";
+import { Footer } from "@/components/home/Footer";
 
 export default function HomePage() {
 

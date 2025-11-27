@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Button } from "./ui/button";
+import React, { useState, useEffect } from "react";
+import { Button } from "../ui/button";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
@@ -9,11 +9,29 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Container } from "./Container";
+} from "../ui/dropdown-menu";
+import { Container } from "../Container";
+import Link from "next/link";
+
+
+const footerLinks = [
+  { href: "/privacy-policy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/developers", label: "Developers" },
+];
 
 export function Footer() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <footer className="py-20">
@@ -40,24 +58,13 @@ export function Footer() {
         {/* Footer Links and Theme Toggle */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-border">
           <div className="flex items-center gap-6">
-            <a
-              href="/privacy"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Privacy
-            </a>
-            <a
-              href="/terms"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Terms
-            </a>
-            <a
-              href="/developers"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Developers
-            </a>
+            {
+              footerLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {link.label}
+                </Link>
+              ))
+            }
           </div>
 
           {/* Theme Dropdown */}

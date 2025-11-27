@@ -1,5 +1,5 @@
 import { CheckCircle2, XCircle } from "lucide-react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 export function HonestySection() {
   const weNail = [

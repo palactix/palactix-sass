@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 export function PricingSection() {
   const plans = [

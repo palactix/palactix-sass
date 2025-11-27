@@ -3,7 +3,7 @@
 import React from "react";
 import { Instagram, Linkedin, Facebook, Youtube } from "lucide-react";
 import { motion } from "motion/react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 export function PlatformsSection() {
   const platforms = [

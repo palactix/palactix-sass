@@ -3,7 +3,7 @@
 import React from "react";
 import { X } from "lucide-react";
 import { motion } from "motion/react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 export function PainPointSection() {
   return (

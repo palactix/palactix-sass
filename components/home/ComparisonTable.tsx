@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Check, X } from "lucide-react";
-import { Container } from "./Container";
+import { Container } from "../Container";
 
 const CheckIcon = () => (
   <Check className="w-5 h-5 text-primary mx-auto" />

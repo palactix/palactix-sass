@@ -5,8 +5,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./ui/accordion";
-import { Container } from "./Container";
+} from "../ui/accordion";
+import { Container } from "../Container";
 
 export function FAQSection() {
   const faqs = [
