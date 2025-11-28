@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Container } from "../Container";
+import Link from "next/link";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,12 +27,12 @@ export function Navbar() {
     >
       <Container className="py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
               <span className="text-white font-bold text-lg">P</span>
             </div>
             <span className="text-lg font-semibold">Palactix</span>
-          </a>
+          </Link>
         </div>
 
         <div className="flex items-center gap-6">
@@ -51,7 +52,7 @@ export function Navbar() {
             className="bg-primary hover:bg-primary/90 text-white"
             asChild
           >
-            <a href="/auth/signup">Start 14-day Agency Pilot</a>
+            <Link href="/auth/signup">Start 14-day Agency Pilot</Link>
           </Button>
         </div>
       </Container>

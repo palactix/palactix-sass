@@ -15,8 +15,8 @@
   --color-card-foreground: #0c0d0e;
   --color-popover: #ffffff;
   --color-popover-foreground: #0c0d0e;
-  --color-border: #d0d7de;
-  --color-input: #f6f8fa;
+  --color-border: #d0d7de; /* subtle gray for general borders in light mode */
+  --color-input: #d1d5db;  /* slightly lighter input border to reduce highlight */
   --color-ring: #2ea44f;
   --color-background: #ffffff;
   --color-foreground: #0c0d0e;

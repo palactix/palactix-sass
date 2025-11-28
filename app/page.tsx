@@ -8,11 +8,12 @@ import { PricingSection } from "@/components/home/PricingSection";
 import { HonestySection } from "@/components/home/HonestySection";
 import { FAQSection } from "@/components/home/FAQSection";
 import { Footer } from "@/components/home/Footer";
+import { FinalCTA } from "@/components/home/FinalCTA";
 
 export default function HomePage() {
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navbar />
       <main>
         <HeroSection />
@@ -23,6 +24,7 @@ export default function HomePage() {
         <PricingSection />
         <HonestySection />
         <FAQSection />
+        <FinalCTA />
       </main>
       <Footer />
     </div>
