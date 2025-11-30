@@ -15,3 +15,17 @@ export type ResendVerificationPayload = {
 export type ResendVerificationResponse = {
   message: string;
 };
+
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+export type LoginResponse = {
+  message: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
