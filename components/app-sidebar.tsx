@@ -10,15 +10,6 @@ import {
   Users,
   BarChart3,
   CreditCard,
-  LogOut,
-  User,
-  Lock,
-  Search,
-  Bell,
-  CheckSquare,
-  ChevronRight,
-  ChevronsUpDown,
-  Plus,
 } from "lucide-react"
 
 import {
@@ -97,6 +88,11 @@ const data = {
     },
   ],
   navSecondary: [
+    {
+      title: "Agency App",
+      url: "/agency-app",
+      icon: LayoutDashboard,
+    },
     {
       title: "Settings",
       url: "/settings",

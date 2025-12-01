@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp, Users } from "lucide-react"
+import Link from "next/link"
 
 const recentPosts = [
   { id: 1, clientName: "Nike", platform: "instagram", time: "2 hours ago", status: "success" },
@@ -37,6 +38,24 @@ export default function DashboardPage() {
             <Plus className="mr-2 h-4 w-4" /> New Post
           </Button>
         </div>
+      </div>
+
+      {/* Agency App Banner */}
+      <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+                <h3 className="text-xl font-bold mb-1">Create Your Agency App</h3>
+                <p className="text-green-50/90 max-w-xl">
+                    Takes 4 minutes. After this, your clients will only see YOUR agency name on Instagram, TikTok, etc. No more third-party branding.
+                </p>
+            </div>
+            <Button size="lg" variant="secondary" className="font-semibold whitespace-nowrap text-green-700 hover:bg-white" asChild>
+                <Link href="/agency-app">Get Started</Link>
+            </Button>
+        </div>
+        {/* Decorative circle */}
+        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="absolute -left-12 -bottom-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
       </div>
 
       {/* Stats Grid */}
