@@ -29,3 +29,22 @@ export type LoginResponse = {
     email: string;
   };
 };
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};
