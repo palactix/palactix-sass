@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { signup, resendVerification, login, forgotPassword, resetPassword } from "./auth.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { signup, resendVerification, login, forgotPassword, resetPassword, getUser, logout } from "./auth.api";
 import type { 
   SignupPayload, 
   SignupResponse, 
@@ -12,8 +12,33 @@ import type {
   ForgotPasswordPayload,
   ForgotPasswordResponse,
   ResetPasswordPayload,
-  ResetPasswordResponse
+  ResetPasswordResponse,
+  UserResponse
 } from "../types/auth.types";
+
+export const authKeys = {
+  user: ["auth", "user"] as const,
+};
+
+export function useUser() {
+  return useQuery<UserResponse, Error>({
+    queryKey: authKeys.user,
+    queryFn: getUser,
+    retry: false,
+    staleTime: Infinity, // Cache forever (until hard refresh or invalidation)
+  });
+}
+
+export function useLogoutMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      queryClient.setQueryData(authKeys.user, null);
+      queryClient.invalidateQueries({ queryKey: authKeys.user });
+    },
+  });
+}
 
 export function useSignupMutation() {
   return useMutation<SignupResponse, Error, SignupPayload>({
@@ -22,8 +47,12 @@ export function useSignupMutation() {
 }
 
 export function useLoginMutation() {
+  const queryClient = useQueryClient();
   return useMutation<LoginResponse, Error, LoginPayload>({
     mutationFn: login,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.user });
+    },
   });
 }
 

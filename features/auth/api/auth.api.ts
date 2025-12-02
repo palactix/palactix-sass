@@ -10,7 +10,8 @@ import type {
   ForgotPasswordPayload,
   ForgotPasswordResponse,
   ResetPasswordPayload,
-  ResetPasswordResponse
+  ResetPasswordResponse,
+  UserResponse
 } from "../types/auth.types";
 import { AUTH_API_ROUTES } from "@/utils/constants/api-routes";
 
@@ -21,6 +22,15 @@ export async function signup(payload: SignupPayload) {
 
 export async function login(payload: LoginPayload) {
   const res = await api.post<LoginResponse>(AUTH_API_ROUTES.LOGIN, payload);
+  return res.data;
+}
+
+export async function logout() {
+  await api.post(AUTH_API_ROUTES.LOGOUT);
+}
+
+export async function getUser() {
+  const res = await api.get<UserResponse>(AUTH_API_ROUTES.CHECK_AUTH);
   return res.data;
 }
 

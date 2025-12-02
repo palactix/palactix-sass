@@ -8,13 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/forms/FormMessage";
 import { useLoginMutation } from "../api/auth.queries";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "../stores/auth.store";
 import type { NormalizedApiError } from "@/lib/api/error-handler";
 import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = searchParams.get("returnUrl");
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
 
   const {
@@ -33,7 +35,8 @@ export default function LoginForm() {
     mutate(values, {
       onSuccess: () => {
         setAuthenticated(true);
-        router.push("/dashboard");
+        console.log({ returnUrl });
+        router.push(returnUrl || "/dashboard");
       },
       onError: (error: NormalizedApiError) => {
         if (error.fieldErrors) {
