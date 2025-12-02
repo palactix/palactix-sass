@@ -1,13 +1,12 @@
-"use client"
-
-import { useState } from "react"
-import { Check, Copy, ExternalLink, Instagram, Linkedin, Twitter, Facebook, Youtube, AlertTriangle, Plus, Upload, Trash2, Key, Pencil, Save, X, Loader2, AlertCircle, ChevronsUpDown } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Check, Copy, ExternalLink, Plus, Upload, Trash2, Pencil, Save, X, Loader2, AlertCircle, ChevronsUpDown, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +25,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Select,
@@ -41,15 +39,18 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { toast } from "sonner"
-import { AnimatePresence, motion } from "motion/react"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useMyAgencyApp, useChannels } from "@/features/agency-app/api/agency-app.queries"
+import { AppStatus } from "@/features/agency-app/types/agency-app.types"
+import { getPlatformIcon } from "@/lib/utils/platform-icons"
+import { useTheme } from "next-themes"
+import Image from "next/image"
 
 // --- Types & Data ---
 
 type Platform = {
   id: string
   name: string
-  icon: any
+  icon: string | null | undefined
   color: string
   connected: boolean
   lastUsed?: string
@@ -57,28 +58,23 @@ type Platform = {
   optional?: boolean
   disabled?: boolean
   badge?: string
+  channelId: number
 }
-
-const initialPlatforms: Platform[] = [
-  { id: "instagram", name: "Instagram", icon: Instagram, color: "text-pink-500", connected: true, lastUsed: "2h ago", appId: "849302847592019" },
-  { id: "tiktok", name: "TikTok", icon: ({ className }: { className?: string }) => (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-  ), color: "text-black dark:text-white", connected: true, lastUsed: "5h ago", appId: "773829104827364" },
-  { id: "linkedin", name: "LinkedIn", icon: Linkedin, color: "text-blue-600", connected: true, lastUsed: "1 day ago", appId: "992837465102938" },
-  { id: "x", name: "X (Twitter)", icon: Twitter, color: "text-black dark:text-white", connected: false },
-  { id: "facebook", name: "Facebook", icon: Facebook, color: "text-blue-600", connected: false, optional: true },
-]
 
 // --- Main Component ---
 
 export function AgencyAppDashboard() {
-  const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms)
-  const [appName, setAppName] = useState("Rivera Social App")
+  const { data: myApp } = useMyAgencyApp();
+  const { data: allChannels } = useChannels();
+  const { theme } = useTheme();
+  
+  const [platforms, setPlatforms] = useState<Platform[]>([])
+  const [appName, setAppName] = useState("")
   const [isEditingName, setIsEditingName] = useState(false)
-  const [tempName, setTempName] = useState(appName)
-  const [previewPlatformId, setPreviewPlatformId] = useState("instagram")
+  const [tempName, setTempName] = useState("")
+  const [previewPlatformId, setPreviewPlatformId] = useState<string>("")
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [description, setDescription] = useState("We help brands grow on social media and build real connections.")
+  const [description, setDescription] = useState("")
   
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -86,10 +82,45 @@ export function AgencyAppDashboard() {
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [platformToEdit, setPlatformToEdit] = useState<Platform | null>(null)
 
+  // Initialize data from API
+  useEffect(() => {
+    if (myApp && allChannels) {
+      setAppName(prev => (prev !== myApp.name ? myApp.name || "My Agency App" : prev));
+      setTempName(prev => (prev !== myApp.name ? myApp.name || "My Agency App" : prev));
+      setDescription(prev => (prev !== myApp.description ? myApp.description || "" : prev));
+
+      const mappedPlatforms: Platform[] = allChannels.map(channel => {
+        const appChannel = myApp.channels?.find(c => c.channel_id === channel.id);
+        const isConnected = !!(appChannel && (appChannel.client_id || appChannel.client_secret));
+        
+        return {
+          id: channel.slug,
+          channelId: channel.id,
+          name: channel.name,
+          icon: channel.icon,
+          color: "",
+          connected: isConnected,
+          lastUsed: isConnected ? "Active" : undefined,
+          appId: appChannel?.client_id || undefined,
+        };
+      });
+
+      // Only update platforms if the length or connection status changes to avoid loops
+      // For simplicity in this fix, we'll set it. In a real app, use deep comparison or useMemo.
+      setPlatforms(mappedPlatforms);
+      
+      if (mappedPlatforms.length > 0 && !previewPlatformId) {
+        setPreviewPlatformId(mappedPlatforms[0].id);
+      }
+    }
+  }, [myApp, allChannels, previewPlatformId]);
+
   const activePlatforms = platforms.filter(p => p.connected)
   const previewPlatform = platforms.find(p => p.id === previewPlatformId) || platforms[0]
 
+  console.log("sd");
   const handleSaveName = () => {
+    // TODO: Implement API call to update name
     setAppName(tempName)
     setIsEditingName(false)
     toast.success("App name updated")
@@ -103,17 +134,20 @@ export function AgencyAppDashboard() {
   }
 
   const handleRemovePlatform = (id: string) => {
+    // TODO: Implement API call
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, connected: false } : p))
     toast.success("Platform removed")
   }
 
   const handleAddPlatform = (id: string, appId: string) => {
+    // TODO: Implement API call
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, connected: true, appId, lastUsed: "Just now" } : p))
     setIsAddModalOpen(false)
     toast.success(`${platforms.find(p => p.id === id)?.name} connected successfully`)
   }
 
   const handleChangeCredentials = (id: string, appId: string) => {
+    // TODO: Implement API call
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, appId } : p))
     setEditingPlatformId(null)
     setPlatformToEdit(null)
@@ -126,6 +160,14 @@ export function AgencyAppDashboard() {
   const initiateChangeCredentials = (platform: Platform) => {
     setPlatformToEdit(platform)
     setIsWarningModalOpen(true)
+  }
+
+  if (!myApp || !allChannels) {
+      return (
+        <div className="flex h-40 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )
   }
 
   return (
@@ -152,7 +194,11 @@ export function AgencyAppDashboard() {
                         <Pencil className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                 )}
-                <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200 mt-2">Active</Badge>
+                {myApp?.status === AppStatus.REVIEW ? (
+                  <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200 mt-2">In Review</Badge>
+                ) : (
+                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200 mt-2">Live</Badge>
+                )}
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
                 This name appears on consent screens exactly as set in your developer app. Changing it here will not update existing connections.
@@ -186,12 +232,21 @@ export function AgencyAppDashboard() {
                             </Select>
                         </div>
                         <CardContent className="p-6 flex flex-col items-center text-center space-y-4 bg-background/50">
-                            <div className={`h-16 w-16 rounded-xl flex items-center justify-center text-white shadow-lg ${previewPlatform.color.replace('text-', 'bg-').replace('dark:text-white', '')} ${previewPlatform.id === 'tiktok' ? 'bg-black' : ''} ${previewPlatform.id === 'x' ? 'bg-black' : ''}`}>
-                                <previewPlatform.icon className="h-8 w-8" />
-                            </div>
+                            {previewPlatform && (
+                                <div className={`h-16 w-16 rounded-xl flex items-center justify-center bg-background border shadow-sm`}>
+                                    <Image 
+                                        src={getPlatformIcon(previewPlatform.icon, theme)} 
+                                        alt={previewPlatform.name} 
+                                        width={32} 
+                                        height={32} 
+                                        className="h-8 w-8 object-contain"
+                                        unoptimized
+                                    />
+                                </div>
+                            )}
                             <div className="space-y-1">
                                 <p className="font-medium text-lg leading-tight">
-                                    <span className="font-bold">{appName}</span> wants to access your {previewPlatform.name} account
+                                    <span className="font-bold">{appName}</span> wants to access your {previewPlatform?.name} account
                                 </p>
                                 <p className="text-xs text-muted-foreground">This is what your clients see — no Palactix branding.</p>
                             </div>
@@ -205,6 +260,18 @@ export function AgencyAppDashboard() {
             </Collapsible>
         </div>
       </div>
+
+      {/* Review Status Alert */}
+      {myApp?.status === AppStatus.REVIEW && (
+        <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-900/20">
+          <AlertCircle className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-900 dark:text-amber-100">App Under Review</AlertTitle>
+          <AlertDescription className="text-amber-800 dark:text-amber-200">
+            Your app has been submitted for review. We&apos;ll notify you once it&apos;s approved and live. 
+            You can view your configuration below, but changes are restricted during review.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* 2. Connected Platforms */}
       <div className="space-y-4">
@@ -220,8 +287,15 @@ export function AgencyAppDashboard() {
                 <Card key={platform.id} className="p-0 overflow-hidden">
                     <div className="flex flex-col sm:flex-row">
                         <div className="p-6 flex-1 flex items-start gap-4">
-                            <div className={`p-3 rounded-full bg-background border shadow-sm ${platform.color}`}>
-                                <platform.icon className="h-6 w-6" />
+                            <div className={`p-3 rounded-full bg-background border shadow-sm`}>
+                                <Image 
+                                    src={getPlatformIcon(platform.icon, theme)} 
+                                    alt={platform.name} 
+                                    width={24} 
+                                    height={24} 
+                                    className="h-6 w-6 object-contain"
+                                    unoptimized
+                                />
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2">
@@ -389,6 +463,7 @@ function PlatformSetupDialog({
     const [appId, setAppId] = useState("")
     const [appSecret, setAppSecret] = useState("")
     const [verifying, setVerifying] = useState(false)
+    const { theme } = useTheme();
 
     const selectedPlatform = platforms.find(p => p.id === selectedPlatformId)
 
@@ -434,8 +509,15 @@ function PlatformSetupDialog({
                                     className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedPlatformId === platform.id ? 'border-primary bg-primary/5' : 'hover:bg-muted'}`}
                                     onClick={() => setSelectedPlatformId(platform.id)}
                                 >
-                                    <div className={`p-2 rounded-full bg-background border ${platform.color}`}>
-                                        <platform.icon className="h-5 w-5" />
+                                    <div className={`p-2 rounded-full bg-background border`}>
+                                        <Image 
+                                            src={getPlatformIcon(platform.icon, theme)} 
+                                            alt={platform.name} 
+                                            width={20} 
+                                            height={20} 
+                                            className="h-5 w-5 object-contain"
+                                            unoptimized
+                                        />
                                     </div>
                                     <span className="font-medium">{platform.name}</span>
                                     {selectedPlatformId === platform.id && <Check className="ml-auto h-4 w-4 text-primary" />}

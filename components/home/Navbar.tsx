@@ -42,12 +42,12 @@ export function Navbar() {
           >
             Pricing
           </a>
-          <a
+          <Link
             href="/auth/login"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Login
-          </a>
+          </Link>
           <Button
             className="bg-primary hover:bg-primary/90 text-white"
             asChild
