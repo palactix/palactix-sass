@@ -16,7 +16,7 @@ export const STATIC_PAGES_CONTENT_URLS = {
 
 
 export const SOCIAL_PAGE_LINKS = {
-  "X" : "https://twitter.com/palactix",
+  "X": "https://twitter.com/palactix",
   "LINKEDIN": "https://linkedin.com/company/palactix",
   "GITHUB": "https://github.com/palactix",
   "FACEBOOK": "https://facebook.com/palactix",

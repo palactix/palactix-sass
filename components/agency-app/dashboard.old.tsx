@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +43,7 @@ import { AppStatus } from "@/features/agency-app/types/agency-app.types"
 import { getPlatformIcon } from "@/lib/utils/platform-icons"
 import { useTheme } from "next-themes"
 import Image from "next/image"
+import { AlertWarning } from "@/components/shared/alert"
 
 // --- Types & Data ---
 
@@ -263,14 +263,18 @@ export function AgencyAppDashboard() {
 
       {/* Review Status Alert */}
       {myApp?.status === AppStatus.REVIEW && (
-        <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-900/20">
-          <AlertCircle className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-900 dark:text-amber-100">App Under Review</AlertTitle>
-          <AlertDescription className="text-amber-800 dark:text-amber-200">
-            Your app has been submitted for review. We&apos;ll notify you once it&apos;s approved and live. 
-            You can view your configuration below, but changes are restricted during review.
-          </AlertDescription>
-        </Alert>
+        // <Alert className="border-amber-200 bg-amber-100">
+        //   <AlertCircle className="h-4 w-4 text-amber-700" />
+        //   <AlertTitle className="text-amber-700 font-semibold">App Under Review</AlertTitle>
+        //   <AlertDescription className="text-amber-600">
+        //     Your app has been submitted for review. We'll notify you once it's approved and live. 
+        //     You can view your configuration below, but changes are restricted during review.
+        //   </AlertDescription>
+        // </Alert>
+        <AlertWarning 
+            title="App Under Review" 
+            message="Your app has been submitted for review. We'll notify you once it's approved and live. You can view your configuration below, but changes are restricted during review." 
+        />
       )}
 
       {/* 2. Connected Platforms */}

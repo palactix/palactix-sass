@@ -3,6 +3,8 @@ import { AGENCY_APP_API_ROUTES, CHANNEL_LIST } from "@/utils/constants/api-route
 import type {
   CreateAppPayload,
   CreateAppResponse,
+  UpdateAppNamePayload,
+  UpdateAppNameResponse,
   UpdatePlatformsPayload,
   UpdatePlatformsResponse,
   UpdateCredentialsPayload,
@@ -28,6 +30,12 @@ export async function getMyAgencyApp() {
 
 export async function createApp(payload: CreateAppPayload) {
   const res = await api.post<CreateAppResponse>(AGENCY_APP_API_ROUTES.CREATE_APP, payload);
+  return res.data;
+}
+
+export async function updateAppName(appId: string, payload: UpdateAppNamePayload) {
+  const url = getRoute(AGENCY_APP_API_ROUTES.UPDATE_APP_NAME, appId);
+  const res = await api.post<UpdateAppNameResponse>(url, payload);
   return res.data;
 }
 

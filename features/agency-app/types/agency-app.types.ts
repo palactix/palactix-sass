@@ -53,10 +53,13 @@ export interface CreateAppPayload {
   description?: string;
 }
 
-export interface CreateAppResponse {
-  message: string;
-  data: AgencyApp;
+export type CreateAppResponse = AgencyApp;
+
+export interface UpdateAppNamePayload {
+  name: string;
 }
+
+export type UpdateAppNameResponse = AgencyApp;
 
 export interface UpdatePlatformsPayload {
   platform_ids: number[];

@@ -10,6 +10,7 @@ import { Step4Activation } from "./wizard/Step4Review";
 import { Step5Success } from "./wizard/Step5Success";
 import { Loader2 } from "lucide-react";
 import { AppStatus } from "@/features/agency-app/types/agency-app.types";
+import { isEmpty } from 'es-toolkit/compat';
 
 interface AgencyAppWizardProps {
   onComplete: () => void;
@@ -19,9 +20,12 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
   const { currentStep, setAppId, setStep, setIsLive } = useWizardStore();
   const { data: myApp, isLoading } = useMyAgencyApp();
 
-  // Initialize wizard state from server data
+  console.log({currentStep});
+
   useEffect(() => {
-    if (myApp) {
+    
+    if (myApp && !isEmpty(myApp)) {
+      console.log({myApp});
       setAppId(myApp.id);
       setIsLive(myApp.is_live);
       
@@ -29,20 +33,15 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
       if (myApp.is_live === 1) {
         onComplete();
       } else {
-        // If we have channels with credentials, go to step 4 (Activation)
-        // If we have channels, go to step 3 (Credentials)
-        // If we have ID, go to step 2 (Platforms)
-        // Otherwise step 1
-        
         const hasCredentials = myApp.channels?.some(c => c.client_id && c.client_secret);
         const hasChannels = myApp.channels?.length > 0;
 
         if (hasCredentials) {
-             setStep(4);
+            setStep(4);
         } else if (hasChannels) {
-             setStep(3);
+            setStep(3);
         } else {
-             setStep(2);
+            setStep(2);
         }
       }
     }

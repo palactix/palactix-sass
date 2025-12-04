@@ -15,6 +15,7 @@ export function Step1BasicInfo() {
   const { setAppId, setStep } = useWizardStore();
   const { data: myApp } = useMyAgencyApp();
   const { mutate, isPending } = useCreateAppMutation();
+
   
   const [appName, setAppName] = useState("");
   const initialized = useRef(false);
@@ -38,7 +39,7 @@ export function Step1BasicInfo() {
 
     mutate({ name: appName }, {
       onSuccess: (res) => {
-        setAppId(res.data.id);
+        setAppId(res?.id);
         setStep(2);
         toast.success("App created successfully");
       },

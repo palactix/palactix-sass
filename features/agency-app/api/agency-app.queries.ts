@@ -5,6 +5,7 @@ import {
   getChannels,
   getMyAgencyApp,
   createApp,
+  updateAppName,
   updateAppPlatforms,
   updateAppCredentials,
   activateApp,
@@ -13,6 +14,8 @@ import {
 import type {
   CreateAppPayload,
   CreateAppResponse,
+  UpdateAppNamePayload,
+  UpdateAppNameResponse,
   UpdatePlatformsPayload,
   UpdatePlatformsResponse,
   UpdateCredentialsPayload,
@@ -51,6 +54,16 @@ export function useCreateAppMutation() {
   const queryClient = useQueryClient();
   return useMutation<CreateAppResponse, Error, CreateAppPayload>({
     mutationFn: createApp,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+    },
+  });
+}
+
+export function useUpdateAppNameMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<UpdateAppNameResponse, Error, { appId: string; payload: UpdateAppNamePayload }>({
+    mutationFn: ({ appId, payload }) => updateAppName(appId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
     },
