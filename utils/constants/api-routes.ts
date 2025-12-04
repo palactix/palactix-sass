@@ -22,3 +22,8 @@ export const AGENCY_APP_API_ROUTES = {
   ACTIVATE_APP: "developer-apps/{app}/activate",
   DEACTIVATE_APP: "developer-apps/{app}/deactivate",
 } as const;
+
+
+export const AGENCY_ROUTES = {
+  CREATE_STAFF: "/organization/staff",
+};
