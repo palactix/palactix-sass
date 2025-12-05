@@ -12,3 +12,13 @@ export interface CreateStaffResponse {
     email: string;
   };
 }
+
+export interface Staff {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  created_at: string;
+  avatar?: string;
+}

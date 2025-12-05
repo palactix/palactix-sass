@@ -26,4 +26,11 @@ export const AGENCY_APP_API_ROUTES = {
 
 export const AGENCY_ROUTES = {
   CREATE_STAFF: "/organization/staff",
+  STAFFS: "/organization/staff",
+  ACTIVE: "/organization/staff/{userId}/activate",
+  DEACTIVE: "/organization/staff/{userId}/deactivate",
+  DELETE: "/organization/staff/{userId}",
+  EXPORT: "/organization/staff/export",
+  RESEND_INVITE: "/organization/staff/{userId}/resend-invite",
+  CANCEL_INVITE: "/organization/staff/{userId}/cancel-invite",
 };

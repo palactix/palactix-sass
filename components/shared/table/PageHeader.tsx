@@ -1,0 +1,21 @@
+import React, { memo } from "react";
+
+interface PageHeaderProps {
+  title: string;
+  description?: string;
+  actions?: React.ReactNode;
+}
+
+export const PageHeader = memo(({ title, description, actions }: PageHeaderProps) => {
+  return (
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+        {description && <p className="text-muted-foreground">{description}</p>}
+      </div>
+      {actions && <div>{actions}</div>}
+    </div>
+  );
+});
+
+PageHeader.displayName = "PageHeader";
