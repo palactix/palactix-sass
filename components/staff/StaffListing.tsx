@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -18,9 +18,11 @@ import {
   BulkAction,
   useDataTable,
   FilterBar,
-  FilterConfig
+  FilterConfig,
+  ExportFormat
 } from "@/components/shared/table";
-import { Trash2 } from "lucide-react";
+import { Trash2, UserCheck, UserX } from "lucide-react";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { 
   useStaffList, 
   useActivateStaffMutation, 
@@ -48,6 +50,11 @@ export function StaffListing() {
     handleFilterChange,
     resetFilters
   } = useDataTable<Staff>();
+
+  const [dialogState, setDialogState] = useState<{
+    open: boolean;
+    type: 'delete' | 'activate' | 'deactivate' | null;
+  }>({ open: false, type: null });
 
   const filterConfig = useMemo<FilterConfig[]>(() => [
     { type: 'input', key: 'search', placeholder: 'Search staff...' },
@@ -88,6 +95,12 @@ export function StaffListing() {
   const totalPages = data?.last_page || 1;
   const totalItems = data?.total || 0;
 
+  // Static role assignment based on staff ID
+  const getRoleForStaff = useCallback((staffId: number) => {
+    const roles = ['Manager', 'Developer', 'Designer', 'Member', 'Sales', 'Support'];
+    return roles[staffId % roles.length];
+  }, []);
+
   const handleSelectAll = useMemo(() => getSelectAllHandler(staffData), [staffData, getSelectAllHandler]);
 
   const handleDelete = useCallback((item: Staff) => {
@@ -97,18 +110,39 @@ export function StaffListing() {
   }, [deleteMutation]);
 
   const handleBulkDelete = useCallback(() => {
-    // Implement bulk delete mutation here
-    console.log("Bulk Delete", selectedRows);
-    resetSelection();
-  }, [selectedRows, resetSelection]);
+    setDialogState({ open: true, type: 'delete' });
+  }, []);
 
-  const handleExport = useCallback(() => {
+  const handleBulkActivate = useCallback(() => {
+    setDialogState({ open: true, type: 'activate' });
+  }, []);
+
+  const handleBulkDeactivate = useCallback(() => {
+    setDialogState({ open: true, type: 'deactivate' });
+  }, []);
+
+  const handleConfirmBulkAction = useCallback(() => {
+    if (dialogState.type === 'delete') {
+      console.log("Bulk Delete", selectedRows);
+      // TODO: Implement bulk delete mutation
+    } else if (dialogState.type === 'activate') {
+      console.log("Bulk Activate", selectedRows);
+      // TODO: Implement bulk activate mutation
+    } else if (dialogState.type === 'deactivate') {
+      console.log("Bulk Deactivate", selectedRows);
+      // TODO: Implement bulk deactivate mutation
+    }
+    resetSelection();
+  }, [dialogState.type, selectedRows, resetSelection]);
+
+  const handleExport = useCallback((format: ExportFormat) => {
     exportMutation.mutate(undefined, {
       onSuccess: (data) => {
         const url = window.URL.createObjectURL(new Blob([data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'staff-export.csv');
+        const extension = format === 'csv' ? 'csv' : 'xlsx';
+        link.setAttribute('download', `staff-export.${extension}`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -140,12 +174,24 @@ export function StaffListing() {
 
   const bulkActions = useMemo<BulkAction[]>(() => [
     {
+      label: "Activate",
+      onClick: handleBulkActivate,
+      variant: "default",
+      icon: <UserCheck className="mr-2 h-4 w-4" />
+    },
+    {
+      label: "Deactivate",
+      onClick: handleBulkDeactivate,
+      variant: "secondary",
+      icon: <UserX className="mr-2 h-4 w-4" />
+    },
+    {
       label: "Delete",
       onClick: handleBulkDelete,
       variant: "destructive",
       icon: <Trash2 className="mr-2 h-4 w-4" />
     }
-  ], [handleBulkDelete]);
+  ], [handleBulkDelete, handleBulkActivate, handleBulkDeactivate]);
 
   const breadcrumbItems = useMemo(() => [
     { label: "Dashboard", href: "/dashboard" },
@@ -176,7 +222,7 @@ export function StaffListing() {
     {
       key: "role",
       label: "Role",
-      render: (staff) => <Badge variant="outline">{staff.role}</Badge>
+      render: (staff) => <Badge variant="outline">{getRoleForStaff(staff.id)}</Badge>
     },
     {
       key: "status",
@@ -207,7 +253,7 @@ export function StaffListing() {
         />
       )
     }
-  ], [rowActions]);
+  ], [rowActions, getRoleForStaff]);
 
   return (
     <div className="space-y-6">
@@ -232,7 +278,7 @@ export function StaffListing() {
             
             <div className="flex items-center gap-2">
               <TableBulkActions selectedCount={selectedRows.length} actions={bulkActions} />
-              <ExportButton onClick={handleExport} />
+              <ExportButton onExport={handleExport} />
             </div>
           </div>
         }
@@ -259,6 +305,47 @@ export function StaffListing() {
           isLoading={isLoading && !isPlaceholderData}
         />
       </TableContainer>
+
+      <ConfirmDialog
+        open={dialogState.open}
+        onOpenChange={(open) => setDialogState({ open, type: null })}
+        title={
+          dialogState.type === 'delete'
+            ? `Delete ${selectedRows.length} staff member(s)?`
+            : dialogState.type === 'activate'
+            ? `Activate ${selectedRows.length} staff member(s)?`
+            : `Deactivate ${selectedRows.length} staff member(s)?`
+        }
+        description={
+          dialogState.type === 'delete'
+            ? 'This action cannot be undone. The selected staff members will be permanently removed.'
+            : dialogState.type === 'activate'
+            ? 'The selected staff members will be activated and granted access to the system.'
+            : 'The selected staff members will be deactivated and their access will be revoked.'
+        }
+        confirmText={
+          dialogState.type === 'delete'
+            ? 'Delete'
+            : dialogState.type === 'activate'
+            ? 'Activate'
+            : 'Deactivate'
+        }
+        variant={
+          dialogState.type === 'delete'
+            ? 'destructive'
+            : dialogState.type === 'activate'
+            ? 'success'
+            : 'warning'
+        }
+        icon={
+          dialogState.type === 'delete'
+            ? <Trash2 className="h-6 w-6" />
+            : dialogState.type === 'activate'
+            ? <UserCheck className="h-6 w-6" />
+            : <UserX className="h-6 w-6" />
+        }
+        onConfirm={handleConfirmBulkAction}
+      />
     </div>
   );
 }

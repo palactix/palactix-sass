@@ -57,10 +57,10 @@ export const FilterBar = memo(({
 
       {hasActiveFilters && onReset && (
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="sm" 
           onClick={onReset}
-          className="h-8 px-2 lg:px-3"
+          className="h-8 px-2 lg:px-3 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
         >
           Reset
           <X className="ml-2 h-4 w-4" />
