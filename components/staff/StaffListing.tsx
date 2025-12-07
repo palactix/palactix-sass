@@ -307,43 +307,32 @@ export function StaffListing() {
       </TableContainer>
 
       <ConfirmDialog
-        open={dialogState.open}
-        onOpenChange={(open) => setDialogState({ open, type: null })}
-        title={
-          dialogState.type === 'delete'
-            ? `Delete ${selectedRows.length} staff member(s)?`
-            : dialogState.type === 'activate'
-            ? `Activate ${selectedRows.length} staff member(s)?`
-            : `Deactivate ${selectedRows.length} staff member(s)?`
-        }
-        description={
-          dialogState.type === 'delete'
-            ? 'This action cannot be undone. The selected staff members will be permanently removed.'
-            : dialogState.type === 'activate'
-            ? 'The selected staff members will be activated and granted access to the system.'
-            : 'The selected staff members will be deactivated and their access will be revoked.'
-        }
-        confirmText={
-          dialogState.type === 'delete'
-            ? 'Delete'
-            : dialogState.type === 'activate'
-            ? 'Activate'
-            : 'Deactivate'
-        }
-        variant={
-          dialogState.type === 'delete'
-            ? 'destructive'
-            : dialogState.type === 'activate'
-            ? 'success'
-            : 'warning'
-        }
-        icon={
-          dialogState.type === 'delete'
-            ? <Trash2 className="h-6 w-6" />
-            : dialogState.type === 'activate'
-            ? <UserCheck className="h-6 w-6" />
-            : <UserX className="h-6 w-6" />
-        }
+        open={dialogState.open && dialogState.type === 'delete'}
+        onOpenChange={(open) => setDialogState({ open, type: open ? 'delete' : null })}
+        variant="destructive"
+        title={`Delete ${selectedRows.length} staff member(s)?`}
+        description="This action cannot be undone. The selected staff members will be permanently removed."
+        icon={<Trash2 className="h-6 w-6" />}
+        onConfirm={handleConfirmBulkAction}
+      />
+
+      <ConfirmDialog
+        open={dialogState.open && dialogState.type === 'activate'}
+        onOpenChange={(open) => setDialogState({ open, type: open ? 'activate' : null })}
+        variant="success"
+        title={`Activate ${selectedRows.length} staff member(s)?`}
+        description="The selected staff members will be activated and granted access to the system."
+        icon={<UserCheck className="h-6 w-6" />}
+        onConfirm={handleConfirmBulkAction}
+      />
+
+      <ConfirmDialog
+        open={dialogState.open && dialogState.type === 'deactivate'}
+        onOpenChange={(open) => setDialogState({ open, type: open ? 'deactivate' : null })}
+        variant="warning"
+        title={`Deactivate ${selectedRows.length} staff member(s)?`}
+        description="The selected staff members will be deactivated and their access will be revoked."
+        icon={<UserX className="h-6 w-6" />}
         onConfirm={handleConfirmBulkAction}
       />
     </div>
