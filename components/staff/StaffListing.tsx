@@ -262,7 +262,7 @@ export function StaffListing() {
       <PageHeader 
         title="Staff Members" 
         description="Manage your organization's team members and their roles."
-        actions={<CreateButton href="/staff/create" label="Create New Staff" />}
+        actions={<CreateButton href="/staff/create" label="Invite Staff" />}
       />
 
       <TableContainer

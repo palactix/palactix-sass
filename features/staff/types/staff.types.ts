@@ -1,5 +1,5 @@
 export interface CreateStaffPayload {
-  name: string;
+  name?: string;
   email: string;
   password?: string;
 }

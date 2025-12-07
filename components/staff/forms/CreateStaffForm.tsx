@@ -2,111 +2,116 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createStaffSchema, type CreateStaffSchema } from "@/features/staff/schemas/staff.schemas";
+import { inviteStaffSchema, type InviteStaffSchema } from "@/features/staff/schemas/staff.schemas";
 import { useCreateStaffMutation } from "@/features/staff/api/staff.queries";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormMessage } from "@/components/forms/FormMessage";
 import { toast } from "sonner";
-import { Loader2, Plus } from "lucide-react";
-import { motion } from "motion/react";
+import { Loader2, Mail, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function CreateStaffForm() {
+type CreateStaffFormProps = {
+  onCancel?: () => void;
+};
+
+export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
+  const router = useRouter();
   const { mutate, isPending } = useCreateStaffMutation();
   
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
-  } = useForm<CreateStaffSchema>({
-    resolver: zodResolver(createStaffSchema),
+  } = useForm<InviteStaffSchema>({
+    resolver: zodResolver(inviteStaffSchema),
     defaultValues: {
       name: "",
       email: "",
-      password: "",
     },
   });
 
-  const onSubmit = (data: CreateStaffSchema) => {
+  const onSubmit = (data: InviteStaffSchema) => {
     mutate(data, {
       onSuccess: (res) => {
-        toast.success(res.message || "Staff member created successfully");
-        reset();
+        toast.success(res.message || "Invitation sent successfully", {
+          description: `An invitation email has been sent to ${data.email}`,
+        });
+        
+        if (onCancel) {
+          onCancel();
+        } else {
+          router.push("/staff");
+        }
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to create staff member");
+        toast.error(error.message || "Failed to send invitation");
       },
     });
   };
 
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.push("/staff");
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle>Create New Staff</CardTitle>
-          <CardDescription>Add a new staff member to your organization. They will receive an email with login details.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form id="create-staff-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                placeholder="e.g. John Doe"
-                className="text-lg py-6"
-                {...register("name")}
-              />
-              <FormMessage>{errors.name?.message}</FormMessage>
-            </div>
+    <form id="invite-staff-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-6">
+      <div className="space-y-2">
+        <Label htmlFor="name">
+          Full Name <span className="text-muted-foreground">(Optional)</span>
+        </Label>
+        <Input
+          id="name"
+          placeholder="e.g. John Doe"
+          className="text-base"
+          {...register("name")}
+        />
+        <FormMessage>{errors.name?.message}</FormMessage>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="john@example.com"
-                className="text-lg py-6"
-                {...register("email")}
-              />
-              <FormMessage>{errors.email?.message}</FormMessage>
-            </div>
+      <div className="space-y-2">
+        <Label htmlFor="email">
+          Email Address <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="john@example.com"
+          className="text-base"
+          {...register("email")}
+        />
+        <FormMessage>{errors.email?.message}</FormMessage>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="text-lg py-6"
-                {...register("password")}
-              />
-              <FormMessage>{errors.password?.message}</FormMessage>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-end border-t p-6 bg-muted/10">
-          <Button type="submit" form="create-staff-form" disabled={isPending} size="lg">
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Create Staff Member
-              </>
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
-    </motion.div>
+      <div className="flex justify-end gap-3 pt-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isPending}
+        >
+          <X className="mr-2 h-4 w-4" />
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Mail className="mr-2 h-4 w-4" />
+              Send Invitation
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
   );
 }
