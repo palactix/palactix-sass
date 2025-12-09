@@ -64,8 +64,11 @@ export type User = {
   name: string;
   email: string;
   email_verified_at: string | null;
+  status: string;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
+  organizations: import("@/features/organization/types/organization.types").Organization[];
 };
 
 export type UserResponse = User | null;

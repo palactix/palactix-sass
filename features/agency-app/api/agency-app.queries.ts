@@ -25,11 +25,15 @@ import type {
   ChannelListResponse,
   MyAgencyAppResponse,
 } from "../types/agency-app.types";
+import { useOrganizationStore } from "@/features/organization/stores/organization.store";
 
 export const agencyAppKeys = {
   all: ["agency-app"] as const,
   channels: ["agency-app", "channels"] as const,
-  myApp: ["agency-app", "my-app"] as const,
+  myApp: () => {
+    const currentOrgId = useOrganizationStore.getState().currentOrganization?.id;
+    return ["agency-app", "my-app", currentOrgId] as const;
+  },
 };
 
 export function useChannels() {
@@ -41,12 +45,15 @@ export function useChannels() {
 }
 
 export function useMyAgencyApp() {
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useQuery<MyAgencyAppResponse, Error>({
-    queryKey: agencyAppKeys.myApp,
+    queryKey: agencyAppKeys.myApp(),
     queryFn: getMyAgencyApp,
     retry: false,
     refetchOnWindowFocus: false,
-    staleTime: 0
+    staleTime: 0,
+    enabled: !!currentOrgId,
   });
 }
 
@@ -55,7 +62,7 @@ export function useCreateAppMutation() {
   return useMutation<CreateAppResponse, Error, CreateAppPayload>({
     mutationFn: createApp,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }
@@ -65,7 +72,7 @@ export function useUpdateAppNameMutation() {
   return useMutation<UpdateAppNameResponse, Error, { appId: string; payload: UpdateAppNamePayload }>({
     mutationFn: ({ appId, payload }) => updateAppName(appId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }
@@ -75,7 +82,7 @@ export function useUpdatePlatformsMutation() {
   return useMutation<UpdatePlatformsResponse, Error, { appId: string; payload: UpdatePlatformsPayload }>({
     mutationFn: ({ appId, payload }) => updateAppPlatforms(appId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }
@@ -85,7 +92,7 @@ export function useUpdateCredentialsMutation() {
   return useMutation<UpdateCredentialsResponse, Error, { appId: string; payload: UpdateCredentialsPayload }>({
     mutationFn: ({ appId, payload }) => updateAppCredentials(appId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }
@@ -95,7 +102,7 @@ export function useActivateAppMutation() {
   return useMutation<ActivateAppResponse, Error, string>({
     mutationFn: activateApp,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }
@@ -105,7 +112,7 @@ export function useSendAppToReviewMutation() {
   return useMutation<ReviewAppResponse, Error, string>({
     mutationFn: sendAppToReview,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp });
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
   });
 }

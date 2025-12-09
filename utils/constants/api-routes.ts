@@ -13,25 +13,25 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 export const CHANNEL_LIST = "v1/channels";
 
 export const AGENCY_APP_API_ROUTES = {
-  CREATE_APP: "developer-apps",
-  MY_AGENCY_APP: "developer-apps/my-agency-app",
-  UPDATE_APP_NAME: "developer-apps/{app}/update-name",
-  CREATE_APP_PLATFORMS: "developer-apps/{app}/platforms",
-  CREATE_APP_PLATFORMS_CREDENTIALS: "developer-apps/{app}/platform-credentials",
-  SEND_TO_REVIEW: "developer-apps/{app}/send-to-review",
-  ACTIVATE_APP: "developer-apps/{app}/activate",
-  DEACTIVATE_APP: "developer-apps/{app}/deactivate",
+  CREATE_APP: "/organizations/{orgId}/developer-apps",
+  MY_AGENCY_APP: "/organizations/{orgId}/developer-apps/my-agency-app",
+  UPDATE_APP_NAME: "/organizations/{orgId}/developer-apps/{app}/update-name",
+  CREATE_APP_PLATFORMS: "/organizations/{orgId}/developer-apps/{app}/platforms",
+  CREATE_APP_PLATFORMS_CREDENTIALS: "/organizations/{orgId}/developer-apps/{app}/platform-credentials",
+  SEND_TO_REVIEW: "/organizations/{orgId}/developer-apps/{app}/send-to-review",
+  ACTIVATE_APP: "/organizations/{orgId}/developer-apps/{app}/activate",
+  DEACTIVATE_APP: "/organizations/{orgId}/developer-apps/{app}/deactivate",
 } as const;
 
 
 export const AGENCY_ROUTES = {
-  CREATE_STAFF: "/organization/staff",
-  STAFFS: "/organization/staff",
-  ACTIVE: "/organization/staff/{userId}/activate",
-  DEACTIVE: "/organization/staff/{userId}/deactivate",
-  DELETE: "/organization/staff/{userId}",
-  EXPORT: "/organization/staff/export",
-  RESEND_INVITE: "/organization/staff/{userId}/resend-invite",
-  CANCEL_INVITE: "/organization/staff/{userId}/cancel-invite",
+  CREATE_STAFF: "/organizations/{orgId}/staff",
+  STAFFS: "/organizations/{orgId}/staff",
+  ACTIVE: "/organizations/{orgId}/staff/{userId}/activate",
+  DEACTIVE: "/organizations/{orgId}/staff/{userId}/deactivate",
+  DELETE: "/organizations/{orgId}/staff/{userId}",
+  EXPORT: "/organizations/{orgId}/staff/export",
+  RESEND_INVITE: "/organizations/{orgId}/staff/{userId}/resend-invite",
+  CANCEL_INVITE: "/organizations/{orgId}/staff/{userId}/cancel-invite",
   CREATE_PASSWORD: "/invitations/set-password",
 };

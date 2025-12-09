@@ -12,6 +12,7 @@ import {
 import { CreateStaffPayload, CreateStaffResponse } from "../types/staff.types";
 import { PaginationParams } from "@/types/api";
 import { toast } from "sonner";
+import { useOrganizationStore } from "@/features/organization/stores/organization.store";
 
 export function useCreateStaffMutation() {
   return useMutation<CreateStaffResponse, Error, CreateStaffPayload>({
@@ -20,39 +21,48 @@ export function useCreateStaffMutation() {
 }
 
 export function useStaffList(params: PaginationParams) {
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useQuery({
-    queryKey: ['staff', params],
+    queryKey: ['staff', currentOrgId, params],
     queryFn: () => getStaffList(params),
     placeholderData: keepPreviousData,
+    enabled: !!currentOrgId,
   });
 }
 
 export function useActivateStaffMutation() {
   const queryClient = useQueryClient();
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useMutation({
     mutationFn: activateStaff,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
     }
   });
 }
 
 export function useDeactivateStaffMutation() {
   const queryClient = useQueryClient();
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useMutation({
     mutationFn: deactivateStaff,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
     }
   });
 }
 
 export function useDeleteStaffMutation() {
   const queryClient = useQueryClient();
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useMutation({
     mutationFn: deleteStaff,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
     }
   });
 }
@@ -74,10 +84,12 @@ export function useResendInviteMutation() {
 
 export function useCancelInviteMutation() {
   const queryClient = useQueryClient();
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
   return useMutation({
     mutationFn: cancelInvite,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['staff'] });
+      queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
     }
   });
 }

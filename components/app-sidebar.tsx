@@ -10,6 +10,7 @@ import {
   Users,
   BarChart3,
   CreditCard,
+  ChevronDown,
 } from "lucide-react"
 
 import {
@@ -27,95 +28,162 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-
-// This is sample data.
-const data = {
-  user: {
-    name: "Alex Rivera",
-    email: "alex@riverasocial.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  agency: {
-    name: "Rivera Social",
-    logo: LayoutDashboard,
-    plan: "Pro",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home,
-      isActive: true,
-    },
-    {
-      title: "Scheduler",
-      url: "/scheduler",
-      icon: Calendar,
-    },
-    {
-      title: "Staff",
-      url: "/staff",
-      icon: Users,
-    },
-    {
-      title: "Clients",
-      url: "/clients",
-      icon: Users,
-    },
-    {
-      title: "Inbox",
-      url: "/inbox",
-      icon: Inbox,
-      badge: "10",
-    },
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart3,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Agency App",
-      url: "/agency-app",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
-    },
-    {
-      title: "Billing",
-      url: "/billing",
-      icon: CreditCard,
-    },
-  ],
-}
+import { useUser } from "@/features/auth/api/auth.queries"
+import { useOrganizationStore } from "@/features/organization/stores/organization.store"
+import { getOrganizationRole } from "@/features/organization/types/organization.types"
+import { cn } from "@/lib/utils"
+import { useRouter, usePathname } from "next/navigation"
+import { buildOrgSwitchUrl, useOrgPaths, buildOrgUrl } from "@/lib/utils/org-urls"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { state } = useSidebar()
+  const { data: user } = useUser()
+  const { currentOrganization } = useOrganizationStore()
+  const router = useRouter()
+  const pathname = usePathname()
+  const orgPaths = useOrgPaths()
+
+  // Navigation data - uses orgPaths hook for dynamic URLs
+  const data = {
+    user: {
+      name: "Alex Rivera",
+      email: "alex@riverasocial.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    agency: {
+      name: "Rivera Social",
+      logo: LayoutDashboard,
+      plan: "Pro",
+    },
+    navMain: [
+      {
+        title: "Dashboard",
+        url: orgPaths.dashboard,
+        icon: Home,
+        isActive: true,
+      },
+      {
+        title: "Scheduler",
+        url: orgPaths.scheduler,
+        icon: Calendar,
+      },
+      {
+        title: "Staff",
+        url: buildOrgUrl('/staff'),
+        icon: Users,
+      },
+      {
+        title: "Clients",
+        url: orgPaths.clients,
+        icon: Users,
+      },
+      {
+        title: "Inbox",
+        url: orgPaths.inbox,
+        icon: Inbox,
+        badge: "10",
+      },
+      {
+        title: "Analytics",
+        url: orgPaths.analytics,
+        icon: BarChart3,
+      },
+    ],
+    navSecondary: [
+      {
+        title: "Agency App",
+        url: orgPaths.agencyApp,
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Settings",
+        url: orgPaths.settings,
+        icon: Settings,
+      },
+      {
+        title: "Billing",
+        url: orgPaths.billing,
+        icon: CreditCard,
+      },
+    ],
+  }
+
+  const handleOrgChange = (org: typeof currentOrganization) => {
+    if (!org) return
+    
+    // Use centralized URL builder to switch orgs while preserving current page
+    const newUrl = buildOrgSwitchUrl(org.slug, pathname, true)
+    router.push(newUrl)
+  }
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <data.agency.logo className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {data.agency.name}
-                </span>
-                <span className="truncate text-xs">Enterprise</span>
-              </div>
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                    <LayoutDashboard className="size-4" />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">
+                      {currentOrganization?.name || "Select Organization"}
+                    </span>
+                    <span className="truncate text-xs capitalize">
+                      {currentOrganization 
+                        ? getOrganizationRole(currentOrganization.pivot.role_id)
+                        : "No organization"
+                      }
+                    </span>
+                  </div>
+                  {user?.organizations && user.organizations.length > 1 && (
+                    <ChevronDown className="ml-auto size-4" />
+                  )}
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              
+              {user?.organizations && user.organizations.length > 1 && (
+                <DropdownMenuContent
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  side="bottom"
+                  align="start"
+                  sideOffset={4}
+                >
+                  {user.organizations.map((org) => (
+                    <DropdownMenuItem
+                      key={org.id}
+                      onClick={() => handleOrgChange(org)}
+                      className={cn(
+                        "cursor-pointer gap-2 p-2",
+                        org.id === currentOrganization?.id && "bg-accent"
+                      )}
+                    >
+                      <div className="flex size-6 items-center justify-center rounded-sm border bg-background">
+                        <LayoutDashboard className="size-4 shrink-0" />
+                      </div>
+                      <div className="flex flex-col gap-0.5 overflow-hidden">
+                        <span className="font-medium truncate">{org.name}</span>
+                        <span className="text-xs text-muted-foreground capitalize">
+                          {getOrganizationRole(org.pivot.role_id)}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              )}
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -127,7 +195,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
-                    <Link href={item.url}>
+                    <Link href={orgPaths[item.url.slice(1) as keyof typeof orgPaths] || item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                       {item.badge && (
@@ -148,7 +216,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navSecondary.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild size="sm" tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link href={orgPaths[item.url.slice(1).replace('-', '') as keyof typeof orgPaths] || item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

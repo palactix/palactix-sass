@@ -1,5 +1,6 @@
 import { api } from "@/lib/api/client";
 import { AGENCY_APP_API_ROUTES, CHANNEL_LIST } from "@/utils/constants/api-routes";
+import { buildApiUrl } from "@/lib/utils/api-url";
 import type {
   CreateAppPayload,
   CreateAppResponse,
@@ -14,9 +15,6 @@ import type {
   ChannelListResponse,
   MyAgencyAppResponse,
 } from "../types/agency-app.types";
-
-// Helper to replace {app} in routes
-const getRoute = (route: string, appId: string) => route.replace("{app}", appId);
 
 export async function getChannels() {
   const res = await api.get<ChannelListResponse>(CHANNEL_LIST);
@@ -34,31 +32,31 @@ export async function createApp(payload: CreateAppPayload) {
 }
 
 export async function updateAppName(appId: string, payload: UpdateAppNamePayload) {
-  const url = getRoute(AGENCY_APP_API_ROUTES.UPDATE_APP_NAME, appId);
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.UPDATE_APP_NAME, { app: appId });
   const res = await api.post<UpdateAppNameResponse>(url, payload);
   return res.data;
 }
 
 export async function updateAppPlatforms(appId: string, payload: UpdatePlatformsPayload) {
-  const url = getRoute(AGENCY_APP_API_ROUTES.CREATE_APP_PLATFORMS, appId);
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.CREATE_APP_PLATFORMS, { app: appId });
   const res = await api.post<UpdatePlatformsResponse>(url, payload);
   return res.data;
 }
 
 export async function updateAppCredentials(appId: string, payload: UpdateCredentialsPayload) {
-  const url = getRoute(AGENCY_APP_API_ROUTES.CREATE_APP_PLATFORMS_CREDENTIALS, appId);
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.CREATE_APP_PLATFORMS_CREDENTIALS, { app: appId });
   const res = await api.post<UpdateCredentialsResponse>(url, payload);
   return res.data;
 }
 
 export async function activateApp(appId: string) {
-  const url = getRoute(AGENCY_APP_API_ROUTES.ACTIVATE_APP, appId);
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.ACTIVATE_APP, { app: appId });
   const res = await api.post<ActivateAppResponse>(url);
   return res.data;
 }
 
 export async function sendAppToReview(appId: string) {
-  const url = getRoute(AGENCY_APP_API_ROUTES.SEND_TO_REVIEW, appId);
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.SEND_TO_REVIEW, { app: appId });
   const res = await api.post<ReviewAppResponse>(url);
   return res.data;
 }

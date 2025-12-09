@@ -33,6 +33,7 @@ import {
   useCancelInviteMutation 
 } from "@/features/staff/api/staff.queries";
 import { Staff, UserStatus } from "@/features/staff/types/staff.types";
+import Link from "next/link";
 
 export function StaffListing() {
   const {
