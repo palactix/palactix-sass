@@ -183,6 +183,7 @@ export function StaffListing() {
             title: `Deactivate ${s.name}?`,
             description: "The selected staff member will no longer have access to the system.",
             variant: "destructive",
+            confirmText: "Deactivate"
           });
           if(confirmed) {
             deactivateMutation.mutate(s.id);
@@ -258,7 +259,7 @@ export function StaffListing() {
   ], [handleBulkDelete, handleBulkActivate, handleBulkDeactivate]);
 
   const breadcrumbItems = useMemo(() => [
-    { label: "Dashboard", href: "/dashboard" },
+    { label: "Dashboard", href: buildOrgUrl("/dashboard") },
     { label: "Staff Members" }
   ], []);
 

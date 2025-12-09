@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { buildOrgUrl } from "@/lib/utils/index"
 import { Calendar, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp, Users } from "lucide-react"
 import Link from "next/link"
 
@@ -49,8 +50,8 @@ export default function DashboardPage() {
                     Takes 4 minutes. After this, your clients will only see YOUR agency name on Instagram, TikTok, etc. No more third-party branding.
                 </p>
             </div>
-            <Button size="lg" variant="secondary" className="font-semibold whitespace-nowrap text-green-700 hover:bg-white" asChild>
-                <Link href="/agency-app">Get Started</Link>
+            <Button size="lg" variant="secondary" className="font-semibold whitespace-nowrap hover:bg-white hover:text-green-700" asChild>
+                <Link href={buildOrgUrl('/agency-app')}>Get Started</Link>
             </Button>
         </div>
         {/* Decorative circle */}

@@ -1,0 +1,297 @@
+"use client";
+
+import React, { useMemo, useCallback } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  TableBreadcrumb, 
+  PageHeader, 
+  CreateButton, 
+  TableContainer, 
+  DataTable, 
+  TableRowActions, 
+  TablePagination,
+  ExportButton,
+  Column,
+  RowAction,
+  useDataTable,
+  FilterBar,
+  FilterConfig,
+  ExportFormat
+} from "@/components/shared/table";
+import { Trash2 } from "lucide-react";
+import { confirm } from "@/features/confirm";
+import { 
+  useClientList, 
+  useActivateClientMutation, 
+  useDeactivateClientMutation, 
+  useDeleteClientMutation, 
+  useExportClientsMutation, 
+  useResendClientInviteMutation, 
+  useCancelClientInviteMutation 
+} from "@/features/clients/api/clients.queries";
+import { Client, ClientStatus } from "@/features/clients/types/client.types";
+import { buildOrgUrl } from "@/lib/utils/org-urls";
+
+
+export function ClientListing() {
+  const {
+    sortConfig,
+    currentPage,
+    pageSize,
+    handleSort,
+    setCurrentPage,
+    setPageSize,
+    filters,
+    handleFilterChange,
+    resetFilters
+  } = useDataTable<Client>();
+
+  const filterConfig = useMemo<FilterConfig[]>(() => [
+    { type: 'input', key: 'search', placeholder: 'Search clients...' },
+    { 
+      type: 'select', 
+      key: 'status', 
+      options: [
+        { label: "All Status", value: "all" },
+        { label: "Active", value: "Active" },
+        { label: "Inactive", value: "Inactive" },
+        { label: "Pending", value: "Pending" }
+      ],
+      placeholder: "Filter by status"
+    }
+  ], []);
+
+  // Query
+  const { data, isLoading, isPlaceholderData } = useClientList({
+    page: currentPage,
+    per_page: pageSize,
+    sort: sortConfig?.key 
+      ? (sortConfig.direction === 'desc' ? `-${sortConfig.key}` : sortConfig.key)
+      : undefined,
+    ...Object.keys(filters).reduce((acc, key) => ({
+      ...acc,
+      [`filter[${key}]`]: filters[key]
+    }), {})
+  });
+
+  const activateMutation = useActivateClientMutation();
+  const deactivateMutation = useDeactivateClientMutation();
+  const deleteMutation = useDeleteClientMutation();
+  const exportMutation = useExportClientsMutation();
+  const resendInviteMutation = useResendClientInviteMutation();
+  const cancelInviteMutation = useCancelClientInviteMutation();
+
+  const clientData = useMemo(() => data?.data || [], [data]);
+  const totalPages = data?.last_page || 1;
+  const totalItems = data?.total || 0;
+
+  const handleDelete = useCallback(async (item: Client) => {
+    const confirmed = await confirm({
+      title: "Delete client?",
+      description: `Are you sure you want to delete ${item.name}? This action cannot be undone.`,
+      variant: "destructive",
+      icon: <Trash2 className="h-6 w-6" />
+    });
+    
+    if (confirmed) {
+      deleteMutation.mutate(item.id);
+    }
+  }, [deleteMutation]);
+
+  const handleExport = useCallback((format: ExportFormat) => {
+    const exportFormat = format === 'csv' ? 'csv' : 'excel';
+    exportMutation.mutate(exportFormat, {
+      onSuccess: (data) => {
+        const url = window.URL.createObjectURL(new Blob([data]));
+        const link = document.createElement('a');
+        link.href = url;
+        const extension = format === 'csv' ? 'csv' : 'xlsx';
+        link.setAttribute('download', `clients-export.${extension}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
+    });
+  }, [exportMutation]);
+
+  // Actions
+  const rowActions = useMemo<RowAction<Client>[]>(() => [
+    { label: "Copy Email", onClick: (c) => navigator.clipboard.writeText(c.email), separator: true  },
+    { label: "Edit Details", onClick: (c) => console.log("Edit", c.id), separator: true },
+    { 
+      label: (c) => c.status === ClientStatus.active ? 'Deactivate' : 'Activate', 
+      onClick: async (c) => {
+        if(c.status === ClientStatus.active) {
+          const confirmed = await confirm({
+            title: `Deactivate ${c.name}?`,
+            description: "The client will no longer have access to the system.",
+            variant: "destructive",
+            confirmText: "Deactivate"
+          });
+          if(confirmed) {
+            deactivateMutation.mutate(c.id);
+          }
+        } else {
+          const confirmed = await confirm({
+            title: `Activate ${c.name}?`,
+            description: "The client will be granted access to the system.",
+            variant: "success",
+          });
+          if(confirmed){
+            activateMutation.mutate(c.id);
+          }
+        }
+      },
+      hidden: (c) => c.status === ClientStatus.pending
+    },
+    { 
+      label: "Resend Invite", 
+      onClick: async (c) => {
+        const confirmed = await confirm({
+          title: `Resend invite to ${c.name}?`,
+          description: "A new invitation email will be sent.",
+          variant: "success",
+        });
+        if(confirmed) {
+          resendInviteMutation.mutate(c.id);
+        }
+      },
+      hidden: (c) => c.status === ClientStatus.active
+    },
+    { 
+      label: "Cancel Invite", 
+      onClick: async (c) => {
+        const confirmed = await confirm({
+          title: `Cancel invite for ${c.name}?`,
+          description: "The client's invitation will be cancelled.",
+          variant: "destructive",
+          confirmText: "Cancel Invite"
+        });
+        if(confirmed) {
+          cancelInviteMutation.mutate(c.id);
+        }
+      },
+      hidden: (c) => c.status === ClientStatus.active,
+      className: "text-destructive",
+      separator: true
+    },
+    { label: "Delete Client", onClick: handleDelete, className: "text-destructive" }
+  ], [handleDelete, activateMutation, deactivateMutation, resendInviteMutation, cancelInviteMutation]);
+
+  const breadcrumbItems = useMemo(() => [
+    { label: "Dashboard", href: buildOrgUrl("/dashboard") },
+    { label: "Clients" }
+  ], []);
+
+  // Columns - NO ROLE COLUMN
+  const columns = useMemo<Column<Client>[]>(() => [
+    {
+      key: "name",
+      label: "Name",
+      sortable: true,
+      render: (client) => (
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={client.avatar} />
+            <AvatarFallback>{client.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <span className="font-medium">{client.name}</span>
+        </div>
+      )
+    },
+    {
+      key: "email",
+      label: "Email",
+      sortable: true
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      render: (client) => {
+        const statusConfig = {
+          active: { variant: "default" as const, className: "bg-green-600 hover:bg-green-600" },
+          inactive: { variant: "secondary" as const, className: "" },
+          pending: { variant: "outline" as const, className: "border-amber-500 text-amber-700" }
+        };
+        
+        const config = statusConfig[client.status as keyof typeof statusConfig] || { variant: "outline" as const, className: "" };
+        
+        return (
+          <Badge 
+            variant={config.variant}
+            className={config.className}
+          >
+            {client.status}
+          </Badge>
+        );
+      }
+    },
+    {
+      key: "created_at",
+      label: "Joined",
+      sortable: true,
+      render: (client) => new Date(client.created_at).toLocaleDateString()
+    },
+    {
+      key: "actions",
+      label: "",
+      render: (client) => (
+        <TableRowActions 
+          row={client}
+          actions={rowActions}
+        />
+      )
+    }
+  ], [rowActions]);
+
+  return (
+    <div className="space-y-6">
+      <TableBreadcrumb items={breadcrumbItems} />
+      
+      <PageHeader 
+        title="Clients" 
+        description="Manage your organization's clients and their access."
+        actions={<CreateButton href={buildOrgUrl('/clients/create')} label="Invite Client" />}
+      />
+
+      <TableContainer
+        isLoading={isLoading}
+        header={
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <FilterBar 
+              filters={filters} 
+              onFilterChange={handleFilterChange} 
+              onReset={resetFilters}
+              config={filterConfig} 
+            />
+            
+            <div className="flex items-center gap-2">
+              <ExportButton onExport={handleExport} />
+            </div>
+          </div>
+        }
+        footer={
+          <TablePagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            totalItems={totalItems}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+          />
+        }
+      >
+        <DataTable 
+          data={clientData}
+          columns={columns}
+          keyField="id"
+          sortConfig={sortConfig}
+          onSort={handleSort}
+          isLoading={isLoading && !isPlaceholderData}
+        />
+      </TableContainer>
+    </div>
+  );
+}

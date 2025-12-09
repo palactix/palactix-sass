@@ -36,3 +36,14 @@ export const AGENCY_ROUTES = {
   CANCEL_INVITE: "/organizations/{orgId}/staff/{userId}/cancel-invite",
   CREATE_PASSWORD: "/invitations/set-password",
 };
+
+export const CLIENT_ROUTES = {
+  CREATE_CLIENT: "/organizations/{orgId}/clients",
+  CLIENTS: "/organizations/{orgId}/clients",
+  ACTIVATE: "/organizations/{orgId}/clients/{userId}/activate",
+  DEACTIVATE: "/organizations/{orgId}/clients/{userId}/deactivate",
+  DELETE: "/organizations/{orgId}/clients/{userId}",
+  EXPORT_CLIENTS: "/organizations/{orgId}/clients/export",
+  RESEND_INVITE: "/organizations/{orgId}/clients/{userId}/resend-invite",
+  CANCEL_INVITE: "/organizations/{orgId}/clients/{userId}/cancel-invite",
+};

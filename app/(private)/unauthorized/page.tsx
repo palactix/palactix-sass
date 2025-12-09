@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { buildOrgUrl } from "@/lib/utils/org-urls";
 
 export default function UnauthorizedPage() {
   return (
@@ -31,7 +32,7 @@ export default function UnauthorizedPage() {
         </div>
 
         <Button asChild>
-          <Link href="/dashboard">
+          <Link href={buildOrgUrl("/dashboard")}>
             Go to Dashboard
           </Link>
         </Button>

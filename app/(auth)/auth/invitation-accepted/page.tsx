@@ -12,9 +12,10 @@ import { Card } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setPasswordSchema, type SetPasswordSchema } from "@/features/auth/schemas/set-password.schema";
-import { useSetPasswordMutation } from "@/features/auth/api/auth.queries";
+import { useSetPasswordMutation, useUser } from "@/features/auth/api/auth.queries";
 import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { buildOrgUrl } from "@/lib/utils/org-urls";
 
 function InvitationAcceptContent() {
   const searchParams = useSearchParams();
@@ -25,6 +26,7 @@ function InvitationAcceptContent() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { refetch } = useUser();
 
   const form = useForm<SetPasswordSchema>({
     resolver: zodResolver(setPasswordSchema),
@@ -57,8 +59,15 @@ function InvitationAcceptContent() {
         description: "Redirecting to dashboard...",
       });
       
+      // Refetch user data to get organizations
+      const { data: userData } = await refetch();
+
+      const firstOrgSlug = userData?.organizations?.[0]?.slug;
+      
+      const redirectUrl = `${firstOrgSlug ? `/${firstOrgSlug}` : ""}/dashboard`;
+      
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push(redirectUrl);
       }, 1000);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Failed to create password. Please try again.";
