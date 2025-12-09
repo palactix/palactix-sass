@@ -33,7 +33,8 @@ import {
   useCancelInviteMutation 
 } from "@/features/staff/api/staff.queries";
 import { Staff, UserStatus } from "@/features/staff/types/staff.types";
-import Link from "next/link";
+import { buildOrgUrl, getOrgSlugFromPath, useOrgPaths } from "@/lib/utils/org-urls";
+
 
 export function StaffListing() {
   const {
@@ -90,12 +91,6 @@ export function StaffListing() {
   const staffData = useMemo(() => data?.data || [], [data]);
   const totalPages = data?.last_page || 1;
   const totalItems = data?.total || 0;
-
-  // Static role assignment based on staff ID
-  const getRoleForStaff = useCallback((staffId: number) => {
-    const roles = ['Manager', 'Developer', 'Designer', 'Member', 'Sales', 'Support'];
-    return roles[staffId % roles.length];
-  }, []);
 
   const handleSelectAll = useMemo(() => getSelectAllHandler(staffData), [staffData, getSelectAllHandler]);
 
@@ -158,13 +153,17 @@ export function StaffListing() {
   }, [selectedRows, resetSelection]);
 
   const handleExport = useCallback((format: ExportFormat) => {
-    exportMutation.mutate(undefined, {
+    const exportFormat = format === 'csv' ? 'csv' : 'xlsx';
+    exportMutation.mutate(exportFormat, {
       onSuccess: (data) => {
+        const org = getOrgSlugFromPath(window.location.pathname);
         const url = window.URL.createObjectURL(new Blob([data]));
         const link = document.createElement('a');
         link.href = url;
         const extension = format === 'csv' ? 'csv' : 'xlsx';
-        link.setAttribute('download', `staff-export.${extension}`);
+        const fileName = `staff-${org}-${new Date().toISOString().split('T')[0]}.${extension}`;
+        
+        link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -178,7 +177,29 @@ export function StaffListing() {
     { label: "Edit Details", onClick: (s) => console.log("Edit", s.id), separator: true },
     { 
       label: (s) => s.status === UserStatus.active ? 'Deactivate' : 'Activate', 
-      onClick: (s) => s.status === UserStatus.active ? deactivateMutation.mutate(s.id) : activateMutation.mutate(s.id),
+      onClick: async (s) => {
+        if(s.status === UserStatus.active) {
+          const confirmed = await confirm({
+            title: `Deactivate ${s.name}?`,
+            description: "The selected staff member will no longer have access to the system.",
+            variant: "destructive",
+          });
+          if(confirmed) {
+            deactivateMutation.mutate(s.id);
+          }
+        } else {
+
+          const confirmed = await confirm({
+            title: `Activate ${s.name}?`,
+            description: "The selected staff member will be granted access to the system.",
+            variant: "success",
+          });
+          if(confirmed){
+            activateMutation.mutate(s.id);
+          }
+          
+        }
+      },
       hidden: (s) => s.status === UserStatus.pending
     },
     { 
@@ -265,7 +286,24 @@ export function StaffListing() {
     {
       key: "role",
       label: "Role",
-      render: (staff) => <Badge variant="outline">{getRoleForStaff(staff.id)}</Badge>
+      render: (staff) => {
+        const roleConfig = {
+          manager: { variant: "destructive" as const, className: "" },
+          staff: { variant: "secondary" as const, className: "" }
+        };
+        
+        const roleName = staff.role.name.toLowerCase();
+        const config = roleConfig[roleName as keyof typeof roleConfig] || { variant: "outline" as const, className: "" };
+        
+        return (
+          <Badge 
+            variant={config.variant}
+            className={config.className}
+          >
+            {staff.role.name}
+          </Badge>
+        );
+      }
     },
     {
       key: "status",
@@ -306,7 +344,7 @@ export function StaffListing() {
         />
       )
     }
-  ], [rowActions, getRoleForStaff]);
+  ], [rowActions]);
 
   return (
     <div className="space-y-6">
@@ -315,7 +353,7 @@ export function StaffListing() {
       <PageHeader 
         title="Staff Members" 
         description="Manage your organization's team members and their roles."
-        actions={<CreateButton href="/staff/create" label="Invite Staff" />}
+        actions={<CreateButton href={buildOrgUrl('/staff/create')} label="Invite Staff" />}
       />
 
       <TableContainer
@@ -330,7 +368,7 @@ export function StaffListing() {
             />
             
             <div className="flex items-center gap-2">
-              <TableBulkActions selectedCount={selectedRows.length} actions={bulkActions} />
+              {/* <TableBulkActions selectedCount={selectedRows.length} actions={bulkActions} /> */}
               <ExportButton onExport={handleExport} />
             </div>
           </div>
@@ -353,8 +391,8 @@ export function StaffListing() {
           sortConfig={sortConfig}
           onSort={handleSort}
           selectedRows={selectedRows}
-          onRowSelect={handleRowSelect}
-          onSelectAll={handleSelectAll}
+          //onRowSelect={handleRowSelect}
+          //onSelectAll={handleSelectAll}
           isLoading={isLoading && !isPlaceholderData}
         />
       </TableContainer>

@@ -37,8 +37,9 @@ export function useActivateStaffMutation() {
   
   return useMutation({
     mutationFn: activateStaff,
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
+      toast.success(res.message);
     }
   });
 }
@@ -49,8 +50,9 @@ export function useDeactivateStaffMutation() {
   
   return useMutation({
     mutationFn: deactivateStaff,
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
+      toast.success(res.message);
     }
   });
 }

@@ -3,8 +3,10 @@
 @theme {
   --color-primary: #2ea44f;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f6f8fa;
-  --color-secondary-foreground: #0c0d0e;
+  /* --color-secondary: #f6f8fa;
+  --color-secondary-foreground: #0c0d0e; */
+  --color-secondary: #6366f1; /* blue-500 */
+  --color-secondary-foreground: #ffffff;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
   --color-muted: #f6f8fa;
@@ -40,7 +42,8 @@
     --color-card-foreground: #ffffff;
     --color-popover: #161719;
     --color-popover-foreground: #ffffff;
-    --color-secondary: #1f2124;
+    /* --color-secondary: #1f2124; */
+    --color-secondary: #4f46e5; /* blue-600 */
     --color-secondary-foreground: #ffffff;
     --color-muted: #1f2124;
     --color-muted-foreground: #9198a1;

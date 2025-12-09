@@ -11,6 +11,7 @@ export const AUTH_API_ROUTES = {
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export const CHANNEL_LIST = "v1/channels";
+export const ROLES_LIST = "v1/roles";
 
 export const AGENCY_APP_API_ROUTES = {
   CREATE_APP: "/organizations/{orgId}/developer-apps",
@@ -30,7 +31,7 @@ export const AGENCY_ROUTES = {
   ACTIVE: "/organizations/{orgId}/staff/{userId}/activate",
   DEACTIVE: "/organizations/{orgId}/staff/{userId}/deactivate",
   DELETE: "/organizations/{orgId}/staff/{userId}",
-  EXPORT: "/organizations/{orgId}/staff/export",
+  EXPORT_STAFF: "/organizations/{orgId}/staff/export",
   RESEND_INVITE: "/organizations/{orgId}/staff/{userId}/resend-invite",
   CANCEL_INVITE: "/organizations/{orgId}/staff/{userId}/cancel-invite",
   CREATE_PASSWORD: "/invitations/set-password",

@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type ExportFormat = 'csv' | 'excel';
+export type ExportFormat = 'csv' | 'xlsx';
 
 interface ExportButtonProps {
   onExport: (format: ExportFormat) => void;
@@ -28,7 +28,7 @@ export const ExportButton = memo(({ onExport, label = "Export" }: ExportButtonPr
           <FileText className="mr-2 h-4 w-4" />
           Export as CSV
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onExport('excel')}>
+        <DropdownMenuItem onClick={() => onExport('xlsx')}>
           <FileSpreadsheet className="mr-2 h-4 w-4" />
           Export as Excel
         </DropdownMenuItem>

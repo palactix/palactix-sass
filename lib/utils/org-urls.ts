@@ -18,9 +18,7 @@ import { useOrganizationStore } from "@/features/organization/stores/organizatio
  * buildOrgUrl('/staff', 'tech-startup') // '/tech-startup/staff'
  */
 export function buildOrgUrl(path: string, orgSlug?: string): string {
-  console.log({orgSlug}, useOrganizationStore.getState().currentOrganization);
   const slug = orgSlug || useOrganizationStore.getState().currentOrganization?.slug;
-  console.log({orgSlug});
   if (!slug) {
     console.warn('No organization slug available for building URL');
     return path;

@@ -32,8 +32,11 @@ export async function deleteStaff(userId: number) {
   return res.data;
 }
 
-export async function exportStaff() {
-  const res = await api.get(AGENCY_ROUTES.EXPORT, { responseType: 'blob' });
+export async function exportStaff(format: 'csv' | 'excel') {
+  const res = await api.get(AGENCY_ROUTES.EXPORT_STAFF, { 
+    params: { format },
+    responseType: 'blob' 
+  });
   return res.data;
 }
 

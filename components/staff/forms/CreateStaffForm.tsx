@@ -4,13 +4,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { inviteStaffSchema, type InviteStaffSchema } from "@/features/staff/schemas/staff.schemas";
 import { useCreateStaffMutation } from "@/features/staff/api/staff.queries";
+import { useRoles } from "@/features/roles/api/roles.queries";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/forms/FormMessage";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Mail, X } from "lucide-react";
+import { Loader2, Mail, UserCog } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { buildOrgUrl } from "@/lib/utils/org-urls";
 
 type CreateStaffFormProps = {
   onCancel?: () => void;
@@ -20,18 +29,24 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
   const router = useRouter();
   
   const { mutate, isPending } = useCreateStaffMutation();
+  const { data: rolesData, isLoading: isLoadingRoles } = useRoles();
   
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<InviteStaffSchema>({
     resolver: zodResolver(inviteStaffSchema),
     defaultValues: {
       name: "",
       email: "",
+      role_id: 0,
     },
   });
+
+  const selectedRoleId = watch("role_id");
 
   const onSubmit = (data: InviteStaffSchema) => {
     mutate(data, {
@@ -43,7 +58,7 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
         if (onCancel) {
           onCancel();
         } else {
-          router.push("/staff");
+          router.push(buildOrgUrl("/staff"));
         }
       },
       onError: (error) => {
@@ -89,6 +104,37 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
         <FormMessage>{errors.email?.message}</FormMessage>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="role">
+          Role <span className="text-destructive">*</span>
+        </Label>
+        {isLoadingRoles ? (
+          <div className="flex items-center justify-center h-10 border rounded-md">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <Select
+            value={selectedRoleId && selectedRoleId > 0 ? selectedRoleId.toString() : undefined}
+            onValueChange={(value) => setValue("role_id", parseInt(value), { shouldValidate: true })}
+          >
+            <SelectTrigger id="role" className="text-base">
+              <SelectValue placeholder="Select a role" />
+            </SelectTrigger>
+            <SelectContent>
+              {rolesData?.map((role) => (
+                <SelectItem key={role.id} value={role.id.toString()}>
+                  <div className="flex items-center gap-2">
+                    <UserCog className="h-4 w-4 text-muted-foreground" />
+                    <span>{role.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        <FormMessage>{errors.role_id?.message}</FormMessage>
+      </div>
+
       <div className="flex justify-end gap-3 pt-4">
         <Button
           type="button"
@@ -96,7 +142,7 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
           onClick={handleCancel}
           disabled={isPending}
         >
-          <X className="mr-2 h-4 w-4" />
+
           Cancel
         </Button>
         <Button type="submit" disabled={isPending}>
