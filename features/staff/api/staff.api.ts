@@ -51,3 +51,16 @@ export async function cancelInvite(userId: number) {
   const res = await api.post(url);
   return res.data;
 }
+
+export async function searchStaff(query: string) {
+  const res = await api.get<Array<{ id: number; name: string }>>(AGENCY_ROUTES.SEARCH_STAFF, {
+    params: { q: query }
+  });
+  return res.data;
+}
+
+export async function assignClientsToStaff(userId: number, clientIds: number[]) {
+  const url = buildApiUrl(AGENCY_ROUTES.ASSIGN_CLIENTS, { userId });
+  const res = await api.post(url, { client_ids: clientIds });
+  return res.data;
+}

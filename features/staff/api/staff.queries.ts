@@ -7,7 +7,9 @@ import {
   deleteStaff,
   exportStaff,
   resendInvite,
-  cancelInvite
+  cancelInvite,
+  searchStaff,
+  assignClientsToStaff
 } from "./staff.api";
 import { CreateStaffPayload, CreateStaffResponse } from "../types/staff.types";
 import { PaginationParams } from "@/types/api";
@@ -93,5 +95,33 @@ export function useCancelInviteMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
     }
+  });
+}
+
+export function useSearchStaff(query: string) {
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+  
+  return useQuery({
+    queryKey: ['staff-search', currentOrgId, query],
+    queryFn: () => searchStaff(query),
+    enabled: !!currentOrgId && query.length > 0,
+    staleTime: 30000, // 30 seconds
+  });
+}
+
+export function useAssignClientsMutation() {
+  const queryClient = useQueryClient();
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+
+  return useMutation({
+    mutationFn: ({ userId, clientIds }: { userId: number; clientIds: number[] }) => 
+      assignClientsToStaff(userId, clientIds),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
+      toast.success("Clients assigned successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to assign clients");
+    },
   });
 }

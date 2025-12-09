@@ -35,6 +35,8 @@ export const AGENCY_ROUTES = {
   RESEND_INVITE: "/organizations/{orgId}/staff/{userId}/resend-invite",
   CANCEL_INVITE: "/organizations/{orgId}/staff/{userId}/cancel-invite",
   CREATE_PASSWORD: "/invitations/set-password",
+  SEARCH_STAFF: "/organizations/{orgId}/staff/search",
+  ASSIGN_CLIENTS: "/organizations/{orgId}/staff/{userId}/assign-clients",
 };
 
 export const CLIENT_ROUTES = {
@@ -46,4 +48,6 @@ export const CLIENT_ROUTES = {
   EXPORT_CLIENTS: "/organizations/{orgId}/clients/export",
   RESEND_INVITE: "/organizations/{orgId}/clients/{userId}/resend-invite",
   CANCEL_INVITE: "/organizations/{orgId}/clients/{userId}/cancel-invite",
+  ASSIGN_STAFF: "/organizations/{orgId}/clients/{userId}/assign-staff",
+  SEARCH_CLIENTS: "/organizations/{orgId}/clients/search",
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -32,9 +32,12 @@ import {
 } from "@/features/clients/api/clients.queries";
 import { Client, ClientStatus } from "@/features/clients/types/client.types";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
+import { AssignStaffDialog } from "./AssignStaffDialog";
 
 
 export function ClientListing() {
+  const [assignStaffClient, setAssignStaffClient] = useState<Client | null>(null);
+  
   const {
     sortConfig,
     currentPage,
@@ -119,6 +122,10 @@ export function ClientListing() {
   const rowActions = useMemo<RowAction<Client>[]>(() => [
     { label: "Copy Email", onClick: (c) => navigator.clipboard.writeText(c.email), separator: true  },
     { label: "Edit Details", onClick: (c) => console.log("Edit", c.id), separator: true },
+    { 
+      label: "Assign Staff", 
+      onClick: (c) => setAssignStaffClient(c)
+    },
     { 
       label: (c) => c.status === ClientStatus.active ? 'Deactivate' : 'Activate', 
       onClick: async (c) => {
@@ -292,6 +299,18 @@ export function ClientListing() {
           isLoading={isLoading && !isPlaceholderData}
         />
       </TableContainer>
+
+      {assignStaffClient && (
+        <AssignStaffDialog
+          isOpen={!!assignStaffClient}
+          onClose={() => setAssignStaffClient(null)}
+          client={{
+            id: assignStaffClient.id,
+            name: assignStaffClient.name,
+            email: assignStaffClient.email,
+          }}
+        />
+      )}
     </div>
   );
 }

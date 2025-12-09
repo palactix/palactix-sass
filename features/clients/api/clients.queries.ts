@@ -7,7 +7,9 @@ import {
   deleteClient,
   exportClients,
   resendClientInvite,
-  cancelClientInvite
+  cancelClientInvite,
+  assignStaffToClient,
+  searchClients
 } from "./clients.api";
 import type { CreateClientPayload } from "../types/client.types";
 import type { PaginationParams } from "@/types/api";
@@ -116,5 +118,30 @@ export function useCancelClientInviteMutation() {
     onError: (error: Error) => {
       toast.error(error.message || "Failed to cancel invitation");
     },
+  });
+}
+
+export function useAssignStaffMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, staffId }: { userId: number; staffId: number }) => 
+      assignStaffToClient(userId, staffId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+      toast.success("Staff assigned successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to assign staff");
+    },
+  });
+}
+
+export function useSearchClients(query: string) {
+  return useQuery({
+    queryKey: ['clients-search', query],
+    queryFn: () => searchClients(query),
+    enabled: query.length > 0,
+    staleTime: 30000, // 30 seconds
   });
 }
