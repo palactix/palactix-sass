@@ -51,3 +51,11 @@ export const CLIENT_ROUTES = {
   ASSIGN_STAFF: "/organizations/{orgId}/clients/{userId}/assign-staff",
   SEARCH_CLIENTS: "/organizations/{orgId}/clients/search",
 };
+
+export const NOTIFICATION_ROUTES = {
+  LIST: "/notifications",
+  MARK_AS_READ: "/notifications/{notificationId}/read",
+  MARK_ALL_AS_READ: "/notifications/read-all",
+  DELETE: "/notifications/{notificationId}",
+  UNREAD_COUNT: "/notifications/unread-count",
+};

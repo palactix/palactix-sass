@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, CheckSquare, Search, LogOut, User, Lock, Settings, Sun, Moon, Laptop } from "lucide-react"
+import { Search, LogOut, User, Lock, Settings, Sun, Moon, Laptop } from "lucide-react"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,6 +21,7 @@ import { useTheme } from "next-themes"
 import { useLogoutMutation, useUser } from "@/features/auth/api/auth.queries"
 import { useAuthStore } from "@/features/auth/stores/auth.store"
 import { useRouter } from "next/navigation"
+import { NotificationDropdown } from "@/components/shared/NotificationDropdown"
 
 export function SiteHeader() {
   const { setTheme } = useTheme()
@@ -56,17 +57,8 @@ export function SiteHeader() {
         
         {/* Right Actions */}
         <div className="flex items-center gap-2 ml-auto">
-          <Button variant="ghost" size="icon" className="text-muted-foreground relative">
-            <CheckSquare className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary" />
-            <span className="sr-only">Tasks</span>
-          </Button>
           
-          <Button variant="ghost" size="icon" className="text-muted-foreground relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive" />
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <NotificationDropdown />
 
           <div className="h-8 w-px bg-border mx-2 hidden md:block" />
 
