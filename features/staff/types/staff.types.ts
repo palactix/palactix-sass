@@ -22,3 +22,9 @@ export interface Staff {
   created_at: string;
   avatar?: string;
 }
+
+export enum UserStatus{
+  active = "active",
+  inactive = "inactive",
+  pending = "pending"
+}

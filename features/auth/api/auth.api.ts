@@ -11,9 +11,11 @@ import type {
   ForgotPasswordResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
+  SetPasswordPayload,
+  SetPasswordResponse,
   UserResponse
 } from "../types/auth.types";
-import { AUTH_API_ROUTES } from "@/utils/constants/api-routes";
+import { AUTH_API_ROUTES, AGENCY_ROUTES } from "@/utils/constants/api-routes";
 
 export async function signup(payload: SignupPayload) {
   const res = await api.post<SignupResponse>(AUTH_API_ROUTES.SIGNUP, payload);
@@ -46,5 +48,10 @@ export async function forgotPassword(payload: ForgotPasswordPayload) {
 
 export async function resetPassword(payload: ResetPasswordPayload) {
   const res = await api.post<ResetPasswordResponse>(AUTH_API_ROUTES.RESET_PASSWORD, payload);
+  return res.data;
+}
+
+export async function setPassword(payload: SetPasswordPayload) {
+  const res = await api.post<SetPasswordResponse>(AGENCY_ROUTES.CREATE_PASSWORD, payload);
   return res.data;
 }

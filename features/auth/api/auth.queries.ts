@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { signup, resendVerification, login, forgotPassword, resetPassword, getUser, logout } from "./auth.api";
+import { signup, resendVerification, login, forgotPassword, resetPassword, setPassword, getUser, logout } from "./auth.api";
 import type { 
   SignupPayload, 
   SignupResponse, 
@@ -13,6 +13,8 @@ import type {
   ForgotPasswordResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
+  SetPasswordPayload,
+  SetPasswordResponse,
   UserResponse
 } from "../types/auth.types";
 
@@ -71,5 +73,15 @@ export function useForgotPasswordMutation() {
 export function useResetPasswordMutation() {
   return useMutation<ResetPasswordResponse, Error, ResetPasswordPayload>({
     mutationFn: resetPassword,
+  });
+}
+
+export function useSetPasswordMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<SetPasswordResponse, Error, SetPasswordPayload>({
+    mutationFn: setPassword,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.user });
+    },
   });
 }

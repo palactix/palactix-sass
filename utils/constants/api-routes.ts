@@ -33,4 +33,5 @@ export const AGENCY_ROUTES = {
   EXPORT: "/organization/staff/export",
   RESEND_INVITE: "/organization/staff/{userId}/resend-invite",
   CANCEL_INVITE: "/organization/staff/{userId}/cancel-invite",
+  CREATE_PASSWORD: "/invitations/set-password",
 };

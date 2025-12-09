@@ -11,6 +11,7 @@ import {
 } from "./staff.api";
 import { CreateStaffPayload, CreateStaffResponse } from "../types/staff.types";
 import { PaginationParams } from "@/types/api";
+import { toast } from "sonner";
 
 export function useCreateStaffMutation() {
   return useMutation<CreateStaffResponse, Error, CreateStaffPayload>({
@@ -65,6 +66,9 @@ export function useExportStaffMutation() {
 export function useResendInviteMutation() {
   return useMutation({
     mutationFn: resendInvite,
+    onSuccess: (res) => {
+      toast.success(res.message);
+    }
   });
 }
 

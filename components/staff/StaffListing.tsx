@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useCallback, useState } from "react";
+import React, { useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -22,7 +22,7 @@ import {
   ExportFormat
 } from "@/components/shared/table";
 import { Trash2, UserCheck, UserX } from "lucide-react";
-import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { confirm } from "@/features/confirm";
 import { 
   useStaffList, 
   useActivateStaffMutation, 
@@ -32,7 +32,7 @@ import {
   useResendInviteMutation, 
   useCancelInviteMutation 
 } from "@/features/staff/api/staff.queries";
-import { Staff } from "@/features/staff/types/staff.types";
+import { Staff, UserStatus } from "@/features/staff/types/staff.types";
 
 export function StaffListing() {
   const {
@@ -50,11 +50,6 @@ export function StaffListing() {
     handleFilterChange,
     resetFilters
   } = useDataTable<Staff>();
-
-  const [dialogState, setDialogState] = useState<{
-    open: boolean;
-    type: 'delete' | 'activate' | 'deactivate' | null;
-  }>({ open: false, type: null });
 
   const filterConfig = useMemo<FilterConfig[]>(() => [
     { type: 'input', key: 'search', placeholder: 'Search staff...' },
@@ -103,37 +98,63 @@ export function StaffListing() {
 
   const handleSelectAll = useMemo(() => getSelectAllHandler(staffData), [staffData, getSelectAllHandler]);
 
-  const handleDelete = useCallback((item: Staff) => {
-    if (confirm("Are you sure you want to delete this staff member?")) {
+  const handleDelete = useCallback(async (item: Staff) => {
+    const confirmed = await confirm({
+      title: "Delete staff member?",
+      description: `Are you sure you want to delete ${item.name}? This action cannot be undone.`,
+      variant: "destructive",
+      icon: <Trash2 className="h-6 w-6" />
+    });
+    
+    if (confirmed) {
       deleteMutation.mutate(item.id);
     }
   }, [deleteMutation]);
 
-  const handleBulkDelete = useCallback(() => {
-    setDialogState({ open: true, type: 'delete' });
-  }, []);
+  const handleBulkDelete = useCallback(async () => {
+    const confirmed = await confirm({
+      title: `Delete ${selectedRows.length} staff member(s)?`,
+      description: "This action cannot be undone. The selected staff members will be permanently removed.",
+      variant: "destructive",
+      icon: <Trash2 className="h-6 w-6" />
+    });
 
-  const handleBulkActivate = useCallback(() => {
-    setDialogState({ open: true, type: 'activate' });
-  }, []);
-
-  const handleBulkDeactivate = useCallback(() => {
-    setDialogState({ open: true, type: 'deactivate' });
-  }, []);
-
-  const handleConfirmBulkAction = useCallback(() => {
-    if (dialogState.type === 'delete') {
+    if (confirmed) {
       console.log("Bulk Delete", selectedRows);
       // TODO: Implement bulk delete mutation
-    } else if (dialogState.type === 'activate') {
+      resetSelection();
+    }
+  }, [selectedRows, resetSelection]);
+
+  const handleBulkActivate = useCallback(async () => {
+    const confirmed = await confirm({
+      title: `Activate ${selectedRows.length} staff member(s)?`,
+      description: "The selected staff members will be activated and granted access to the system.",
+      variant: "success",
+      icon: <UserCheck className="h-6 w-6" />
+    });
+
+    if (confirmed) {
       console.log("Bulk Activate", selectedRows);
       // TODO: Implement bulk activate mutation
-    } else if (dialogState.type === 'deactivate') {
+      resetSelection();
+    }
+  }, [selectedRows, resetSelection]);
+
+  const handleBulkDeactivate = useCallback(async () => {
+    const confirmed = await confirm({
+      title: `Deactivate ${selectedRows.length} staff member(s)?`,
+      description: "The selected staff members will be deactivated and their access will be revoked.",
+      variant: "warning",
+      icon: <UserX className="h-6 w-6" />
+    });
+
+    if (confirmed) {
       console.log("Bulk Deactivate", selectedRows);
       // TODO: Implement bulk deactivate mutation
+      resetSelection();
     }
-    resetSelection();
-  }, [dialogState.type, selectedRows, resetSelection]);
+  }, [selectedRows, resetSelection]);
 
   const handleExport = useCallback((format: ExportFormat) => {
     exportMutation.mutate(undefined, {
@@ -152,22 +173,43 @@ export function StaffListing() {
 
   // Actions
   const rowActions = useMemo<RowAction<Staff>[]>(() => [
-    { label: "Copy Email", onClick: (s) => navigator.clipboard.writeText(s.email) },
+    { label: "Copy Email", onClick: (s) => navigator.clipboard.writeText(s.email), separator: true  },
     { label: "Edit Details", onClick: (s) => console.log("Edit", s.id), separator: true },
     { 
-      label: (s) => s.status === 'Active' ? 'Deactivate' : 'Activate', 
-      onClick: (s) => s.status === 'Active' ? deactivateMutation.mutate(s.id) : activateMutation.mutate(s.id) 
+      label: (s) => s.status === UserStatus.active ? 'Deactivate' : 'Activate', 
+      onClick: (s) => s.status === UserStatus.active ? deactivateMutation.mutate(s.id) : activateMutation.mutate(s.id),
+      hidden: (s) => s.status === UserStatus.pending
     },
     { 
       label: "Resend Invite", 
-      onClick: (s) => resendInviteMutation.mutate(s.id),
-      hidden: (s) => s.status === 'Active'
+      onClick: async (s) => {
+        const confirmed = await confirm({
+          title: `Resend invite to ${s.name}?`,
+          description: "The selected staff members will be received a new invitation email.",
+          variant: "success",
+        });
+        if(confirmed) {
+          resendInviteMutation.mutate(s.id);
+        }
+      },
+      hidden: (s) => s.status === UserStatus.active
     },
     { 
       label: "Cancel Invite", 
-      onClick: (s) => cancelInviteMutation.mutate(s.id),
-      hidden: (s) => s.status === 'Active',
-      className: "text-destructive"
+      onClick: async (s) => {
+        const confirmed = await confirm({
+          title: `Cancel invite for ${s.name}?`,
+          description: "The selected staff member's invitation will be cancelled.",
+          variant: "destructive",
+          confirmText: "Cancel Invite"
+        });
+        if(confirmed) {
+          cancelInviteMutation.mutate(s.id);
+        }
+      },
+      hidden: (s) => s.status === UserStatus.active,
+      className: "text-destructive",
+      separator: true
     },
     { label: "Delete Staff", onClick: handleDelete, className: "text-destructive" }
   ], [handleDelete, activateMutation, deactivateMutation, resendInviteMutation, cancelInviteMutation]);
@@ -207,7 +249,7 @@ export function StaffListing() {
       render: (staff) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={staff.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.id}`} alt={staff.name} />
+            <AvatarImage src={staff.avatar} />
             <AvatarFallback>{staff.name.slice(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <span className="font-medium">{staff.name}</span>
@@ -228,14 +270,24 @@ export function StaffListing() {
       key: "status",
       label: "Status",
       sortable: true,
-      render: (staff) => (
-        <Badge 
-          variant={staff.status === "Active" ? "default" : "secondary"}
-          className={staff.status === "Active" ? "bg-green-100 text-green-700 hover:bg-green-100 border-green-200" : ""}
-        >
-          {staff.status}
-        </Badge>
-      )
+      render: (staff) => {
+        const statusConfig = {
+          active: { variant: "default" as const, className: "bg-green-600 hover:bg-green-600" },
+          inactive: { variant: "secondary" as const, className: "" },
+          pending: { variant: "outline" as const, className: "border-amber-500 text-amber-700" }
+        };
+        
+        const config = statusConfig[staff.status as keyof typeof statusConfig] || { variant: "outline" as const, className: "" };
+        
+        return (
+          <Badge 
+            variant={config.variant}
+            className={config.className}
+          >
+            {staff.status}
+          </Badge>
+        );
+      }
     },
     {
       key: "created_at",
@@ -305,36 +357,6 @@ export function StaffListing() {
           isLoading={isLoading && !isPlaceholderData}
         />
       </TableContainer>
-
-      <ConfirmDialog
-        open={dialogState.open && dialogState.type === 'delete'}
-        onOpenChange={(open) => setDialogState({ open, type: open ? 'delete' : null })}
-        variant="destructive"
-        title={`Delete ${selectedRows.length} staff member(s)?`}
-        description="This action cannot be undone. The selected staff members will be permanently removed."
-        icon={<Trash2 className="h-6 w-6" />}
-        onConfirm={handleConfirmBulkAction}
-      />
-
-      <ConfirmDialog
-        open={dialogState.open && dialogState.type === 'activate'}
-        onOpenChange={(open) => setDialogState({ open, type: open ? 'activate' : null })}
-        variant="success"
-        title={`Activate ${selectedRows.length} staff member(s)?`}
-        description="The selected staff members will be activated and granted access to the system."
-        icon={<UserCheck className="h-6 w-6" />}
-        onConfirm={handleConfirmBulkAction}
-      />
-
-      <ConfirmDialog
-        open={dialogState.open && dialogState.type === 'deactivate'}
-        onOpenChange={(open) => setDialogState({ open, type: open ? 'deactivate' : null })}
-        variant="warning"
-        title={`Deactivate ${selectedRows.length} staff member(s)?`}
-        description="The selected staff members will be deactivated and their access will be revoked."
-        icon={<UserX className="h-6 w-6" />}
-        onConfirm={handleConfirmBulkAction}
-      />
     </div>
   );
 }

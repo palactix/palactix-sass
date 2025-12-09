@@ -49,6 +49,16 @@ export type ResetPasswordResponse = {
   message: string;
 };
 
+export type SetPasswordPayload = {
+  token: string;
+  password: string;
+  password_confirmation: string;
+};
+
+export type SetPasswordResponse = {
+  message: string;
+};
+
 export type User = {
   id: string;
   name: string;
