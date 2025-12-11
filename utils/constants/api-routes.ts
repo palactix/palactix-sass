@@ -26,6 +26,7 @@ export const AGENCY_APP_API_ROUTES = {
 
 
 export const AGENCY_ROUTES = {
+  PERMISSIONS: "/organizations/{orgId}/permissions",
   CREATE_STAFF: "/organizations/{orgId}/staff",
   STAFFS: "/organizations/{orgId}/staff",
   ACTIVE: "/organizations/{orgId}/staff/{userId}/activate",
@@ -37,6 +38,7 @@ export const AGENCY_ROUTES = {
   CREATE_PASSWORD: "/invitations/set-password",
   SEARCH_STAFF: "/organizations/{orgId}/staff/search",
   ASSIGN_CLIENTS: "/organizations/{orgId}/staff/{userId}/assign-clients",
+  ASSIGNED_CLIENTS: "/organizations/{orgId}/staff/{userId}/assigned-clients",
 };
 
 export const CLIENT_ROUTES = {

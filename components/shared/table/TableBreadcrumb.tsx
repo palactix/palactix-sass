@@ -30,9 +30,7 @@ export const TableBreadcrumb = memo(({ items }: TableBreadcrumbProps) => {
                 {isLast || !item.href ? (
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink>
-                    <Link href={item.href}>{item.label}</Link>
-                  </BreadcrumbLink>
+                  <Link href={item.href}>{item.label}</Link>
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}

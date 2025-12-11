@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 import { buildPostLoginRedirect } from "@/lib/utils/org-urls";
 import { use } from "react";
 
+import { useOrganizationAuth } from "@/features/organization/hooks/useOrganizationAuth";
+
 interface OrgLayoutProps {
   children: React.ReactNode;
   params: Promise<{ org: string }>;
@@ -18,6 +20,9 @@ export default function OrgLayout({ children, params }: OrgLayoutProps) {
   const { data: user, isLoading } = useUser();
   const { currentOrganization, setCurrentOrganization } = useOrganizationStore();
   const { org } = use(params);
+  
+  // Initialize organization permissions
+  useOrganizationAuth();
 
   useEffect(() => {
     if (!isLoading && user) {
