@@ -33,9 +33,9 @@ export async function deleteClient(userId: number) {
 }
 
 export async function exportClients(format: 'csv' | 'excel') {
-  const res = await api.get(CLIENT_ROUTES.EXPORT_CLIENTS, { 
+  const res = await api.get(CLIENT_ROUTES.EXPORT_CLIENTS, {
     params: { format },
-    responseType: 'blob' 
+    responseType: 'blob'
   });
   return res.data;
 }
@@ -62,5 +62,11 @@ export async function searchClients(query: string) {
   const res = await api.get<Array<{ id: number; name: string }>>(CLIENT_ROUTES.SEARCH_CLIENTS, {
     params: { q: query }
   });
+  return res.data;
+}
+
+export async function getLinkedAccounts(userId: number) {
+  const url = buildApiUrl(CLIENT_ROUTES.LINKED_ACCOUNTS, { userId });
+  const res = await api.get<import("../types/linked-accounts.types").LinkedAccountsResponse>(url);
   return res.data;
 }

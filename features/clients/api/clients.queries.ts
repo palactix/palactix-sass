@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  createClient, 
-  getClientList, 
-  activateClient, 
-  deactivateClient, 
+import {
+  createClient,
+  getClientList,
+  activateClient,
+  deactivateClient,
   deleteClient,
   exportClients,
   resendClientInvite,
   cancelClientInvite,
   assignStaffToClient,
-  searchClients
+  searchClients,
+  getLinkedAccounts
 } from "./clients.api";
 import type { CreateClientPayload } from "../types/client.types";
 import type { PaginationParams } from "@/types/api";
@@ -125,7 +126,7 @@ export function useAssignStaffMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, staffId }: { userId: number; staffId: number }) => 
+    mutationFn: ({ userId, staffId }: { userId: number; staffId: number }) =>
       assignStaffToClient(userId, staffId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
@@ -143,5 +144,13 @@ export function useSearchClients(query: string) {
     queryFn: () => searchClients(query),
     enabled: query.length > 0,
     staleTime: 30000, // 30 seconds
+  });
+}
+
+export function useLinkedAccounts(userId: number | null) {
+  return useQuery({
+    queryKey: ['client-linked-accounts', userId],
+    queryFn: () => getLinkedAccounts(userId!),
+    enabled: !!userId,
   });
 }

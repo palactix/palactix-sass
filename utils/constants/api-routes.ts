@@ -52,6 +52,8 @@ export const CLIENT_ROUTES = {
   CANCEL_INVITE: "/organizations/{orgId}/clients/{userId}/cancel-invite",
   ASSIGN_STAFF: "/organizations/{orgId}/clients/{userId}/assign-staff",
   SEARCH_CLIENTS: "/organizations/{orgId}/clients/search",
+  ASSIGNED_CLIENTS: "/organizations/{orgId}/clients/{userId}/assigned-clients",
+  LINKED_ACCOUNTS: "/organizations/{orgId}/clients/{userId}/accounts",
 };
 
 export const NOTIFICATION_ROUTES = {

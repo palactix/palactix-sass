@@ -33,10 +33,12 @@ import {
 import { Client, ClientStatus } from "@/features/clients/types/client.types";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { AssignStaffDialog } from "./AssignStaffDialog";
+import { LinkedAccountsDialog } from "./LinkedAccountsDialog";
 
 
 export function ClientListing() {
   const [assignStaffClient, setAssignStaffClient] = useState<Client | null>(null);
+  const [linkedAccountsClient, setLinkedAccountsClient] = useState<Client | null>(null);
   
   const {
     sortConfig,
@@ -125,6 +127,11 @@ export function ClientListing() {
     { 
       label: "Assign Staff", 
       onClick: (c) => setAssignStaffClient(c)
+    },
+    { 
+      label: "View Accounts", 
+      onClick: (c) => setLinkedAccountsClient(c),
+      separator: true
     },
     { 
       label: (c) => c.status === ClientStatus.active ? 'Deactivate' : 'Activate', 
@@ -308,6 +315,19 @@ export function ClientListing() {
             id: assignStaffClient.id,
             name: assignStaffClient.name,
             email: assignStaffClient.email,
+          }}
+        />
+      )}
+
+      {linkedAccountsClient && (
+        <LinkedAccountsDialog
+          isOpen={!!linkedAccountsClient}
+          onClose={() => setLinkedAccountsClient(null)}
+          client={{
+            id: linkedAccountsClient.id,
+            name: linkedAccountsClient.name,
+            email: linkedAccountsClient.email,
+            avatar: linkedAccountsClient.avatar,
           }}
         />
       )}
