@@ -64,3 +64,7 @@ export const NOTIFICATION_ROUTES = {
   DELETE: "/notifications/{notificationId}",
   UNREAD_COUNT: "/notifications/unread-count",
 };
+
+export const CHANNEL_ROUTES = {
+  CONNECT: "v1/channels/{channel}/connect",
+}

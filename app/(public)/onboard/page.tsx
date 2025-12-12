@@ -1,30 +1,91 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Container } from "@/components/Container";
 import { Shield, Lock, HelpCircle, Loader2 } from "lucide-react";
 import { useUser } from "@/features/auth/api/auth.queries";
-import { useOnboardInfo } from "@/features/onboard/api/onboard.queries";
+import { useOnboardInfo, useChannelConnectMutation } from "@/features/onboard/api/onboard.queries";
 import { useChannelLogo } from "@/hooks/use-channel-logo";
 import { Channel } from "@/features/agency-app/types/agency-app.types";
+import { toast } from "sonner";
 
 export default function OnboardPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const orgSlug = searchParams.get("org");
   
   const { data: user, isLoading: isUserLoading } = useUser();
   const { data: onboardInfo, isLoading: isOnboardLoading } = useOnboardInfo(orgSlug);
+  const connectMutation = useChannelConnectMutation();
   const getChannelLogo = useChannelLogo();
+  
+  const [connectingChannel, setConnectingChannel] = useState<string | null>(null);
 
   const isLoading = isUserLoading || isOnboardLoading;
 
-  const handleChannelConnect = (channel: Channel) => {
-    // TODO: Initiate OAuth flow for the channel
-    console.log("Connect channel:", channel.slug);
-  };
+  // Listen for OAuth success message from popup
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Verify origin for security
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data?.type === "OAUTH_SUCCESS") {
+        setConnectingChannel(null);
+        toast.success("Account connected successfully!");
+        // Redirect to dashboard after successful connection
+        router.push(`/${orgSlug}/dashboard`);
+      } else if (event.data?.type === "OAUTH_ERROR") {
+        setConnectingChannel(null);
+        toast.error(event.data?.message || "Failed to connect account");
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [router, orgSlug]);
+
+  const handleChannelConnect = useCallback(async (channel: Channel) => {
+    if (connectingChannel) return; // Prevent multiple clicks
+    
+    setConnectingChannel(channel.slug);
+    
+    try {
+      const oauthUrl = await connectMutation.mutateAsync(channel.slug);
+      
+      // Open OAuth URL in a small popup window
+      const width = 600;
+      const height = 700;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      
+      const popup = window.open(
+        oauthUrl.url,
+        "oauth_popup",
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+      );
+      
+      // Check if popup was blocked
+      if (!popup) {
+        toast.error("Popup was blocked. Please allow popups for this site.");
+        setConnectingChannel(null);
+        return;
+      }
+      
+      // Poll to check if popup was closed without completing
+      const pollTimer = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(pollTimer);
+          setConnectingChannel(null);
+        }
+      }, 500);
+    } catch (error) {
+      toast.error("Failed to initiate connection. Please try again.");
+      setConnectingChannel(null);
+    }
+  }, [connectingChannel, connectMutation]);
 
   if (isLoading) {
     return (
@@ -134,27 +195,41 @@ export default function OnboardPage() {
               transition={{ delay: 0.6, duration: 0.5 }}
               className="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-8"
             >
-              {channels.map((channel, index) => (
+              {channels.map((channel, index) => {
+                const isConnecting = connectingChannel === channel.slug;
+                
+                return (
                 <motion.button
                   key={channel.id}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.7 + index * 0.1, duration: 0.3 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={!isConnecting ? { scale: 1.05, y: -2 } : {}}
+                  whileTap={!isConnecting ? { scale: 0.95 } : {}}
                   onClick={() => handleChannelConnect(channel)}
-                  className="group relative flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-card/50 hover:border-primary/50 hover:bg-card transition-all cursor-pointer"
+                  disabled={!!connectingChannel}
+                  className={`group relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
+                    isConnecting 
+                      ? "border-primary bg-primary/5 cursor-wait" 
+                      : connectingChannel 
+                        ? "border-border bg-card/30 opacity-50 cursor-not-allowed"
+                        : "border-border bg-card/50 hover:border-primary/50 hover:bg-card cursor-pointer"
+                  }`}
                 >
                   {/* Icon Container */}
-                  <div className="w-12 h-12 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden">
-                    <Image
-                      src={getChannelLogo(channel.icon)}
-                      alt={channel.name}
-                      width={32}
-                      height={32}
-                      className="object-contain"
-                      unoptimized
-                    />
+                  <div className="w-12 h-12 rounded-xl bg-muted/50 flex items-center justify-center overflow-hidden relative">
+                    {isConnecting ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    ) : (
+                      <Image
+                        src={getChannelLogo(channel.icon)}
+                        alt={channel.name}
+                        width={32}
+                        height={32}
+                        className="object-contain"
+                        unoptimized
+                      />
+                    )}
                   </div>
                   
                   {/* Channel Name */}
@@ -165,7 +240,7 @@ export default function OnboardPage() {
                   {/* Hover Glow */}
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10 blur-sm" />
                 </motion.button>
-              ))}
+              )})}
             </motion.div>
 
             {/* Security Notice */}
