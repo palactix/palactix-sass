@@ -1,5 +1,6 @@
 "use client";
 
+import { AssignClientsDialog } from "@/components/staff/AssignClientsDialog";
 import { StaffListing } from "@/components/staff/StaffListing";
 import { CreateStaffForm } from "@/components/staff/forms/CreateStaffForm";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,12 +12,12 @@ export default function CreateStaffPage() {
   const router = useRouter();
 
   const handleCancel = () => {
-    router.push(buildOrgUrl("/staff"));
+    router.push(buildOrgUrl("staff"));
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      router.push(buildOrgUrl("/staff"));
+      router.push(buildOrgUrl("staff"));
     }
   };
 
@@ -36,15 +37,15 @@ export default function CreateStaffPage() {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="w-full max-w-[600px]"
         >
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Invite Staff Member</CardTitle>
-              <CardDescription>
-                Send an invitation email to a new staff member. They will receive a link to set up their account.
-              </CardDescription>
-            </CardHeader>
-            <CreateStaffForm onCancel={handleCancel} />
-          </Card>
+          <AssignClientsDialog
+            isOpen={true}
+            onClose={() =>handleCancel()}
+            staff={{
+              id: 1,
+              name: "John Doe",
+              email: "john.doe@example.com",
+            }}
+          />
         </motion.div>
       </div>
     </div>

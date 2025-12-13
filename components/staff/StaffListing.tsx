@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
@@ -33,12 +34,10 @@ import {
   useCancelInviteMutation 
 } from "@/features/staff/api/staff.queries";
 import { Staff, UserStatus } from "@/features/staff/types/staff.types";
-import { buildOrgUrl, getOrgSlugFromPath, useOrgPaths } from "@/lib/utils/org-urls";
-import { AssignClientsDialog } from "./AssignClientsDialog";
-
+import { buildOrgUrl, getOrgSlugFromPath } from "@/lib/utils/org-urls";
 
 export function StaffListing() {
-  const [assignClientsStaff, setAssignClientsStaff] = useState<Staff | null>(null);
+  const router = useRouter();
   const {
     selectedRows,
     sortConfig,
@@ -155,7 +154,7 @@ export function StaffListing() {
   }, [selectedRows, resetSelection]);
 
   const handleExport = useCallback((format: ExportFormat) => {
-    const exportFormat = format === 'csv' ? 'csv' : 'xlsx';
+    const exportFormat = format === 'csv' ? 'csv' : 'excel';
     exportMutation.mutate(exportFormat, {
       onSuccess: (data) => {
         const org = getOrgSlugFromPath(window.location.pathname);
@@ -178,8 +177,17 @@ export function StaffListing() {
     { label: "Copy Email", onClick: (s) => navigator.clipboard.writeText(s.email), separator: true  },
     { label: "Edit Details", onClick: (s) => console.log("Edit", s.id), separator: true },
     { 
+      label: "View Assigned Clients", 
+      onClick: (s) => {
+        const url = buildOrgUrl(`/staff/${s.id}/assigned-clients`);
+        router.push(url, { scroll: false });
+      }
+    },
+    { 
       label: "Assign Clients", 
-      onClick: (s) => setAssignClientsStaff(s)
+      onClick: (s) => {
+        router.push(buildOrgUrl(`/staff/${s.id}/assign-clients`));
+      }
     },
     { 
       label: (s) => s.status === UserStatus.active ? 'Deactivate' : 'Activate', 
@@ -373,7 +381,7 @@ export function StaffListing() {
               onReset={resetFilters}
               config={filterConfig} 
             />
-            
+             
             <div className="flex items-center gap-2">
               {/* <TableBulkActions selectedCount={selectedRows.length} actions={bulkActions} /> */}
               <ExportButton onExport={handleExport} />
@@ -404,19 +412,7 @@ export function StaffListing() {
         />
       </TableContainer>
 
-      {assignClientsStaff && (
-        <AssignClientsDialog
-          isOpen={!!assignClientsStaff}
-          onClose={() => setAssignClientsStaff(null)}
-          staff={{
-            id: assignClientsStaff.id,
-            name: assignClientsStaff.name,
-            email: assignClientsStaff.email,
-          }}
-        />
-      )}
+     
     </div>
   );
 }
-
-

@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/client";
 import { AGENCY_ROUTES } from "@/utils/constants/api-routes";
-import { CreateStaffPayload, CreateStaffResponse, Staff } from "../types/staff.types";
+import { CreateStaffPayload, CreateStaffResponse, Staff, AssignedClient } from "../types/staff.types";
 import { LaravelPagination, PaginationParams } from "@/types/api";
 import { buildApiUrl } from "@/lib/utils/api-url";
 
@@ -33,9 +33,9 @@ export async function deleteStaff(userId: number) {
 }
 
 export async function exportStaff(format: 'csv' | 'excel') {
-  const res = await api.get(AGENCY_ROUTES.EXPORT_STAFF, { 
+  const res = await api.get(AGENCY_ROUTES.EXPORT_STAFF, {
     params: { format },
-    responseType: 'blob' 
+    responseType: 'blob'
   });
   return res.data;
 }
@@ -62,5 +62,11 @@ export async function searchStaff(query: string) {
 export async function assignClientsToStaff(userId: number, clientIds: number[]) {
   const url = buildApiUrl(AGENCY_ROUTES.ASSIGN_CLIENTS, { userId });
   const res = await api.post(url, { client_ids: clientIds });
+  return res.data;
+}
+
+export async function getAssignedClients(userId: number, params: PaginationParams) {
+  const url = buildApiUrl(AGENCY_ROUTES.ASSIGNED_CLIENTS, { userId });
+  const res = await api.get<LaravelPagination<AssignedClient>>(url, { params });
   return res.data;
 }

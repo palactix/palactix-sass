@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  getNotifications, 
+import {
+  getNotifications,
   getUnreadCount,
-  markAsRead, 
+  markAsRead,
   markAllAsRead,
-  deleteNotification 
+  deleteNotification
 } from "./notifications.api";
 import { toast } from "sonner";
 
@@ -18,7 +18,7 @@ export function useNotifications() {
   return useQuery({
     queryKey: notificationKeys.list(),
     queryFn: getNotifications,
-    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchInterval: 100000, // Refetch every 10 seconds
     refetchIntervalInBackground: true,
     staleTime: 5000,
   });

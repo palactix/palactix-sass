@@ -1,6 +1,6 @@
 import { useMutation, useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
-import { 
-  createStaff, 
+import {
+  createStaff,
   getStaffList,
   activateStaff,
   deactivateStaff,
@@ -9,7 +9,8 @@ import {
   resendInvite,
   cancelInvite,
   searchStaff,
-  assignClientsToStaff
+  assignClientsToStaff,
+  getAssignedClients
 } from "./staff.api";
 import { CreateStaffPayload, CreateStaffResponse } from "../types/staff.types";
 import { PaginationParams } from "@/types/api";
@@ -24,7 +25,7 @@ export function useCreateStaffMutation() {
 
 export function useStaffList(params: PaginationParams) {
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useQuery({
     queryKey: ['staff', currentOrgId, params],
     queryFn: () => getStaffList(params),
@@ -36,7 +37,7 @@ export function useStaffList(params: PaginationParams) {
 export function useActivateStaffMutation() {
   const queryClient = useQueryClient();
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useMutation({
     mutationFn: activateStaff,
     onSuccess: (res) => {
@@ -49,7 +50,7 @@ export function useActivateStaffMutation() {
 export function useDeactivateStaffMutation() {
   const queryClient = useQueryClient();
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useMutation({
     mutationFn: deactivateStaff,
     onSuccess: (res) => {
@@ -62,7 +63,7 @@ export function useDeactivateStaffMutation() {
 export function useDeleteStaffMutation() {
   const queryClient = useQueryClient();
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useMutation({
     mutationFn: deleteStaff,
     onSuccess: () => {
@@ -89,7 +90,7 @@ export function useResendInviteMutation() {
 export function useCancelInviteMutation() {
   const queryClient = useQueryClient();
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useMutation({
     mutationFn: cancelInvite,
     onSuccess: () => {
@@ -100,7 +101,7 @@ export function useCancelInviteMutation() {
 
 export function useSearchStaff(query: string) {
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
-  
+
   return useQuery({
     queryKey: ['staff-search', currentOrgId, query],
     queryFn: () => searchStaff(query),
@@ -114,7 +115,7 @@ export function useAssignClientsMutation() {
   const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
 
   return useMutation({
-    mutationFn: ({ userId, clientIds }: { userId: number; clientIds: number[] }) => 
+    mutationFn: ({ userId, clientIds }: { userId: number; clientIds: number[] }) =>
       assignClientsToStaff(userId, clientIds),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['staff', currentOrgId] });
@@ -123,5 +124,16 @@ export function useAssignClientsMutation() {
     onError: (error: Error) => {
       toast.error(error.message || "Failed to assign clients");
     },
+  });
+}
+
+export function useAssignedClients(userId: number, params: PaginationParams) {
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+
+  return useQuery({
+    queryKey: ['assigned-clients', currentOrgId, userId, params],
+    queryFn: () => getAssignedClients(userId, params),
+    placeholderData: keepPreviousData,
+    enabled: !!currentOrgId && !!userId,
   });
 }
