@@ -11,6 +11,14 @@ export interface LaravelPagination<T> {
   path?: string;
   from?: number;
   to?: number;
+  meta?: {
+    total: number;
+    last_page: number;
+    per_page: number;
+    current_page: number;
+    from: number;
+    to: number;
+  };
 }
 
 export interface PaginationParams {

@@ -249,7 +249,7 @@ export function StaffListing() {
       separator: true
     },
     { label: "Delete Staff", onClick: handleDelete, className: "text-destructive" }
-  ], [handleDelete, activateMutation, deactivateMutation, resendInviteMutation, cancelInviteMutation]);
+  ], [handleDelete, activateMutation, deactivateMutation, resendInviteMutation, cancelInviteMutation, router]);
 
   const bulkActions = useMemo<BulkAction[]>(() => [
     {
