@@ -30,10 +30,11 @@ import {
   useResendClientInviteMutation, 
   useCancelClientInviteMutation 
 } from "@/features/clients/api/clients.queries";
-import { Client, ClientStatus } from "@/features/clients/types/client.types";
+import { Client } from "@/features/clients/types/client.types";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { AssignStaffDialog } from "./AssignStaffDialog";
 import { LinkedAccountsDialog } from "./LinkedAccountsDialog";
+import { UserStatus } from "@/types/user";
 
 
 export function ClientListing() {
@@ -134,9 +135,9 @@ export function ClientListing() {
       separator: true
     },
     { 
-      label: (c) => c.status === ClientStatus.active ? 'Deactivate' : 'Activate', 
+      label: (c) => c.status === UserStatus.active ? 'Deactivate' : 'Activate', 
       onClick: async (c) => {
-        if(c.status === ClientStatus.active) {
+        if(c.status === UserStatus.active) {
           const confirmed = await confirm({
             title: `Deactivate ${c.name}?`,
             description: "The client will no longer have access to the system.",
@@ -157,7 +158,7 @@ export function ClientListing() {
           }
         }
       },
-      hidden: (c) => c.status === ClientStatus.pending
+      hidden: (c) => c.status === UserStatus.pending
     },
     { 
       label: "Resend Invite", 
@@ -171,7 +172,7 @@ export function ClientListing() {
           resendInviteMutation.mutate(c.id);
         }
       },
-      hidden: (c) => c.status === ClientStatus.active
+      hidden: (c) => c.status === UserStatus.active
     },
     { 
       label: "Cancel Invite", 
@@ -186,7 +187,7 @@ export function ClientListing() {
           cancelInviteMutation.mutate(c.id);
         }
       },
-      hidden: (c) => c.status === ClientStatus.active,
+      hidden: (c) => c.status === UserStatus.active,
       className: "text-destructive",
       separator: true
     },

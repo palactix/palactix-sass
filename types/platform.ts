@@ -9,8 +9,8 @@ export type Platform = {
 };
 
 export type LinkedAccount = {
-  id: number;
-  channel_id: number;
+  id: string;
+  channel_id: string;
   channel_slug: string;
   external_id: string;
   name: string;

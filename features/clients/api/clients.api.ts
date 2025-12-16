@@ -3,6 +3,7 @@ import { CLIENT_ROUTES } from "@/utils/constants/api-routes";
 import { CreateClientPayload, CreateClientResponse, Client } from "../types/client.types";
 import { LaravelPagination, PaginationParams } from "@/types/api";
 import { buildApiUrl } from "@/lib/utils/api-url";
+import { LinkedAccountsResponse } from "../types/linked-accounts.types";
 
 export async function createClient(payload: CreateClientPayload) {
   const res = await api.post<CreateClientResponse>(CLIENT_ROUTES.CREATE_CLIENT, payload);
@@ -67,6 +68,6 @@ export async function searchClients(query: string) {
 
 export async function getLinkedAccounts(userId: number) {
   const url = buildApiUrl(CLIENT_ROUTES.LINKED_ACCOUNTS, { userId });
-  const res = await api.get<import("../types/linked-accounts.types").LinkedAccountsResponse>(url);
+  const res = await api.get<LinkedAccountsResponse>(url);
   return res.data;
 }

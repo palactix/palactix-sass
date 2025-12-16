@@ -60,7 +60,7 @@ export type SetPasswordResponse = {
 };
 
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   email_verified_at: string | null;

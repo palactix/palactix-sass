@@ -33,8 +33,9 @@ import {
   useResendInviteMutation, 
   useCancelInviteMutation 
 } from "@/features/staff/api/staff.queries";
-import { Staff, UserStatus } from "@/features/staff/types/staff.types";
+import { Staff } from "@/features/staff/types/staff.types";
 import { buildOrgUrl, getOrgSlugFromPath } from "@/lib/utils/org-urls";
+import { UserStatus } from "@/types/user";
 
 export function StaffListing() {
   const router = useRouter();
@@ -307,7 +308,7 @@ export function StaffListing() {
           staff: { variant: "secondary" as const, className: "" }
         };
         
-        const roleName = staff.role.name.toLowerCase();
+        const roleName = staff?.role?.name.toLowerCase();
         const config = roleConfig[roleName as keyof typeof roleConfig] || { variant: "outline" as const, className: "" };
         
         return (
@@ -315,7 +316,7 @@ export function StaffListing() {
             variant={config.variant}
             className={config.className}
           >
-            {staff.role.name}
+            {staff?.role?.name}
           </Badge>
         );
       }

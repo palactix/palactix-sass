@@ -1,6 +1,3 @@
-export interface Role {
-  id: number;
-  name: string;
-}
+import { Role } from "@/types/user";
 
 export type RolesListResponse = Role[];

@@ -1,3 +1,5 @@
+import { User } from "@/types/user";
+
 export interface CreateClientPayload {
   name: string;
   email: string;
@@ -6,24 +8,7 @@ export interface CreateClientPayload {
 
 export interface CreateClientResponse {
   message: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  user: User;
 }
 
-export interface Client {
-  id: number;
-  name: string;
-  email: string;
-  status: string;
-  created_at: string;
-  avatar?: string;
-}
-
-export enum ClientStatus {
-  active = "active",
-  inactive = "inactive",
-  pending = "pending"
-}
+export type Client = User

@@ -24,6 +24,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ChooseAccounts } from "@/components/scheduler/ChooseAccounts";
+import { useUser } from "@/features/auth/api/auth.queries";
 
 export default function ClientSchedulerPage() {
   // Helper to get platform logo from slug (for mock data)
@@ -31,7 +33,9 @@ export default function ClientSchedulerPage() {
     return `/images/channels/${slug}.svg`;
   };
   const [media, setMedia] = useState<any[]>([]);
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
+
+  const { data: user } = useUser()
+  
   const [separateCaptions, setSeparateCaptions] = useState(false);
   const [globalCaption, setGlobalCaption] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
@@ -72,13 +76,8 @@ export default function ClientSchedulerPage() {
     setMedia(media.filter(m => m.id !== id));
   };
 
-  const toggleAccount = (accountId: string) => {
-    setSelectedAccounts(prev =>
-      prev.includes(accountId)
-        ? prev.filter(id => id !== accountId)
-        : [...prev, accountId]
-    );
-  };
+  const selectedAccounts = [1, 2];
+  
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -216,56 +215,7 @@ export default function ClientSchedulerPage() {
             </Card>
 
             {/* Choose Accounts Section */}
-            <Card className="p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-lg font-semibold">Choose Accounts</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">Select which accounts to post to</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {availableAccounts.map((account) => (
-                  <Card
-                    key={account.id}
-                    className={`p-4 cursor-pointer transition-all border-2 ${
-                      selectedAccounts.includes(account.id)
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                    onClick={() => toggleAccount(account.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="relative">
-                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-border">
-                          <Image src={account.avatar} alt={account.username} width={40} height={40} className="object-cover" />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background bg-background flex items-center justify-center">
-                          <Image
-                            src={getPlatformLogo(account.icon)}
-                            alt={account.platform}
-                            width={14}
-                            height={14}
-                            className="w-3 h-3 object-contain"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{account.username}</p>
-                        <p className="text-xs text-muted-foreground">{account.platform}</p>
-                      </div>
-                      {selectedAccounts.includes(account.id) && (
-                        <div className="shrink-0">
-                          <div className="rounded-full bg-primary p-1">
-                            <Check className="h-3 w-3 text-primary-foreground" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </Card>
+            { user && <ChooseAccounts client={user} /> }
 
             {/* Caption Section */}
             <Card className="p-6 shadow-sm">

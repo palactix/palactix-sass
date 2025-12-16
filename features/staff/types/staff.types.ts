@@ -1,4 +1,5 @@
-import { Role } from "@/features/roles/types/role.types";
+
+import { User, UserStatus as StaffUserStatus } from "@/types/user";
 
 export interface CreateStaffPayload {
   name?: string;
@@ -8,28 +9,10 @@ export interface CreateStaffPayload {
 
 export interface CreateStaffResponse {
   message: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-  };
+  user: User;
 }
 
-export interface Staff {
-  id: number;
-  name: string;
-  email: string;
-  role: Role;
-  status: string;
-  created_at: string;
-  avatar?: string;
-}
-
-export enum UserStatus {
-  active = "active",
-  inactive = "inactive",
-  pending = "pending"
-}
+export type Staff = User
 
 export interface AssignedClient {
   id: number;
