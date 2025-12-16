@@ -97,7 +97,7 @@ export function AgencyAppDashboard() {
           id: channel.slug,
           channelId: channel.id,
           name: channel.name,
-          icon: channel.icon,
+          icon: getPlatformIcon(channel.icon, theme),
           color: "",
           connected: isConnected,
           lastUsed: isConnected ? "Active" : undefined,

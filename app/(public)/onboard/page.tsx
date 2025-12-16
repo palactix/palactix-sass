@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Container } from "@/components/Container";
 import { Shield, Lock, HelpCircle, Loader2 } from "lucide-react";
 import { useUser } from "@/features/auth/api/auth.queries";
-import { useOnboardInfo, useChannelConnectMutation } from "@/features/onboard/api/onboard.queries";
+import { useOnboardInfo } from "@/features/onboard/api/onboard.queries";
 import { useChannelLogo } from "@/hooks/use-channel-logo";
+import { useChannelConnect } from "@/hooks/use-channel-connect";
 import { Channel } from "@/features/agency-app/types/agency-app.types";
 import { toast } from "sonner";
 
@@ -19,10 +20,10 @@ export default function OnboardPage() {
   
   const { data: user, isLoading: isUserLoading } = useUser();
   const { data: onboardInfo, isLoading: isOnboardLoading } = useOnboardInfo(orgSlug);
-  const connectMutation = useChannelConnectMutation();
   const getChannelLogo = useChannelLogo();
-  
-  const [connectingChannel, setConnectingChannel] = useState<string | null>(null);
+  const { connectChannel, connectingChannel } = useChannelConnect({
+    redirectPath: `/${orgSlug}/dashboard`,
+  });
 
   const isLoading = isUserLoading || isOnboardLoading;
 
@@ -33,12 +34,10 @@ export default function OnboardPage() {
       if (event.origin !== window.location.origin) return;
       
       if (event.data?.type === "OAUTH_SUCCESS") {
-        setConnectingChannel(null);
         toast.success("Account connected successfully!");
         // Redirect to dashboard after successful connection
         router.push(`/${orgSlug}/dashboard`);
       } else if (event.data?.type === "OAUTH_ERROR") {
-        setConnectingChannel(null);
         toast.error(event.data?.message || "Failed to connect account");
       }
     };
@@ -46,46 +45,6 @@ export default function OnboardPage() {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [router, orgSlug]);
-
-  const handleChannelConnect = useCallback(async (channel: Channel) => {
-    if (connectingChannel) return; // Prevent multiple clicks
-    
-    setConnectingChannel(channel.slug);
-    
-    try {
-      const oauthUrl = await connectMutation.mutateAsync(channel.slug);
-      
-      // Open OAuth URL in a small popup window
-      const width = 600;
-      const height = 700;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2;
-      
-      const popup = window.open(
-        oauthUrl.url,
-        "oauth_popup",
-        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-      );
-      
-      // Check if popup was blocked
-      if (!popup) {
-        toast.error("Popup was blocked. Please allow popups for this site.");
-        setConnectingChannel(null);
-        return;
-      }
-      
-      // Poll to check if popup was closed without completing
-      const pollTimer = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(pollTimer);
-          setConnectingChannel(null);
-        }
-      }, 500);
-    } catch (error) {
-      toast.error("Failed to initiate connection. Please try again.");
-      setConnectingChannel(null);
-    }
-  }, [connectingChannel, connectMutation]);
 
   if (isLoading) {
     return (
@@ -183,7 +142,7 @@ export default function OnboardPage() {
             >
               <div className="h-px flex-1 bg-border" />
               <span className="text-sm text-muted-foreground px-4">
-                Let's connect your accounts (30 seconds)
+                Let&apos;s connect your accounts (30 seconds)
               </span>
               <div className="h-px flex-1 bg-border" />
             </motion.div>
@@ -206,7 +165,7 @@ export default function OnboardPage() {
                   transition={{ delay: 0.7 + index * 0.1, duration: 0.3 }}
                   whileHover={!isConnecting ? { scale: 1.05, y: -2 } : {}}
                   whileTap={!isConnecting ? { scale: 0.95 } : {}}
-                  onClick={() => handleChannelConnect(channel)}
+                  onClick={() => connectChannel(channel)}
                   disabled={!!connectingChannel}
                   className={`group relative flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${
                     isConnecting 

@@ -7,6 +7,7 @@ import { useOrganizationStore } from "@/features/organization/stores/organizatio
 import { Loader2 } from "lucide-react";
 import { buildPostLoginRedirect } from "@/lib/utils/org-urls";
 import { use } from "react";
+import { ModalProvider } from "@/components/providers/ModalProvider";
 
 import { useOrganizationAuth } from "@/features/organization/hooks/useOrganizationAuth";
 
@@ -70,5 +71,5 @@ export default function OrgLayout({ children, params }: OrgLayoutProps) {
     );
   }
 
-  return <>{children}</>;
+  return <ModalProvider>{children}</ModalProvider>;
 }

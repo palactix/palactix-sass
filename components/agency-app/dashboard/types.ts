@@ -1,4 +1,4 @@
-import { Platform } from "./types";
+import { Platform } from "@/types/platform";
 
 export type DashboardHeaderProps = {
   appName: string;
@@ -16,16 +16,4 @@ export type AppDetailsProps = {
   platforms: Platform[];
 };
 
-export type Platform = {
-  id: string;
-  name: string;
-  icon: any; // Using any for now to match existing structure, ideally should be specific type
-  color: string;
-  connected: boolean;
-  lastUsed?: string;
-  appId?: string;
-  optional?: boolean;
-  disabled?: boolean;
-  badge?: string;
-  channelId: number;
-};
+

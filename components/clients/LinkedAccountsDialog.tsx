@@ -2,6 +2,7 @@
 
 import { Loader2, Link2, ExternalLink } from "lucide-react";
 import { useLinkedAccounts } from "@/features/clients/api/clients.queries";
+import { useChannelConnect } from "@/hooks/use-channel-connect";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,8 @@ import {
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Channel } from "@/features/agency-app/types/agency-app.types";
+
+import { LinkedAccount } from "@/types/platform";
 
 interface LinkedAccountsDialogProps {
   isOpen: boolean;
@@ -36,11 +38,17 @@ export function LinkedAccountsDialog({
   client,
 }: LinkedAccountsDialogProps) {
   const { data, isLoading } = useLinkedAccounts(isOpen ? client.id : null);
+  const { connectChannel, connectingChannel } = useChannelConnect({
+    onSuccess: () => {
+      // Refresh the linked accounts data or close dialog
+      // The hook already shows success toast
+    },
+    onError: (error) => {
+      console.error("Channel connection error:", error);
+    },
+  });
 
-  const handleChannelClick = (channel: Channel) => {
-    // TODO: Implement account linking flow
-    console.log("Link account for channel:", channel.slug);
-  };
+  console.log("Linked accounts data:", data);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -130,8 +138,11 @@ export function LinkedAccountsDialog({
                       <Tooltip key={channel.id}>
                         <TooltipTrigger asChild>
                           <button
-                            onClick={() => handleChannelClick(channel)}
-                            className="p-3 rounded-lg border bg-card hover:bg-accent hover:border-primary/50 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            onClick={() => connectChannel(channel)}
+                            disabled={!!connectingChannel}
+                            className={`p-3 rounded-lg border bg-card hover:bg-accent hover:border-primary/50 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                              connectingChannel === channel.slug ? "opacity-50 cursor-wait" : ""
+                            }`}
                           >
                             <img 
                               src={channel.icon["logo-svg"] || channel.icon["logo-png"]} 
@@ -142,7 +153,9 @@ export function LinkedAccountsDialog({
                         </TooltipTrigger>
                         <TooltipContent side="bottom">
                           <p className="font-medium">{channel.name}</p>
-                          <p className="text-xs text-muted-foreground">Click to connect</p>
+                          <p className="text-xs text-muted-foreground">
+                            {connectingChannel === channel.slug ? "Connecting..." : "Click to connect"}
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     ))}
