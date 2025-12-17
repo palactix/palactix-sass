@@ -10,6 +10,9 @@ import { Container } from "../Container";
 
 export function FAQSection() {
   const faqs = [
+    {question: "Why does Palactix require my own app credentials?", 
+      answer: "Because your clients trust you, not us. Using your own apps ensures full isolation, brand-safe OAuth consent, and zero shared access across agencies."
+    },
     {
       question: 'Will my clients ever see "Palactix" anywhere?',
       answer:

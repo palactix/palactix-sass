@@ -4,50 +4,67 @@ import { useChannelLogo } from "@/hooks/use-channel-logo";
 import { LinkedAccount, Platform } from "@/types/platform";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useMemo } from "react";
 
+export const AccountsBadge = ({
+  channels,
+  linked_accounts,
+  selectedAccountIds,
+  onChange,
+}: LinkedAccountsResponse & {
+  selectedAccountIds: string[];
+  onChange?: (ids: string[]) => void;
+}) => {
+  const channelMap = useMemo(() => {
+    const map = new Map<string, Platform>();
+    channels.forEach((c) => map.set(String(c.id), c));
+    return map;
+  }, [channels]);
 
-export const AccountsBadge = ({ channels, linked_accounts }: LinkedAccountsResponse) => {
-  const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
-  const toggleAccount = (accountId: string) => {
-    setSelectedAccounts(prev =>
-      prev.includes(accountId)
-        ? prev.filter(id => id !== accountId)
-        : [...prev, accountId]
-    );
-  };
-
-  return linked_accounts.map((account) => (<AccountBadge 
-    key={account.id} 
-    account={account} 
-    selectedAccounts={selectedAccounts} 
-    toggleAccount={toggleAccount}
-    channels={channels}
-  />)
+  const handleToggle = useCallback(
+    (accountId: string) => {
+      if (!onChange) return;
+      const next = selectedAccountIds.includes(accountId)
+        ? selectedAccountIds.filter((id) => id !== accountId)
+        : [...selectedAccountIds, accountId];
+      onChange(next);
+    },
+    [onChange, selectedAccountIds]
   );
-};
 
+  return linked_accounts.map((account) => (
+    <AccountBadge
+      key={account.id}
+      account={account}
+      selectedAccounts={selectedAccountIds}
+      toggleAccount={handleToggle}
+      platform={channelMap.get(String(account.channel_id))}
+    />
+  ));
+};
 
 export const AccountBadge = ({
   account,
   selectedAccounts,
-  channels,
+  platform,
   toggleAccount,
-
-}: {account: LinkedAccount, selectedAccounts: string[], channels: Platform[], toggleAccount: (accountId: string) => void}) => {
+}: {
+  account: LinkedAccount;
+  selectedAccounts: string[];
+  platform?: Platform;
+  toggleAccount: (accountId: string) => void;
+}) => {
   const platformLogo = useChannelLogo();
-
-  const platform = channels.find(channel => channel.id === account.channel_id);
+  const isSelected = selectedAccounts.includes(`${account.id}`);
 
   return (
     <Card
       key={account.id}
       className={`p-4 cursor-pointer transition-all border-2 ${
-        selectedAccounts.includes(`${account.id}`)
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/50"
+        isSelected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
       }`}
       onClick={() => toggleAccount(`${account.id}`)}
+      style={{ userSelect: "none" }}
     >
       <div className="flex items-center gap-3">
         <div className="relative">
@@ -68,7 +85,7 @@ export const AccountBadge = ({
           <p className="font-medium text-sm truncate">{account.username}</p>
           <p className="text-xs text-muted-foreground">{platform?.name || ""}</p>
         </div>
-        {selectedAccounts.includes(`${account.id}`) && (
+        {isSelected && (
           <div className="shrink-0">
             <div className="rounded-full bg-primary p-1">
               <Check className="h-3 w-3 text-primary-foreground" />
@@ -78,4 +95,4 @@ export const AccountBadge = ({
       </div>
     </Card>
   );
-}
+};
