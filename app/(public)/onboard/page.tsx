@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import { useChannelLogo } from "@/hooks/use-channel-logo";
 import { useChannelConnect } from "@/hooks/use-channel-connect";
 import { toast } from "sonner";
 
-export default function OnboardPage() {
+function OnboardPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orgSlug = searchParams.get("org");
@@ -254,5 +254,17 @@ export default function OnboardPage() {
         </motion.div>
       </Container>
     </div>
+  );
+}
+
+export default function OnboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    }>
+      <OnboardPageContent />
+    </Suspense>
   );
 }
