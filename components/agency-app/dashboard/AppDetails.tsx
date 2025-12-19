@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Copy, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,18 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useMyAgencyApp, useChannels } from "@/features/agency-app/api/agency-app.queries";
+import { useState } from "react";
 
 export function AppDetails() {
   const { data: myApp } = useMyAgencyApp();
   const { data: allChannels } = useChannels();
-  
-  const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    if (myApp) {
-      setDescription(myApp.description || "");
-    }
-  }, [myApp]);
+
+  const [description, setDescription] = useState(myApp?.description);
 
   const handleCopyInfo = () => {
     if (!myApp || !allChannels) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { inviteStaffSchema, type InviteStaffSchema } from "@/features/staff/schemas/staff.schemas";
 import { useCreateStaffMutation } from "@/features/staff/api/staff.queries";
@@ -36,7 +36,6 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm<InviteStaffSchema>({
     resolver: zodResolver(inviteStaffSchema),
     defaultValues: {
@@ -46,7 +45,7 @@ export function CreateStaffForm({ onCancel }: CreateStaffFormProps) {
     },
   });
 
-  const selectedRoleId = watch("role_id");
+  const selectedRoleId = useWatch({  name: "role_id" });
 
   const onSubmit = (data: InviteStaffSchema) => {
     mutate(data, {

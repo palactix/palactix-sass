@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Container } from "../Container";
+import Link from "next/link";
 
 export function FinalCTA() { 
   return (
@@ -15,7 +16,7 @@ export function FinalCTA() {
             className="bg-primary hover:bg-primary/90 text-white"
             asChild
           >
-            <a href="/auth/signup">Start 14-day Agency Pilot</a>
+            <Link href="/auth/signup">Get started with Palactix</Link>
           </Button>
 
           <p className="text-sm text-muted-foreground">

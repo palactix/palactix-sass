@@ -20,6 +20,7 @@ export type LinkedAccount = {
   status: number;
   has_token: boolean;
   children: LinkedAccount[];
+  channel: Platform;
 };
 
 

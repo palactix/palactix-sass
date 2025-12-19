@@ -8,7 +8,7 @@ export const appDetailsSchema = z.object({
 export type AppDetailsSchema = z.infer<typeof appDetailsSchema>;
 
 export const platformSelectorSchema = z.object({
-  platform_ids: z.array(z.number()).min(1, "Please select at least one platform"),
+  platform_ids: z.array(z.string()).min(1, "Please select at least one platform"),
 });
 
 export type PlatformSelectorSchema = z.infer<typeof platformSelectorSchema>;

@@ -1,3 +1,5 @@
+import { Platform } from "@/types/platform";
+
 export enum AppStatus {
   ACTIVE = 1,
   DRAFT = 2,
@@ -14,20 +16,12 @@ export interface ChannelIcon {
   "logo-svg"?: string;
 }
 
-export interface Channel {
-  id: number;
-  name: string;
-  slug: string;
-  icon: ChannelIcon;
-  api_url: string;
-  version?: string | null;
-  supports_refresh: number; // 0 or 1
-}
+export type Channel = Platform
 
 export interface AgencyAppChannel {
-  id: number;
+  id: string;
   developer_app_id: string;
-  channel_id: number;
+  channel_id: string;
   client_id: string | null;
   client_secret: string | null;
   created_at: string;
@@ -62,7 +56,7 @@ export interface UpdateAppNamePayload {
 export type UpdateAppNameResponse = AgencyApp;
 
 export interface UpdatePlatformsPayload {
-  platform_ids: number[];
+  platform_ids: string[];
 }
 
 export interface UpdatePlatformsResponse {
@@ -71,7 +65,7 @@ export interface UpdatePlatformsResponse {
 }
 
 export interface PlatformCredential {
-  platform_id: number;
+  platform_id: string;
   credentials: Record<string, string>;
 }
 

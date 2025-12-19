@@ -56,7 +56,7 @@ export function PlatformSelectorForm({ defaultValues, onSubmit, isPending, prevS
     }
   }, [defaultValues, reset]);
 
-  const togglePlatform = useCallback((id: number) => {
+  const togglePlatform = useCallback((id: string) => {
     const current = getValues("platform_ids") || [];
     const updated = current.includes(id)
       ? current.filter((pid) => pid !== id)

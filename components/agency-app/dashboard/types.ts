@@ -16,4 +16,13 @@ export type AppDetailsProps = {
   platforms: Platform[];
 };
 
-
+export interface ConnectedPlatform extends Platform {
+  color: string;
+  connected: boolean;
+  lastUsed?: string;
+  appId?: string;
+  optional?: boolean;
+  disabled?: boolean;
+  badge?: string;
+  channelId: string;
+};

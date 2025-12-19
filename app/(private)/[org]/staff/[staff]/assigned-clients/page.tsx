@@ -11,7 +11,7 @@ export default function CreateStaffPage() {
   const router = useRouter();
   const params = useParams();
 
-  const { openSheet, closeSheet } = useSheet();
+  const { openSheet } = useSheet();
 
   const { staff } = params;
 
@@ -26,7 +26,7 @@ export default function CreateStaffPage() {
         }
       });
     }
-  }, [staff])
+  }, [staff, router, openSheet]);
 
   return (
     <div className="container py-10">

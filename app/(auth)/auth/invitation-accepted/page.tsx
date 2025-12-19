@@ -9,13 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, Eye, EyeOff, Lock, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { setPasswordSchema, type SetPasswordSchema } from "@/features/auth/schemas/set-password.schema";
 import { useSetPasswordMutation, useUser } from "@/features/auth/api/auth.queries";
 import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { buildOrgUrl } from "@/lib/utils/org-urls";
+
 
 function InvitationAcceptContent() {
   const searchParams = useSearchParams();
@@ -38,7 +38,7 @@ function InvitationAcceptContent() {
 
   const setPasswordMutation = useSetPasswordMutation();
 
-  const password = form.watch("password");
+  const password = useWatch({ control: form.control, name: "password" });
 
   const passwordRequirements = {
     minLength: password.length >= 8,

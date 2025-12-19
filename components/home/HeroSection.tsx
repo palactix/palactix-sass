@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { ArrowRight, Shield, CheckCircle2 } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "../Container";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -50,8 +51,8 @@ export function HeroSection() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-xl text-muted-foreground leading-relaxed"
             >
-              Your clients see only YOUR agency name on Instagram, TikTok, X,
-              and LinkedIn. Zero third-party branding. Zero shared keys. Flat
+              Your clients authorize your brand — not a third-party tool. 
+              Zero third-party branding. Zero shared keys. Flat
               pricing.
             </motion.p>
 
@@ -67,10 +68,10 @@ export function HeroSection() {
                 className="bg-primary hover:bg-primary/90 text-white text-base group"
                 asChild
               >
-                <a href="/auth/signup" className="flex items-center gap-2">
-                  Start 14-day Agency Pilot
+                <Link href={"/auth/signup"} className="flex items-center gap-2">
+                    Start Agency Pilot
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </a>
+                </Link>
               </Button>
               <Button
                 size="lg"

@@ -19,7 +19,7 @@ export function PricingSection() {
         "White-label Dashboard",
         "BYO Keys Support",
       ],
-      cta: "Start 14-day Pilot",
+      cta: "Get started",
       ctaLink: "/auth/signup",
       popular: false,
     },
@@ -35,7 +35,7 @@ export function PricingSection() {
         "Priority Support",
         "Custom Domain",
       ],
-      cta: "Start 14-day Pilot",
+      cta: "Choose Pro",
       ctaLink: "/auth/signup",
       popular: true,
     },
@@ -51,7 +51,7 @@ export function PricingSection() {
         "Custom Integrations",
         "On-premise Option",
       ],
-      cta: "Book a call",
+      cta: "Talk to sales",
       ctaLink: "/contact",
       popular: false,
     },
@@ -71,7 +71,7 @@ export function PricingSection() {
             Simple, transparent pricing
           </h2>
           <p className="text-lg text-muted-foreground">
-            Choose the plan that fits your agency
+            No shared apps. No temporary access. Full ownership from day one.
           </p>
         </motion.div>
 
@@ -139,6 +139,11 @@ export function PricingSection() {
               </Button>
             </motion.div>
           ))}
+        </div>
+        <div className="text-center mt-8">
+          <p className="text-sm text-muted-foreground">
+            Prices shown exclude platform API costs, if applicable.
+          </p>
         </div>
 
         {/* Separator Line */}

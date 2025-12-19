@@ -27,7 +27,7 @@ export function Step5Success({ onComplete }: Step5SuccessProps) {
       </div>
       <h2 className="text-4xl font-bold mb-4">You now own your social stack.</h2>
       <p className="text-xl text-muted-foreground max-w-xl mx-auto mb-8">
-        Your clients will only see <span className="font-semibold text-foreground">"{myApp?.name || "Your App"}"</span> on consent screens — never Palactix or a third-party tool.
+        Your clients will only see <span className="font-semibold text-foreground"> &quot;{myApp?.name || "Your App"}&quot;</span> on consent screens — never Palactix or a third-party tool.
       </p>
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -7,30 +7,38 @@ import { DashboardHeader } from "./DashboardHeader";
 import { ReviewStatusAlert } from "./ReviewStatusAlert";
 import { ConnectedPlatforms } from "./ConnectedPlatforms";
 import { AppDetails } from "./AppDetails";
-import { Platform } from "./types";
 import { useMemo } from "react";
+import { ConnectedPlatform } from "./types";
+
 
 export function AgencyAppDashboard() {
   const { data: myApp, isLoading: isAppLoading } = useMyAgencyApp();
   const { data: allChannels, isLoading: isChannelsLoading } = useChannels();
 
-  const platforms: Platform[] = useMemo(() => {
+  const platforms: ConnectedPlatform[] = useMemo(() => {
     if (!myApp || !allChannels) return [];
     
     return allChannels.map(channel => {
       const appChannel = myApp.channels?.find(c => c.channel_id === channel.id);
       const isConnected = !!(appChannel && (appChannel.client_id || appChannel.client_secret));
-      
       return {
-        id: channel.slug,
-        channelId: channel.id,
-        name: channel.name,
-        icon: channel.icon,
+        ...channel,
         color: "",
+        channelId: channel.id,
         connected: isConnected,
         lastUsed: isConnected ? "Active" : undefined,
         appId: appChannel?.client_id || undefined,
-      };
+      }
+      // return {
+      //   id: channel.slug,
+      //   channelId: channel.id,
+      //   name: channel.name,
+      //   icon: channel.icon,
+      //   color: "",
+      //   connected: isConnected,
+      //   lastUsed: isConnected ? "Active" : undefined,
+      //   appId: appChannel?.client_id || undefined,
+      // };
     });
   }, [myApp, allChannels]);
 

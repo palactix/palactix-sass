@@ -9,7 +9,6 @@ import { Step3Credentials } from "./wizard/Step3Credentials";
 import { Step4Activation } from "./wizard/Step4Review";
 import { Step5Success } from "./wizard/Step5Success";
 import { Loader2 } from "lucide-react";
-import { AppStatus } from "@/features/agency-app/types/agency-app.types";
 import { isEmpty } from 'es-toolkit/compat';
 
 interface AgencyAppWizardProps {

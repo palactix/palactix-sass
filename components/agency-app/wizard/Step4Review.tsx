@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { motion } from "motion/react";
-import { Check, Instagram, Linkedin, Twitter, Facebook, Youtube, Loader2, AlertCircle } from "lucide-react";
+import { Check, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useSendAppToReviewMutation, useMyAgencyApp, useChannels } from "@/features/agency-app/api/agency-app.queries";
 import { useWizardStore } from "@/features/agency-app/stores/wizard.store";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { useTheme } from "next-themes";
 import Image from "next/image";
@@ -21,12 +20,12 @@ interface Step4ActivationProps {
   onComplete?: () => void;
 }
 
-export function Step4Activation({ onComplete }: Step4ActivationProps) {
+export function Step4Activation({}: Step4ActivationProps) {
   const { appId, setStep } = useWizardStore();
   const { data: myApp } = useMyAgencyApp();
   const { data: allChannels } = useChannels();
   const { mutate, isPending } = useSendAppToReviewMutation();
-  const router = useRouter();
+
   const { theme } = useTheme();
 
   // Reactively update when data changes

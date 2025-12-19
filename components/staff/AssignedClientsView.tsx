@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, ExternalLink, Calendar, Mail, User, Clock, Link2 } from "lucide-react";
+import { Loader2, ExternalLink, Calendar, Mail, User } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { useAssignedClients } from "@/features/staff/api/staff.queries";

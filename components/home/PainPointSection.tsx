@@ -91,16 +91,13 @@ export function PainPointSection() {
             className="space-y-6 order-1 lg:order-2"
           >
             <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              This screen costs agencies{" "}
-              <span className="text-destructive">six-figure clients</span> every
-              single week
+              Third-party consent screen silently costs {" "}
+              <span className="text-destructive">six-figure clients</span>
             </h2>
 
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Never again explain a third-party tool to a{" "}
-              <span className="text-destructive font-semibold">million-follower creator</span>.
-              {` When high-profile clients see a generic tool's name
-              asking for permissions, trust erodes instantly.`}
+              When clients see third-party consent screens, trust breaks.
+              Serious brands expect to authorize <span className="text-destructive font-semibold">your app</span>, not someone else’s.
             </p>
 
             <p className="text-lg text-muted-foreground leading-relaxed">

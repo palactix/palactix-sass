@@ -5,7 +5,9 @@ export function HonestySection() {
   const weNail = [
     "White-label scheduling",
     "True BYO keys",
+    "We never publish through shared social apps",
     "Unlimited clients flat pricing",
+    
   ];
 
   const weDontHaveYet = [

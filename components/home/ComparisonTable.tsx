@@ -68,7 +68,7 @@ export function ComparisonTable() {
       <Container>
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Why agencies are switching
+            Why agencies choose Palactix
           </h2>
         </div>
 

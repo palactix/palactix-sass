@@ -20,15 +20,17 @@ import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
-import { Platform } from "./types";
+
 import { PlatformSetupDialog } from "./PlatformSetupDialog";
+import { Platform } from "@/types/platform";
+import { ConnectedPlatform } from "./types";
 
 interface ConnectedPlatformsProps {
-  platforms: Platform[];
+  platforms: ConnectedPlatform[];
 }
 
 export function ConnectedPlatforms({ platforms: initialPlatforms }: ConnectedPlatformsProps) {
-  const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
+  const [platforms, setPlatforms] = useState<ConnectedPlatform[]>(initialPlatforms);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPlatformId, setEditingPlatformId] = useState<string | null>(null);
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);

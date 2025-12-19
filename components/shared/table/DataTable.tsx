@@ -44,14 +44,14 @@ interface DataTableRowProps<T> {
   keyField: keyof T;
 }
 
-// Memoized Row Component
-const DataTableRow = memo(<T,>({ 
+// Generic Row Component to preserve T through memo
+function DataTableRowBase<T>({ 
   item, 
   columns, 
   isSelected, 
   onRowSelect, 
   keyField 
-}: DataTableRowProps<T>) => {
+}: DataTableRowProps<T>) {
 
   const id = item[keyField] as unknown as string | number;
 
@@ -72,14 +72,23 @@ const DataTableRow = memo(<T,>({
       ))}
     </TableRow>
   );
-}, (prev, next) => {
+}
+
+const areRowsEqual = <T,>(prev: DataTableRowProps<T>, next: DataTableRowProps<T>) => {
   return (
     prev.isSelected === next.isSelected &&
     prev.item === next.item &&
     prev.columns === next.columns &&
     prev.onRowSelect === next.onRowSelect
   );
-}) as <T>(props: DataTableRowProps<T>) => React.ReactElement;
+};
+
+type DataTableRowComponent = <T>(props: DataTableRowProps<T>) => React.ReactElement | null;
+
+const DataTableRow = memo(
+  DataTableRowBase as <T>(props: DataTableRowProps<T>) => React.ReactElement | null,
+  areRowsEqual as <T>(prev: DataTableRowProps<T>, next: DataTableRowProps<T>) => boolean
+) as DataTableRowComponent & { displayName?: string };
 
 DataTableRow.displayName = "DataTableRow";
 

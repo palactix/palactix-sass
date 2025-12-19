@@ -7,14 +7,12 @@ import { Button } from "@/components/ui/button";
 import { useChannelLogo } from "@/hooks/use-channel-logo";
 import Image from "next/image";
 import { Loader2, Link as LinkIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-
 import { Platform } from "@/types/platform";
 
 interface AvailableChannelsToLinkProps {
   clientId: number;
   availableChannels?: Platform[];
-  onConnect?: (channelId: number, channelName: string) => void;
+  onConnect?: (channelId: string, channelName: string) => void;
 }
 
 export function AvailableChannelsToLink({ 

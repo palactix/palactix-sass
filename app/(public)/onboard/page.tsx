@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -10,7 +10,6 @@ import { useUser } from "@/features/auth/api/auth.queries";
 import { useOnboardInfo } from "@/features/onboard/api/onboard.queries";
 import { useChannelLogo } from "@/hooks/use-channel-logo";
 import { useChannelConnect } from "@/hooks/use-channel-connect";
-import { Channel } from "@/features/agency-app/types/agency-app.types";
 import { toast } from "sonner";
 
 export default function OnboardPage() {

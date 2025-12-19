@@ -23,8 +23,9 @@ import { AppStatus } from "@/features/agency-app/types/agency-app.types";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
-import { Platform } from "./types";
+
 import { useUpdateAppNameMutation } from "@/features/agency-app/api/agency-app.queries";
+import { Platform } from "@/types/platform";
 
 interface DashboardHeaderProps {
   appId: string;

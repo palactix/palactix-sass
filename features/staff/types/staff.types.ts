@@ -1,5 +1,5 @@
 
-import { User, UserStatus as StaffUserStatus } from "@/types/user";
+import { User } from "@/types/user";
 
 export interface CreateStaffPayload {
   name?: string;

@@ -1,7 +1,7 @@
 "use client";
 import { ClientListing } from "@/components/clients/ClientListing";
 import { CreateClientForm } from "@/components/clients/forms/CreateClientForm";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";

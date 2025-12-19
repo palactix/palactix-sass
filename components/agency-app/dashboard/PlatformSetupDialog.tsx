@@ -16,7 +16,8 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
-import { Platform } from "./types";
+import { Platform } from "@/types/platform";
+
 
 interface PlatformSetupDialogProps {
   open: boolean;

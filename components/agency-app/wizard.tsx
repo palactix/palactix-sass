@@ -31,7 +31,6 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
   const [step, setStep] = useState(1)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
   const [appName, setAppName] = useState("")
-  const [credentials, setCredentials] = useState<Record<string, any>>({})
   const [verifying, setVerifying] = useState<string | null>(null)
   const [verified, setVerified] = useState<string[]>([])
 
@@ -166,7 +165,7 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Add Platform Credentials</CardTitle>
-                <CardDescription>Configure your app for each platform. We've provided direct links to the developer portals.</CardDescription>
+                <CardDescription>Configure your app for each platform. We&apos;ve provided direct links to the developer portals.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full" defaultValue={selectedPlatforms[0]}>
@@ -260,7 +259,7 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
              <Card>
               <CardHeader>
                 <CardTitle>Final Review</CardTitle>
-                <CardDescription>You're about to activate your white-label agency app.</CardDescription>
+                <CardDescription>You&apos;re about to activate your white-label agency app.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
@@ -314,7 +313,7 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
             </div>
             <h2 className="text-4xl font-bold mb-4">You now own your social stack.</h2>
             <p className="text-xl text-muted-foreground max-w-xl mx-auto mb-8">
-                Your clients will only see <span className="font-semibold text-foreground">"{appName}"</span> on consent screens — never Palactix or a third-party tool.
+                Your clients will only see <span className="font-semibold text-foreground">&quot;{appName}&quot;</span> on consent screens — never Palactix or a third-party tool.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

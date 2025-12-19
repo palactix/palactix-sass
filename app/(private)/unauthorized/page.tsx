@@ -16,7 +16,7 @@ export default function UnauthorizedPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Unauthorized Access</h1>
           <p className="text-muted-foreground">
-            You don't have permission to access this resource or organization.
+            You don&apos;t have permission to access this resource or organization.
           </p>
         </div>
 
@@ -25,9 +25,9 @@ export default function UnauthorizedPage() {
             This could happen if:
           </p>
           <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-            <li>You're not a member of this organization</li>
+            <li>You&apos;re not a member of this organization</li>
             <li>Your access has been revoked</li>
-            <li>The organization doesn't exist</li>
+            <li>The organization doesn&apos;t exist</li>
           </ul>
         </div>
 

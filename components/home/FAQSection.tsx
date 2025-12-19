@@ -10,7 +10,8 @@ import { Container } from "../Container";
 
 export function FAQSection() {
   const faqs = [
-    {question: "Why does Palactix require my own app credentials?", 
+    {
+      question: "Why does Palactix require my own app credentials?", 
       answer: "Because your clients trust you, not us. Using your own apps ensures full isolation, brand-safe OAuth consent, and zero shared access across agencies."
     },
     {
@@ -19,14 +20,19 @@ export function FAQSection() {
         "No. Once you add your own keys, your agency's name appears everywhere — in OAuth consent screens, email notifications, and anywhere a brand name would be visible. We're completely invisible to your end clients.",
     },
     {
+      question: "When does the 14-day agency pilot start?",
+      answer:
+        "Once your app credentials are connected. The pilot includes full access with no feature restrictions",
+    },
+    {
       question: "Do I have to pay during the 14-day pilot?",
       answer:
         "No credit card required. You get 5 days using our keys to test the platform, then you'll need to add your own keys to continue the trial. The paid plan only starts after your 14-day pilot period ends.",
     },
     {
-      question: "What happens on day 6 if I haven't added my own keys yet?",
+      question: "What if I need help with app setup?",
       answer:
-        "Posting stops until you add them. You'll still have full access to the dashboard and setup guides. Once your keys are approved and added, publishing resumes immediately.",
+        "Our support team provides step-by-step guides and reviews your submissions for free to ensure quick approval.",
     },
     {
       question:

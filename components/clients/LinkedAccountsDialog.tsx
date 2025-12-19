@@ -17,9 +17,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { useChannelLogo } from "@/hooks/use-channel-logo";
 
-import { LinkedAccount } from "@/types/platform";
 
 interface LinkedAccountsDialogProps {
   isOpen: boolean;
@@ -48,7 +48,7 @@ export function LinkedAccountsDialog({
     },
   });
 
-  console.log("Linked accounts data:", data);
+  const getChannelIcon = useChannelLogo();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -98,8 +98,8 @@ export function LinkedAccountsDialog({
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger>
-                              <img 
-                                src={account.channel.icon["logo-svg"] || account.channel.icon["logo-png"]} 
+                              <Image 
+                                src={getChannelIcon(account.channel.icon)} 
                                 alt={account.channel.name}
                                 className="h-5 w-5 object-contain"
                               />
@@ -144,8 +144,8 @@ export function LinkedAccountsDialog({
                               connectingChannel === channel.slug ? "opacity-50 cursor-wait" : ""
                             }`}
                           >
-                            <img 
-                              src={channel.icon["logo-svg"] || channel.icon["logo-png"]} 
+                            <Image 
+                              src={getChannelIcon(channel.icon)} 
                               alt={channel.name}
                               className="h-7 w-7 object-contain"
                             />

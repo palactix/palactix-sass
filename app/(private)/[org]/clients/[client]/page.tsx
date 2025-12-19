@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, ChevronDown, AlertTriangle, FileText, CheckCircle2, Clock, Edit, Eye, ExternalLink, Plus, Image as ImageIcon, Video, XCircle } from "lucide-react";
+import { Calendar, ChevronDown, AlertTriangle, FileText, Clock, Edit, Eye, ExternalLink, Image as ImageIcon, Video, XCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,15 +11,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useModal } from "@/components/providers/ModalProvider";
-import { AvailableChannelsToLink } from "@/components/AvailableChannelsToLink";
 import { ConnectedAccountsCard } from "@/components/clients/dashboard/ConnectedAccountsCard";
 import { useParams } from "next/navigation";
 
 export default function ClientPage() {
   const params = useParams();
   const clientId = params?.client ? parseInt(params.client as string) : null;
-  const { openModal } = useModal();
+
   
   // Mock data - replace with actual API calls
   const client = {

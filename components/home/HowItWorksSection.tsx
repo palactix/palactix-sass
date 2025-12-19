@@ -8,26 +8,26 @@ export function HowItWorksSection() {
   const steps = [
     {
       number: 1,
-      title: "Start instantly",
-      description: "5-day trial with our keys",
+      title: "Guided onboarding",
+      description: "Clear, step-by-step setup for each platform.",
       Icon: Zap,
     },
     {
       number: 2,
-      title: "Add your own keys",
-      description: "Before day 6. Guided templates ensure smooth setup",
+      title: "Add your own app keys",
+      description: "Your apps, your permissions, your brand on the consent screen",
       Icon: Key,
     },
     {
       number: 3,
-      title: "Consent screen shows YOUR name",
-      description: "Zero trust issues",
+      title: "Client-authorized access",
+      description: "Clients approve your app directly, no shared OAuth.",
       Icon: ShieldCheck,
     },
     {
       number: 4,
-      title: "Scale unlimited clients",
-      description: "Flat pricing",
+      title: "Publish with confidence",
+      description: "Every action is isolated, auditable, and under your control.",
       Icon: TrendingUp,
     },
   ];
@@ -37,7 +37,7 @@ export function HowItWorksSection() {
       <Container>
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            60-second start → permanent ownership
+            Guided setup, permanent ownership
           </h2>
         </div>
 
@@ -46,7 +46,7 @@ export function HowItWorksSection() {
           {/* Connection Line */}
           <div className="absolute top-12 left-[12.5%] right-[12.5%] h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
 
-          {steps.map((step, index) => (
+          {steps.map((step) => (
             <div key={step.number} className="relative">
               {/* Step Card */}
               <div className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all group">

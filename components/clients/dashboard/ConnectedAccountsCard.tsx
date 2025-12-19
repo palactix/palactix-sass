@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle2, AlertTriangle, Plus } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useModal } from "@/components/providers/ModalProvider";
@@ -12,6 +9,7 @@ import { LinkedAccount } from "@/types/platform";
 import { useLinkedAccounts } from "@/features/clients/api/clients.queries";
 import { AccountLoader } from "@/components/shared/LinkedAccounts/AccountLoader";
 import { AccountsBadge } from "@/components/shared/LinkedAccounts/AccountsBadge";
+import { Plus } from "lucide-react";
 
 interface ConnectedAccountsCardProps {
   clientId: number;
@@ -24,11 +22,6 @@ export function ConnectedAccountsCard({ clientId }: ConnectedAccountsCardProps) 
   // Assume the API returns both linkedAccounts and availableChannels
   const linkedAccounts: LinkedAccount[] = data?.linked_accounts || [];
   const availableChannels = data?.channels || [];
-
-  // Helper to get platform logo from slug
-  const getPlatformLogo = (slug: string) => {
-    return `/images/channels/${slug}.svg`;
-  };
 
   return (
     <Card className="shadow-sm">
@@ -66,7 +59,7 @@ export function ConnectedAccountsCard({ clientId }: ConnectedAccountsCardProps) 
             </div>
           ) 
         }
-        { data && <AccountsBadge {...data} /> }
+        { data && <AccountsBadge {...{...data, selectedAccountIds: []}}  /> }
       </div>
     </Card>
   );

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Check, ChevronRight, Copy, ExternalLink, Instagram, Linkedin, Twitter, Facebook, Youtube, Loader2 } from "lucide-react";
+import { Check, ChevronRight, Copy, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,7 +43,7 @@ export function Step3Credentials() {
           };
         }
       });
-      setCredentials(creds);
+      setTimeout(() => setCredentials(creds), 0);
     }
   }, [myApp?.channels, allChannels]);
 
