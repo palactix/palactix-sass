@@ -69,3 +69,12 @@ export const NOTIFICATION_ROUTES = {
 export const CHANNEL_ROUTES = {
   CONNECT: "v1/channels/{channel}/connect",
 }
+  
+export const MEDIA_ROUTES = {
+  UPLOAD: "/organizations/{orgId}/media/upload",
+  INIT_UPLOAD: "/organizations/{orgId}/media/upload/init",
+  UPLOAD_CHUNK: "/organizations/{orgId}/media/upload/chunk",
+  COMPLETE_UPLOAD: "/organizations/{orgId}/media/upload/complete",
+  CANCEL_UPLOAD: "/organizations/{orgId}/media/upload/cancel",
+  UPLOAD_STATUS: "/organizations/{orgId}/media/upload/{uploadId}/status",
+};

@@ -1,3 +1,4 @@
+"use client";
 import { ClientDashboard } from "@/components/dashboard/ClientDashboard";
 import { useParams } from "next/navigation";
 import { Suspense } from "react";

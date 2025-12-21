@@ -25,11 +25,6 @@ export const ChooseAccounts = ({
   const resolvedData = linkedAccountsData || data;
   const resolvedLoading = isLoadingOverride ?? isLoading;
 
-  console.log("Rendering ChooseAccounts with:", {
-    selectedAccountIds,
-    resolvedData,
-    resolvedLoading,
-  });
   return (
     <Card className="p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
