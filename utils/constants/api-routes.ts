@@ -19,6 +19,7 @@ export const AGENCY_APP_API_ROUTES = {
   UPDATE_APP_NAME: "/organizations/{orgId}/developer-apps/{app}/update-name",
   CREATE_APP_PLATFORMS: "/organizations/{orgId}/developer-apps/{app}/platforms",
   CREATE_APP_PLATFORMS_CREDENTIALS: "/organizations/{orgId}/developer-apps/{app}/platform-credentials",
+  UPDATE_APP_PLATFORMS_CREDENTIALS: "/organizations/{orgId}/developer-apps/{app}/platform-credentials/{platform}",
   SEND_TO_REVIEW: "/organizations/{orgId}/developer-apps/{app}/send-to-review",
   ACTIVATE_APP: "/organizations/{orgId}/developer-apps/{app}/activate",
   DEACTIVATE_APP: "/organizations/{orgId}/developer-apps/{app}/deactivate",

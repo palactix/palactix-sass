@@ -27,9 +27,10 @@ import { ConnectedPlatform } from "./types";
 
 interface ConnectedPlatformsProps {
   platforms: ConnectedPlatform[];
+  appId: string;
 }
 
-export function ConnectedPlatforms({ platforms: initialPlatforms }: ConnectedPlatformsProps) {
+export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: ConnectedPlatformsProps) {
   const [platforms, setPlatforms] = useState<ConnectedPlatform[]>(initialPlatforms);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPlatformId, setEditingPlatformId] = useState<string | null>(null);
@@ -150,6 +151,7 @@ export function ConnectedPlatforms({ platforms: initialPlatforms }: ConnectedPla
         onOpenChange={setIsAddModalOpen}
         mode="add"
         platforms={platforms.filter(p => !p.connected)}
+        appId={appId}
         onComplete={handleAddPlatform}
       />
 
@@ -195,6 +197,7 @@ export function ConnectedPlatforms({ platforms: initialPlatforms }: ConnectedPla
           mode="edit"
           initialPlatform={platformToEdit}
           platforms={[platformToEdit]}
+          appId={appId}
           onComplete={handleChangeCredentials}
         />
       )}

@@ -17,6 +17,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { Platform } from "@/types/platform";
+import { useUpdatePlatformCredentialsMutation } from "@/features/agency-app/api/agency-app.queries";
 
 
 interface PlatformSetupDialogProps {
@@ -25,6 +26,7 @@ interface PlatformSetupDialogProps {
   mode: 'add' | 'edit';
   platforms: Platform[];
   initialPlatform?: Platform;
+  appId: string;
   onComplete: (id: string, appId: string) => void;
 }
 
@@ -34,27 +36,43 @@ export function PlatformSetupDialog({
   mode,
   platforms,
   initialPlatform,
+  appId,
   onComplete
 }: PlatformSetupDialogProps) {
   const [step, setStep] = useState(mode === 'edit' ? 2 : 1);
   const [selectedPlatformId, setSelectedPlatformId] = useState<string | null>(initialPlatform?.id || null);
-  const [appId, setAppId] = useState("");
+  const [clientId, setClientId] = useState("");
   const [appSecret, setAppSecret] = useState("");
   const [verifying, setVerifying] = useState(false);
   const { theme } = useTheme();
+
+  const updateCredentialsMutation = useUpdatePlatformCredentialsMutation();
 
   const selectedPlatform = platforms.find(p => p.id === selectedPlatformId);
 
   const handleNext = () => setStep(2);
 
   const handleVerify = () => {
-    if (!selectedPlatform) return;
+    if (!selectedPlatform || !clientId.trim() || !appSecret.trim()) return;
     setVerifying(true);
-    setTimeout(() => {
-      setVerifying(false);
-      onComplete(selectedPlatform.id, appId || "123456789012345"); // Mock App ID if empty
-      handleClose();
-    }, 1500);
+    updateCredentialsMutation.mutate(
+      {
+        appId,
+        platformId: selectedPlatform.id,
+        payload: { client_id: clientId, client_secret: appSecret }
+      },
+      {
+        onSuccess: (data) => {
+          setVerifying(false);
+          onComplete(selectedPlatform.id, clientId);
+          handleClose();
+        },
+        onError: (error) => {
+          setVerifying(false);
+          // Handle error, maybe show toast
+        }
+      }
+    );
   };
 
   const handleClose = () => {
@@ -63,7 +81,7 @@ export function PlatformSetupDialog({
     setTimeout(() => {
       setStep(mode === 'edit' ? 2 : 1);
       if (mode === 'add') setSelectedPlatformId(null);
-      setAppId("");
+      setClientId("");
       setAppSecret("");
     }, 300);
   };
@@ -124,7 +142,7 @@ export function PlatformSetupDialog({
                 <div className="space-y-1">
                   <Label className="text-xs">Redirect URI</Label>
                   <div className="flex gap-2">
-                    <Input value="https://palactix.com/oauth/meta" readOnly className="bg-muted text-xs font-mono" />
+                    <Input value={`https://palactix.com/channels/${selectedPlatform?.slug}/callback`} readOnly className="bg-muted text-xs font-mono" />
                     <Button variant="outline" size="icon" className="h-9 w-9"><Copy className="h-4 w-4" /></Button>
                   </div>
                 </div>
@@ -132,8 +150,9 @@ export function PlatformSetupDialog({
                   <Label className="text-xs">App ID / Client Key</Label>
                   <Input
                     placeholder={`Paste ${selectedPlatform.name} App ID`}
-                    value={appId}
-                    onChange={(e) => setAppId(e.target.value)}
+                    value={clientId}
+                    onChange={(e) => setClientId(e.target.value)}
+                    required
                   />
                 </div>
                 <div className="space-y-1">
@@ -143,6 +162,7 @@ export function PlatformSetupDialog({
                     placeholder={`Paste ${selectedPlatform.name} App Secret`}
                     value={appSecret}
                     onChange={(e) => setAppSecret(e.target.value)}
+                    required
                   />
                 </div>
               </div>
@@ -156,7 +176,7 @@ export function PlatformSetupDialog({
           ) : (
             <div className="flex justify-between w-full">
               {mode === 'add' && <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>}
-              <Button onClick={handleVerify} disabled={verifying} className="ml-auto">
+              <Button onClick={handleVerify} disabled={verifying || !clientId.trim() || !appSecret.trim()} className="ml-auto">
                 {verifying ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying...</> : "Verify & Connect"}
               </Button>
             </div>

@@ -61,7 +61,7 @@ export function AgencyAppDashboard() {
       
       {myApp.status === AppStatus.REVIEW && <ReviewStatusAlert />}
       
-      <ConnectedPlatforms platforms={platforms} />
+      <ConnectedPlatforms platforms={platforms} appId={myApp.id} />
       
       <AppDetails />
     </div>

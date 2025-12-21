@@ -49,6 +49,12 @@ export async function updateAppCredentials(appId: string, payload: UpdateCredent
   return res.data;
 }
 
+export async function updatePlatformCredentials(appId: string, platformId: string, payload: { client_id: string; client_secret: string }) {
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.UPDATE_APP_PLATFORMS_CREDENTIALS, { app: appId, platform: platformId });
+  const res = await api.post<{ message: string; channel: any }>(url, payload);
+  return res.data;
+}
+
 export async function activateApp(appId: string) {
   const url = buildApiUrl(AGENCY_APP_API_ROUTES.ACTIVATE_APP, { app: appId });
   const res = await api.post<ActivateAppResponse>(url);

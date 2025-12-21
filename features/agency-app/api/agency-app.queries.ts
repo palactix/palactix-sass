@@ -8,6 +8,7 @@ import {
   updateAppName,
   updateAppPlatforms,
   updateAppCredentials,
+  updatePlatformCredentials,
   activateApp,
   sendAppToReview,
 } from "./agency-app.api";
@@ -91,6 +92,16 @@ export function useUpdateCredentialsMutation() {
   const queryClient = useQueryClient();
   return useMutation<UpdateCredentialsResponse, Error, { appId: string; payload: UpdateCredentialsPayload }>({
     mutationFn: ({ appId, payload }) => updateAppCredentials(appId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
+    },
+  });
+}
+
+export function useUpdatePlatformCredentialsMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<{ message: string; channel: any }, Error, { appId: string; platformId: string; payload: { client_id: string; client_secret: string } }>({
+    mutationFn: ({ appId, platformId, payload }) => updatePlatformCredentials(appId, platformId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
