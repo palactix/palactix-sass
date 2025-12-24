@@ -11,8 +11,8 @@ interface ScheduleBarProps {
 
 export function ScheduleBar({ timezoneOptions, rightActions }: ScheduleBarProps) {
   const { control, setValue } = useFormContext();
-  const scheduledDate = useWatch({ control, name: "scheduledDate" }) as string;
-  const scheduledTime = useWatch({ control, name: "scheduledTime" }) as string;
+  const scheduledDate = useWatch({ control, name: "scheduled_date" }) as string;
+  const scheduledTime = useWatch({ control, name: "scheduled_time" }) as string;
   const timezone = useWatch({ control, name: "timezone" }) as string;
 
   return (
@@ -21,8 +21,8 @@ export function ScheduleBar({ timezoneOptions, rightActions }: ScheduleBarProps)
         <DateTimePicker
           dateValue={scheduledDate}
           timeValue={scheduledTime}
-          onDateChange={(value) => setValue("scheduledDate", value, { shouldDirty: true })}
-          onTimeChange={(value) => setValue("scheduledTime", value, { shouldDirty: true })}
+          onDateChange={(value) => setValue("scheduled_date", value, { shouldDirty: true })}
+          onTimeChange={(value) => setValue("scheduled_time", value, { shouldDirty: true })}
         />
         <Select value={timezone} onValueChange={(value) => setValue("timezone", value, { shouldDirty: true })}>
           <SelectTrigger className="h-9 w-44">

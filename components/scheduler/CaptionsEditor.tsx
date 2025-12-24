@@ -16,10 +16,10 @@ interface CaptionsEditorProps {
 
 export function CaptionsEditor({ accountsMap, channelMap }: CaptionsEditorProps) {
   const { control, setValue } = useFormContext();
-  const selectedAccountIds = useWatch({ control, name: "selectedAccounts" }) as string[];
-  const separateCaptions = useWatch({ control, name: "separateCaptions" }) as boolean;
-  const globalCaption = useWatch({ control, name: "globalCaption" }) as string;
-  const perAccountCaptions = useWatch({ control, name: "perAccountCaptions" }) as Record<string, string>;
+  const selectedAccountIds = useWatch({ control, name: "selected_accounts" }) as string[];
+  const separateCaptions = useWatch({ control, name: "separate_captions" }) as boolean;
+  const globalCaption = useWatch({ control, name: "global_caption" }) as string;
+  const perAccountCaptions = useWatch({ control, name: "per_account_captions" }) as Record<string, string>;
   const platformLogo = useChannelLogo();
 
   return (
@@ -40,7 +40,7 @@ export function CaptionsEditor({ accountsMap, channelMap }: CaptionsEditorProps)
             <Switch
               id="separate-captions"
               checked={separateCaptions}
-              onCheckedChange={(value) => setValue("separateCaptions", value, { shouldDirty: true })}
+              onCheckedChange={(value) => setValue("separate_captions", value, { shouldDirty: true })}
             />
           </div>
         </div>
@@ -51,7 +51,7 @@ export function CaptionsEditor({ accountsMap, channelMap }: CaptionsEditorProps)
           <Textarea
             placeholder="Write your caption here... Use #hashtags and @mentions"
             value={globalCaption}
-            onChange={(e) => setValue("globalCaption", e.target.value, { shouldDirty: true })}
+            onChange={(e) => setValue("global_caption", e.target.value, { shouldDirty: true })}
             className="min-h-32 resize-none"
           />
           <div className="flex items-center justify-between mt-2">
@@ -79,7 +79,7 @@ export function CaptionsEditor({ accountsMap, channelMap }: CaptionsEditorProps)
               if (!account) return null;
               const platform = channelMap.get(String(account.channel_id));
               const value = perAccountCaptions[accountId] ?? "";
-              const handleUseGlobal = () => setValue("perAccountCaptions", { ...perAccountCaptions, [accountId]: globalCaption }, { shouldDirty: true });
+              const handleUseGlobal = () => setValue("per_account_captions", { ...perAccountCaptions, [accountId]: globalCaption }, { shouldDirty: true });
 
               return (
                 <Card key={accountId} className="p-3 border-2">
@@ -114,7 +114,7 @@ export function CaptionsEditor({ accountsMap, channelMap }: CaptionsEditorProps)
                   <Textarea
                     placeholder={`Caption for ${account.username}...`}
                     value={value}
-                    onChange={(e) => setValue("perAccountCaptions", { ...perAccountCaptions, [accountId]: e.target.value }, { shouldDirty: true })}
+                    onChange={(e) => setValue("per_account_captions", { ...perAccountCaptions, [accountId]: e.target.value }, { shouldDirty: true })}
                     className="min-h-16 resize-none text-xs"
                   />
                 </Card>

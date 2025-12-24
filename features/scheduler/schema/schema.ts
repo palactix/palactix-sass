@@ -9,13 +9,13 @@ export const mediaItemSchema = z.object({
 
 export const schedulerFormSchema = z.object({
   media: z.array(mediaItemSchema).max(10),
-  selectedAccounts: z.array(z.string()),
-  perAccountCaptions: z.record(z.string(), z.string()),
-  separateCaptions: z.boolean(),
-  globalCaption: z.string(),
-  firstComment: z.string(),
-  scheduledDate: z.string(),
-  scheduledTime: z.string(),
+  selected_accounts: z.array(z.string()),
+  per_account_captions: z.record(z.string(), z.string()),
+  separate_captions: z.boolean(),
+  global_caption: z.string(),
+  first_comment: z.string(),
+  scheduled_date: z.string(),
+  scheduled_time: z.string(),
   timezone: z.string(),
 });
 

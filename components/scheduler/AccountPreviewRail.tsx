@@ -35,11 +35,11 @@ const getPlatformBadgeColor = (platform: string) => {
 
 export function AccountPreviewRail({ accountsMap, channelMap }: AccountPreviewRailProps) {
   const { control } = useFormContext();
-  const selectedAccountIds = useWatch({ control, name: "selectedAccounts" }) as string[];
+  const selectedAccountIds = useWatch({ control, name: "selected_accounts" }) as string[];
   const media = useWatch({ control, name: "media" }) as MediaItem[];
-  const globalCaption = useWatch({ control, name: "globalCaption" }) as string;
-  const perAccountCaptions = useWatch({ control, name: "perAccountCaptions" }) as Record<string, string>;
-  const separateCaptions = useWatch({ control, name: "separateCaptions" }) as boolean;
+  const globalCaption = useWatch({ control, name: "global_caption" }) as string;
+  const perAccountCaptions = useWatch({ control, name: "per_account_captions" }) as Record<string, string>;
+  const separateCaptions = useWatch({ control, name: "separate_captions" }) as boolean;
   const platformLogo = useChannelLogo();
 
   if (selectedAccountIds.length === 0) {
@@ -62,7 +62,6 @@ export function AccountPreviewRail({ accountsMap, channelMap }: AccountPreviewRa
           const captionForAccount = separateCaptions
             ? perAccountCaptions[accountId] ?? globalCaption
             : globalCaption;
-
           return (
             <TooltipProvider key={accountId}>
               <Tooltip delayDuration={100}>
@@ -90,7 +89,7 @@ export function AccountPreviewRail({ accountsMap, channelMap }: AccountPreviewRa
                           <Image src={account.avatar} alt={account.username} width={40} height={40} className="object-cover" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-semibold text-sm">{account.username}</p>
+                          <p className="font-semibold text-sm text-black dark:text-white">{account.username}</p>
                           <p className="text-xs text-muted-foreground">Just now</p>
                         </div>
                         <Badge className={`text-xs ${getPlatformBadgeColor(platform?.name || account.channel_slug || "")}`}>
@@ -117,10 +116,9 @@ export function AccountPreviewRail({ accountsMap, channelMap }: AccountPreviewRa
                     )}
 
                     <div className="p-4">
-                      <p className="text-sm whitespace-pre-wrap">
-                        <span className="font-semibold">{account.username}</span>{" "}
-                        {captionForAccount || "No caption yet..."}
-                      </p>
+                      <div className="text-sm whitespace-pre-wrap">
+                        <p className="text-black dark:text-white">{captionForAccount || "No caption yet..."}</p>
+                      </div>
                       {!captionForAccount && (
                         <p className="text-xs text-muted-foreground mt-2 italic">
                           Add a caption to see the full preview

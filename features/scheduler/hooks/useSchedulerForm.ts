@@ -9,13 +9,13 @@ export function useSchedulerForm(defaultTimezone: string, maxMedia = 10) {
     resolver: zodResolver(schedulerFormSchema),
     defaultValues: {
       media: [],
-      selectedAccounts: [],
-      perAccountCaptions: {},
-      separateCaptions: false,
-      globalCaption: "",
-      firstComment: "",
-      scheduledDate: "",
-      scheduledTime: "",
+      selected_accounts: [],
+      per_account_captions: {},
+      separate_captions: false,
+      global_caption: "",
+      first_comment: "",
+      scheduled_date: "",
+      scheduled_time: "",
       timezone: defaultTimezone,
     },
   });
@@ -57,14 +57,14 @@ export function useSchedulerForm(defaultTimezone: string, maxMedia = 10) {
 
   const updateAccounts = useCallback(
     (ids: string[]) => {
-      const prev = form.getValues("selectedAccounts");
+      const prev = form.getValues("selected_accounts");
       const removed = prev.filter((id) => !ids.includes(id));
       if (removed.length) {
-        const captions = { ...form.getValues("perAccountCaptions") };
+        const captions = { ...form.getValues("per_account_captions") };
         removed.forEach((id) => delete captions[id]);
-        form.setValue("perAccountCaptions", captions, { shouldDirty: true });
+        form.setValue("per_account_captions", captions, { shouldDirty: true });
       }
-      form.setValue("selectedAccounts", ids, { shouldDirty: true });
+      form.setValue("selected_accounts", ids, { shouldDirty: true });
     },
     [form]
   );

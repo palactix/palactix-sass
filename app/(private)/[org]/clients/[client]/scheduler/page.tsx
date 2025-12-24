@@ -23,7 +23,7 @@ export default function ClientSchedulerPage() {
   const defaultTimezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
   const { form, updateAccounts } = useSchedulerForm(defaultTimezone, MAX_MEDIA);
 
-  const selectedAccounts = useWatch({ control: form.control, name: "selectedAccounts" }) as string[];
+  const selectedAccounts = useWatch({ control: form.control, name: "selected_accounts" }) as string[];
 
   const { data: user } = useUser();
   const { data: linkedData, isLoading: linkedLoading } = useLinkedAccounts(15);
@@ -60,6 +60,17 @@ export default function ClientSchedulerPage() {
   const onSubmit = form.handleSubmit((values) => {
     // TODO: wire to API
     console.log("Schedule payload", values);
+    console.log("Expected format:", {
+      media: values.media,
+      selected_accounts: values.selected_accounts,
+      per_account_captions: values.per_account_captions,
+      separate_captions: values.separate_captions,
+      global_caption: values.global_caption,
+      first_comment: values.first_comment,
+      scheduled_date: values.scheduled_date,
+      scheduled_time: values.scheduled_time,
+      timezone: values.timezone,
+    });
   });
 
   return (
@@ -111,7 +122,7 @@ export default function ClientSchedulerPage() {
 
 function Header({ timezoneOptions }: { timezoneOptions: string[] }) {
   const { control } = useFormContext();
-  const selectedAccounts = useWatch({ control, name: "selectedAccounts" }) as string[];
+  const selectedAccounts = useWatch({ control, name: "selected_accounts" }) as string[];
 
   return (
     <div className="flex items-center justify-between">
@@ -145,7 +156,7 @@ function Header({ timezoneOptions }: { timezoneOptions: string[] }) {
 
 function FirstComment() {
   const { control, setValue } = useFormContext();
-  const firstComment = useWatch({ control, name: "firstComment" }) as string;
+  const firstComment = useWatch({ control, name: "first_comment" }) as string;
 
   return (
     <>
@@ -153,7 +164,7 @@ function FirstComment() {
         placeholder="Add a first comment that will be posted immediately after your post goes live..."
         className="min-h-24 resize-none"
         value={firstComment}
-        onChange={(e) => setValue("firstComment", e.target.value, { shouldDirty: true })}
+        onChange={(e) => setValue("first_comment", e.target.value, { shouldDirty: true })}
       />
       <div className="flex items-center justify-between mt-2">
         <p className="text-xs text-muted-foreground">{firstComment.length} characters</p>
