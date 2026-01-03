@@ -27,7 +27,7 @@ export function TagSelector() {
   const createTagMutation = useCreateTagMutation();
 
   const selectedTags = useMemo(() => {
-    return tags.filter((tag) => tagIds?.includes(tag.id));
+    return tags.filter((tag) => tagIds?.includes(String(tag.id)));
   }, [tags, tagIds]);
 
   const filteredTags = useMemo(() => {
@@ -52,22 +52,24 @@ export function TagSelector() {
 
   const handleSelect = (tagId: string) => {
     const currentTags = tagIds || [];
-    if (currentTags.includes(tagId)) {
+    const stringTagId = String(tagId);
+    if (currentTags.includes(stringTagId)) {
       setValue(
         "tag_ids",
-        currentTags.filter((id) => id !== tagId),
+        currentTags.filter((id) => id !== stringTagId),
         { shouldDirty: true }
       );
     } else {
-      setValue("tag_ids", [...currentTags, tagId], { shouldDirty: true });
+      setValue("tag_ids", [...currentTags, stringTagId], { shouldDirty: true });
     }
   };
 
   const handleRemove = (tagId: string) => {
     const currentTags = tagIds || [];
+    const stringTagId = String(tagId);
     setValue(
       "tag_ids",
-      currentTags.filter((id) => id !== tagId),
+      currentTags.filter((id) => id !== stringTagId),
       { shouldDirty: true }
     );
   };
@@ -202,18 +204,18 @@ export function TagSelector() {
                   }}
                   className={cn(
                     "w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground",
-                    tagIds?.includes(tag.id) && "bg-accent text-accent-foreground"
+                    tagIds?.includes(String(tag.id)) && "bg-accent text-accent-foreground"
                   )}
                 >
                   <div
                     className={cn(
                       "flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                      tagIds?.includes(tag.id)
+                      tagIds?.includes(String(tag.id))
                         ? "bg-primary text-primary-foreground"
                         : "opacity-50"
                     )}
                   >
-                    {tagIds?.includes(tag.id) && (
+                    {tagIds?.includes(String(tag.id)) && (
                       <Check className="h-3 w-3" />
                     )}
                   </div>
