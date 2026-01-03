@@ -78,3 +78,21 @@ export const MEDIA_ROUTES = {
   CANCEL_UPLOAD: "/organizations/{orgId}/media/upload/cancel",
   UPLOAD_STATUS: "/organizations/{orgId}/media/upload/{uploadId}/status",
 };
+
+export const TAGS_ROUTES = {
+  TAGS: "/organizations/{orgId}/tags",
+  CREATE_TAG: "/organizations/{orgId}/tags",
+  UPDATE_TAG: "/organizations/{orgId}/tags/{tagId}",
+  DELETE_TAG: "/organizations/{orgId}/tags/{tagId}",
+  ACTIVATE_TAG: "/organizations/{orgId}/tags/{tagId}/activate",
+  DEACTIVATE_TAG: "/organizations/{orgId}/tags/{tagId}/deactivate",
+};
+
+export const CAMPAIGN_ROUTES = {
+  CREATE_CAMPAIGN: "/organizations/{orgId}/campaigns",
+  CAMPAIGNS: "/organizations/{orgId}/campaigns",
+  UPDATE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}",
+  DELETE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}",
+  ACTIVATE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}/activate",
+  DEACTIVATE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}/deactivate",
+};

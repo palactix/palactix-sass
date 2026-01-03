@@ -17,6 +17,8 @@ export const schedulerFormSchema = z.object({
   scheduled_date: z.string(),
   scheduled_time: z.string(),
   timezone: z.string(),
+  campaign_id: z.string().optional(),
+  tag_ids: z.array(z.string()).optional(),
 });
 
 export type SchedulerFormValues = z.infer<typeof schedulerFormSchema>;

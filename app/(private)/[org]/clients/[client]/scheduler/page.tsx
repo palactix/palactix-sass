@@ -8,11 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { CaptionsEditor } from "@/components/scheduler/CaptionsEditor";
 import { ChooseAccounts } from "@/components/scheduler/ChooseAccounts";
 import { MediaUploader } from "@/components/scheduler/MediaUploader";
 import { ScheduleBar } from "@/components/scheduler/ScheduleBar";
 import { AccountPreviewRail } from "@/components/scheduler/AccountPreviewRail";
+import { CampaignSelector } from "@/components/scheduler/CampaignSelector";
+import { TagSelector } from "@/components/scheduler/TagSelector";
 import { useUser } from "@/features/auth/api/auth.queries";
 import { useLinkedAccounts } from "@/features/clients/api/clients.queries";
 import { useSchedulerForm } from "@/features/scheduler/hooks/useSchedulerForm";
@@ -125,31 +128,44 @@ function Header({ timezoneOptions }: { timezoneOptions: string[] }) {
   const selectedAccounts = useWatch({ control, name: "selected_accounts" }) as string[];
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold">Create Post</h1>
-        {selectedAccounts.length > 0 && (
-          <Badge variant="secondary" className="text-xs">
-            {selectedAccounts.length} {selectedAccounts.length === 1 ? "account" : "accounts"} selected
-          </Badge>
-        )}
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold">Create Post</h1>
+          {selectedAccounts.length > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              {selectedAccounts.length} {selectedAccounts.length === 1 ? "account" : "accounts"} selected
+            </Badge>
+          )}
+        </div>
+
+        <ScheduleBar
+          timezoneOptions={timezoneOptions}
+          rightActions={(
+            <>
+              <Button type="submit" form="schedulerForm" variant="outline" size="default" className="gap-2">
+                <Send className="h-4 w-4" />
+                Post Now
+              </Button>
+              <Button type="submit" form="schedulerForm" size="default" className="gap-2">
+                <Clock className="h-4 w-4" />
+                Schedule Post
+              </Button>
+            </>
+          )}
+        />
       </div>
 
-      <ScheduleBar
-        timezoneOptions={timezoneOptions}
-        rightActions={(
-          <>
-            <Button type="submit" form="schedulerForm" variant="outline" size="default" className="gap-2">
-              <Send className="h-4 w-4" />
-              Post Now
-            </Button>
-            <Button type="submit" form="schedulerForm" size="default" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Schedule Post
-            </Button>
-          </>
-        )}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1.5 block">Campaign</Label>
+          <CampaignSelector />
+        </div>
+        <div>
+          <Label className="text-xs text-muted-foreground mb-1.5 block">Tags</Label>
+          <TagSelector />
+        </div>
+      </div>
     </div>
   );
 }

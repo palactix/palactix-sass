@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/tooltip";
 import { MediaItem } from "@/types/scheduler";
 import { 
-  Image as ImageIcon,
   Upload, 
   X, 
   Pause, 

@@ -17,6 +17,8 @@ export function useSchedulerForm(defaultTimezone: string, maxMedia = 10) {
       scheduled_date: "",
       scheduled_time: "",
       timezone: defaultTimezone,
+      campaign_id: undefined,
+      tag_ids: [],
     },
   });
 
