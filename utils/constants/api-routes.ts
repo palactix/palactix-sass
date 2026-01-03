@@ -96,3 +96,11 @@ export const CAMPAIGN_ROUTES = {
   ACTIVATE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}/activate",
   DEACTIVATE_CAMPAIGN: "/organizations/{orgId}/campaigns/{campaignId}/deactivate",
 };
+
+
+export const SCHEDULER_ROUTES = {
+  SCHEDULE_POST: "/organizations/{orgId}/clients/{clientId}/publish",
+  SCHEDULED_POSTS: "/organizations/{orgId}/clients/{clientId}/scheduled-posts",
+  UPDATE_SCHEDULED_POST: "/organizations/{orgId}/clients/{clientId}/scheduled-posts/{postId}",
+  DELETE_SCHEDULED_POST: "/organizations/{orgId}/clients/{clientId}/scheduled-posts/{postId}"
+};

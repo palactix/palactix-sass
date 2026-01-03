@@ -19,13 +19,18 @@ import { TagSelector } from "@/components/scheduler/TagSelector";
 import { useUser } from "@/features/auth/api/auth.queries";
 import { useLinkedAccounts } from "@/features/clients/api/clients.queries";
 import { useSchedulerForm } from "@/features/scheduler/hooks/useSchedulerForm";
+import { useSchedulePostMutation } from "@/features/scheduler/api/scheduler.queries";
 import { Platform, LinkedAccount } from "@/types/platform";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 export default function ClientSchedulerPage() {
   const MAX_MEDIA = 10;
+  const params = useParams();
+  const clientId = params.client as string;
   const defaultTimezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
   const { form, updateAccounts } = useSchedulerForm(defaultTimezone, MAX_MEDIA);
+  const schedulePostMutation = useSchedulePostMutation();
 
   const selectedAccounts = useWatch({ control: form.control, name: "selected_accounts" }) as string[];
 
@@ -120,9 +125,8 @@ export default function ClientSchedulerPage() {
           payload.campaign_id = values.campaign_id;
         }
 
-        // TODO: wire to API
-        console.log("Transformed payload:", payload);
-        toast.success(`Post ${values.scheduled_date ? 'scheduled' : 'created'} successfully for ${channelPosts.length} account(s)`);
+        // Call API to schedule/publish post
+        schedulePostMutation.mutate({ clientId, payload });
 
       } catch (error) {
         console.error("Validation error:", error);
