@@ -1,12 +1,12 @@
-"use client";
-
 import { PricingSection } from "@/components/home/PricingSection";
-import { Container } from "@/components/Container";
-import { Button } from "@/components/ui/button";
-import { motion } from "motion/react";
-import { Check, Shield, Clock, Zap, ArrowRight } from "lucide-react";
 import { FAQs } from "@/components/shared/FAQs";
-import Link from "next/link";
+import { Container } from "@/components/Container";
+import {
+  AnimatedDiv,
+  AnimatedBenefitCard,
+  ChecklistItem,
+  CTAButton,
+} from "@/components/pricing/PricingClientSections";
 
 export default function PricingPage() {
   const faqs = [
@@ -54,19 +54,19 @@ export default function PricingPage() {
 
   const benefits = [
     {
-      icon: Shield,
+      iconName: "shield" as const,
       title: "Full Ownership & Control",
       description:
         "Use your own platform app credentials. No shared access, no temporary permissions, no platform risks.",
     },
     {
-      icon: Clock,
+      iconName: "clock" as const,
       title: "14-Day Free Evaluation",
       description:
         "Test all features with your real clients before committing. No credit card required to start.",
     },
     {
-      icon: Zap,
+      iconName: "zap" as const,
       title: "Scales With Your Agency",
       description:
         "From 5 clients to unlimited. Add team members and clients as you grow without platform limitations.",
@@ -76,12 +76,10 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6 relative">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+          <AnimatedDiv
+            animate="onMount"
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-block mb-4 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
@@ -89,7 +87,7 @@ export default function PricingPage() {
                 Simple, Transparent Pricing
               </span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-linear-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
               Pricing Built for Agencies
             </h1>
             <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
@@ -102,10 +100,10 @@ export default function PricingPage() {
               more clients and team members — without shared apps, temporary
               access, or hidden platform risks.
             </p>
-          </motion.div>
+          </AnimatedDiv>
         </Container>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-          <div className="absolute inset-0 bg-linear-to-b from-primary/5 via-background to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background" />
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full opacity-50" />
         </div>
       </section>
@@ -115,93 +113,66 @@ export default function PricingPage() {
         <Container>
           <div className="grid md:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
-              <motion.div
+              <AnimatedBenefitCard
                 key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="text-center"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">
-                  <benefit.icon className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
-              </motion.div>
+                iconName={benefit.iconName}
+                title={benefit.title}
+                description={benefit.description}
+                delay={index * 0.1}
+              />
             ))}
           </div>
         </Container>
       </section>
 
-     
-
       {/* Pricing Cards */}
       <PricingSection hideHeader={true} />
 
- {/* 14-Day Evaluation Section */}
+      {/* 14-Day Evaluation Section */}
       <section className="py-20 px-6">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center mb-20"
-          >
+          <AnimatedDiv className="max-w-3xl mx-auto text-center mb-20">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Start with a 14-Day Evaluation
             </h2>
             <p className="text-lg text-muted-foreground mb-6">
-              All new agencies start with a <strong>14-day evaluation period</strong>.
-              Test every feature with your real clients before making a commitment.
+              All new agencies start with a{" "}
+              <strong>14-day evaluation period</strong>. Test every feature with
+              your real clients before making a commitment.
             </p>
             <div className="bg-card border rounded-xl p-8 text-left">
               <h3 className="text-xl font-semibold mb-4">
                 Your evaluation begins once you:
               </h3>
               <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Create your Palactix account</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Add your own social platform app credentials</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span>Connect your first client account</span>
-                </li>
+                <ChecklistItem>Create your Palactix account</ChecklistItem>
+                <ChecklistItem>
+                  Add your own social platform app credentials
+                </ChecklistItem>
+                <ChecklistItem>Connect your first client account</ChecklistItem>
               </ul>
               <p className="mt-6 text-muted-foreground font-medium">
                 No payment is required during the evaluation period.
               </p>
             </div>
-          </motion.div>
+          </AnimatedDiv>
         </Container>
       </section>
-      
+
       {/* After Evaluation Section */}
       <section className="py-20 px-6 bg-muted/30">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
-          >
+          <AnimatedDiv className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               After the Evaluation
             </h2>
             <p className="text-lg text-muted-foreground">
               Once the evaluation period ends, continued access requires an
               active paid subscription based on the plan that best fits your
-              agency&apos;s size and needs. Choose the plan that matches where you
-              are today, and scale up as your agency grows.
+              agency&apos;s size and needs. Choose the plan that matches where
+              you are today, and scale up as your agency grows.
             </p>
-          </motion.div>
+          </AnimatedDiv>
         </Container>
       </section>
 
@@ -211,13 +182,7 @@ export default function PricingPage() {
       {/* Final CTA Section */}
       <section className="py-20 px-6">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
-          >
+          <AnimatedDiv className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Ready to Get Started?
             </h2>
@@ -225,17 +190,12 @@ export default function PricingPage() {
               Start your 14-day evaluation today. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/auth/signup">
-                  Start Free Evaluation
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Talk to Sales</Link>
-              </Button>
+              <CTAButton href="/auth/signup">Start Free Evaluation</CTAButton>
+              <CTAButton href="/contact" variant="outline">
+                Talk to Sales
+              </CTAButton>
             </div>
-          </motion.div>
+          </AnimatedDiv>
         </Container>
       </section>
     </div>
