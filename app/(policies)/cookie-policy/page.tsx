@@ -1,6 +1,13 @@
 import { StaticPageShell, useStaticContent } from "@/features/static-content";
 import { STATIC_PAGES_CONTENT_URLS } from "@/utils/static-content/routes";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cookie Policy - Palactix",
+  description:
+    "View the Cookie Policy for Palactix, outlining how we use cookies and manage your data."
+};
 const COOKIE_POLICY_URL = STATIC_PAGES_CONTENT_URLS.COOKIE_POLICY;
 
 export default function CookiePolicyPage() {

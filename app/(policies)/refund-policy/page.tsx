@@ -1,5 +1,12 @@
 import { StaticPageShell, useStaticContent } from "@/features/static-content";
 import { STATIC_PAGES_CONTENT_URLS } from "@/utils/static-content/routes";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Refund Policy - Palactix",
+  description:
+    "View the Refund Policy for Palactix, outlining refund procedures and conditions."
+};
 
 const REFUND_POLICY_URL = STATIC_PAGES_CONTENT_URLS.REFUND_POLICY
 export const revalidate = 86400;

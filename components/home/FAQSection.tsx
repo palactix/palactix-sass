@@ -1,12 +1,3 @@
-"use client";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { Container } from "../Container";
 import { FAQs } from "../shared/FAQs";
 
 export function FAQSection() {

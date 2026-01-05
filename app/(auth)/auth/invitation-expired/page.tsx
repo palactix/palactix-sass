@@ -2,6 +2,13 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, Mail } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Invitation Expired - Palactix",
+  description:
+    "Your invitation link has expired or is no longer valid."
+};
 
 export default function InvitationExpirePage() {
   return (

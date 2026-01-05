@@ -1,6 +1,13 @@
 import Link from "next/link";
 import ForgotPasswordForm from "@/features/auth/components/ForgotPasswordForm";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Forgot Password - Palactix",
+  description:
+    "Reset your Palactix agency account password."
+};
 
 export default function ForgotPasswordPage() {
   return (

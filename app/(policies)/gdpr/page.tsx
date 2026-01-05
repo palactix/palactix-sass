@@ -1,6 +1,12 @@
 import { StaticPageShell, useStaticContent } from "@/features/static-content";
 import { STATIC_PAGES_CONTENT_URLS } from "@/utils/static-content/routes";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "GDPR - Palactix",
+  description:
+    "View the GDPR Policy for Palactix, outlining data protection and privacy practices."
+};
 const GDPR_URL = STATIC_PAGES_CONTENT_URLS.GDPR;
 
 export default function GdprPage() {

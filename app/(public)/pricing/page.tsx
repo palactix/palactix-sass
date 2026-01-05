@@ -8,6 +8,14 @@ import {
   CTAButton,
 } from "@/components/pricing/PricingClientSections";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pricing - Palactix",
+  description:
+    "Transparent pricing for Palactix. Start with a 14-day evaluation and scale as your agency grows",
+};
+
 export default function PricingPage() {
   const faqs = [
     {

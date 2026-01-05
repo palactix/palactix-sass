@@ -2,6 +2,13 @@ import Link from "next/link";
 import { Suspense } from "react";
 import LoginForm from "@/features/auth/components/LoginForm";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login - Palactix",
+  description:
+    "Login to your Palactix agency account."
+};
 
 export default function LoginPage() {
   return (

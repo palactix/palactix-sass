@@ -1,7 +1,13 @@
 import Link from "next/link";
 import SignupForm from "@/features/auth/components/SignupForm";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Signup - Palactix",
+  description:
+    "Create your Palactix agency account."
+};
 export default function SignupPage() {
   return (
     <AuthCard

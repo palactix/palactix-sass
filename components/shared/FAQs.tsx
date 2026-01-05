@@ -1,9 +1,19 @@
 import { Container } from "../Container";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import Script from "next/script";
+import { generateFAQSchema } from "@/lib/seo/faqSchema";
 
 export const FAQs = ({ faqs }: { faqs: Array<{ question: string; answer: string }> }) => {
   return (
     <section className="py-20">
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateFAQSchema(faqs)),
+        }}
+      />
       <Container>
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
