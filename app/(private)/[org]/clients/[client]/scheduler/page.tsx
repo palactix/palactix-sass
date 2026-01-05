@@ -21,6 +21,7 @@ import { useLinkedAccounts } from "@/features/clients/api/clients.queries";
 import { useSchedulerForm } from "@/features/scheduler/hooks/useSchedulerForm";
 import { useSchedulePostMutation } from "@/features/scheduler/api/scheduler.queries";
 import { Platform, LinkedAccount } from "@/types/platform";
+import { ChannelPost, SchedulePostPayload } from "@/features/scheduler/types";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 
@@ -65,7 +66,7 @@ export default function ClientSchedulerPage() {
         const mediaIds = values.media?.map(m => String(m.id)).filter(Boolean) || [];
 
         // Build channel_posts array
-        const channelPosts = values.selected_accounts.map(accountId => {
+        const channelPosts: ChannelPost[] = values.selected_accounts.map(accountId => {
           // Get caption for this account (global or per-account)
           const caption = values.separate_captions
             ? values.per_account_captions?.[accountId]
@@ -80,8 +81,7 @@ export default function ClientSchedulerPage() {
           }
 
           // Build post object
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const post: Record<string, any> = {
+          const post: ChannelPost = {
             user_channel_account_id: accountId,
           };
 
@@ -116,7 +116,7 @@ export default function ClientSchedulerPage() {
 
         // Build final payload
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const payload: Record<string, any> = {
+        const payload: SchedulePostPayload = {
           channel_posts: channelPosts,
         };
 
