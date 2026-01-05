@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "../Container";
 
-export function PricingSection() {
+export function PricingSection({ hideHeader = false }: { hideHeader?: boolean }) {
   const plans = [
     {
       name: "Starter",
@@ -60,20 +60,22 @@ export function PricingSection() {
   return (
     <section id="pricing" className="py-20 px-6 scroll-mt-20">
       <Container className="mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Simple, transparent pricing
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            No shared apps. No temporary access. Full ownership from day one.
-          </p>
-        </motion.div>
+        {!hideHeader && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              No shared apps. No temporary access. Full ownership from day one.
+            </p>
+          </motion.div>
+        )}
 
         <div className="grid md:grid-cols-3 gap-8">
           {plans.map((plan, index) => (
@@ -142,7 +144,7 @@ export function PricingSection() {
         </div>
         <div className="text-center mt-8">
           <p className="text-sm text-muted-foreground">
-            Prices shown exclude platform API costs, if applicable.
+            Prices shown exclude social platform API usage costs, if applicable.
           </p>
         </div>
 

@@ -36,12 +36,12 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-6">
-          <a
-            href="#pricing"
+          <Link
+            href="/pricing"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Pricing
-          </a>
+          </Link>
           <Link
             href="/auth/login"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
