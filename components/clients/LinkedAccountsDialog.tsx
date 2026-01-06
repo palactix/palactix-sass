@@ -147,6 +147,8 @@ export function LinkedAccountsDialog({
                             <Image 
                               src={getChannelIcon(channel.icon)} 
                               alt={channel.name}
+                              width={50}
+                              height={50}
                               className="h-7 w-7 object-contain"
                             />
                           </button>

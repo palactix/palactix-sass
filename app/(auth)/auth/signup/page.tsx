@@ -12,7 +12,7 @@ export default function SignupPage() {
   return (
     <AuthCard
       title="Create your agency account"
-      subtitle="Start your 14-day free trial — no credit card required"
+      subtitle="Start your 14-day evaluation — no credit card required. Evaluation begins once your first client account is connected."
     >
       <SignupForm />
       <p className="text-xs text-center text-muted-foreground mt-6">

@@ -70,7 +70,7 @@ export default function SignupForm() {
       </div>
 
       <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white" size="lg" disabled={isPending}>
-        {isPending ? "Creating account..." : "Start Free Trial"}
+        {isPending ? "Creating account..." : "Start 14-Day Evaluation"}
       </Button>
     </form>
   );

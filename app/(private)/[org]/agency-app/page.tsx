@@ -5,8 +5,10 @@ import { AgencyAppDashboard } from "@/components/agency-app/dashboard"
 import { useMyAgencyApp } from "@/features/agency-app/api/agency-app.queries"
 import { Loader2 } from "lucide-react"
 import { AppStatus } from "@/features/agency-app/types/agency-app.types"
+import { withPermission } from "@/components/shared/withPermission"
+import { PERMISSIONS } from "@/utils/constants/permissions"
 
-export default function AgencyAppPage() {
+export function AgencyAppPage() {
   const { data: myApp, isLoading, isError, error, refetch } = useMyAgencyApp()
 
   if (isLoading) {
@@ -41,3 +43,6 @@ export default function AgencyAppPage() {
   return <AgencyAppWizard onComplete={() => {
   }} />
 }
+
+
+export default withPermission(AgencyAppPage, PERMISSIONS.DEVELOPER_APP.MANAGE);
