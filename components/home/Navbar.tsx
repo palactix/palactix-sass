@@ -52,7 +52,7 @@ export function Navbar() {
             className="bg-primary hover:bg-primary/90 text-white"
             asChild
           >
-            <Link href="/auth/signup">Start 14-day Agency Pilot</Link>
+          <Link href="/auth/signup">Start 14-day Evaluation</Link>
           </Button>
         </div>
       </Container>

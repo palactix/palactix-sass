@@ -69,7 +69,7 @@ export function HeroSection() {
                 asChild
               >
                 <Link href={"/auth/signup"} className="flex items-center gap-2">
-                    Start Agency Pilot
+                    Start 14-Day Evaluation
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>

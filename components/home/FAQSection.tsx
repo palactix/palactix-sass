@@ -19,7 +19,7 @@ export function FAQSection() {
     {
       question: "Do I have to pay during the 14-day pilot?",
       answer:
-        "No credit card required. You get 5 days using our keys to test the platform, then you'll need to add your own keys to continue the trial. The paid plan only starts after your 14-day pilot period ends.",
+        "No. No credit card is required to start your 14-day evaluation. The evaluation begins once you connect your first client account using your own platform app credentials. You’ll have full access during this period, and you’ll only be asked to choose a paid plan after the evaluation ends.",
     },
     {
       question: "What if I need help with app setup?",
