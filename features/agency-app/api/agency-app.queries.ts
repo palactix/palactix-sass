@@ -11,6 +11,8 @@ import {
   updatePlatformCredentials,
   activateApp,
   sendAppToReview,
+  verifyPlatformCredentials,
+  removePlatformFromApp
 } from "./agency-app.api";
 import type {
   CreateAppPayload,
@@ -25,6 +27,11 @@ import type {
   ReviewAppResponse,
   ChannelListResponse,
   MyAgencyAppResponse,
+  VerifyCredentialsResponse,
+  VerifyCredentialsPayload,
+  Channel,
+  RemovePlatformPayload,
+  RemovePlatformResponse,
 } from "../types/agency-app.types";
 import { useOrganizationStore } from "@/features/organization/stores/organization.store";
 
@@ -100,11 +107,18 @@ export function useUpdateCredentialsMutation() {
 
 export function useUpdatePlatformCredentialsMutation() {
   const queryClient = useQueryClient();
-  return useMutation<{ message: string; channel: any }, Error, { appId: string; platformId: string; payload: { client_id: string; client_secret: string } }>({
+  return useMutation<{ message: string; channel: Channel }, Error, { appId: string; platformId: string; payload: { client_id: string; client_secret: string } }>({
     mutationFn: ({ appId, platformId, payload }) => updatePlatformCredentials(appId, platformId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },
+  });
+}
+
+
+export function useVerifyPlatformCredentialsMutation() {
+  return useMutation<VerifyCredentialsResponse, Error, VerifyCredentialsPayload>({
+    mutationFn: (payload) => verifyPlatformCredentials(payload),
   });
 }
 
@@ -122,6 +136,16 @@ export function useSendAppToReviewMutation() {
   const queryClient = useQueryClient();
   return useMutation<ReviewAppResponse, Error, string>({
     mutationFn: sendAppToReview,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
+    },
+  });
+}
+
+export function useRemovePlatformMutation() {
+  const queryClient = useQueryClient();
+  return useMutation<RemovePlatformResponse, Error, RemovePlatformPayload>({
+    mutationFn: ({ appId, platformId }) => removePlatformFromApp(appId, platformId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: agencyAppKeys.myApp() });
     },

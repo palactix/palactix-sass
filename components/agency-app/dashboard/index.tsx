@@ -28,17 +28,8 @@ export function AgencyAppDashboard() {
         connected: isConnected,
         lastUsed: isConnected ? "Active" : undefined,
         appId: appChannel?.client_id || undefined,
+        is_verified: appChannel?.is_verified || false,
       }
-      // return {
-      //   id: channel.slug,
-      //   channelId: channel.id,
-      //   name: channel.name,
-      //   icon: channel.icon,
-      //   color: "",
-      //   connected: isConnected,
-      //   lastUsed: isConnected ? "Active" : undefined,
-      //   appId: appChannel?.client_id || undefined,
-      // };
     });
   }, [myApp, allChannels]);
 

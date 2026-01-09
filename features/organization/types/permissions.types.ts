@@ -1,3 +1,4 @@
+import { OnboardingState } from "@/components/dashboard/agency-onbaord/types";
 import { Permission } from "@/utils/constants/permissions";
 
 export interface Role {
@@ -47,4 +48,5 @@ export interface OrganizationPermissions {
   limits: Limits;
   features: Features;
   plan: Plan;
+  onboard: OnboardingState;
 }

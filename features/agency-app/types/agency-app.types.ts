@@ -24,6 +24,7 @@ export interface AgencyAppChannel {
   channel_id: string;
   client_id: string | null;
   client_secret: string | null;
+  is_verified: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -92,3 +93,22 @@ export type ChannelListResponse = Channel[];
 
 // User requested to remove .data wrapper
 export type MyAgencyAppResponse = AgencyApp;
+
+export type VerifyCredentialsResponse = {
+  message: string;
+  valid: boolean;
+};
+
+export type VerifyCredentialsPayload = {
+  platform: string;
+  client_id: string;
+  client_secret: string;
+};
+
+export type RemovePlatformPayload = {
+  platformId: string;
+  appId: string;
+}
+export type RemovePlatformResponse = {
+  message: string;
+};

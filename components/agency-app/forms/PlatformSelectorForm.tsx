@@ -13,6 +13,7 @@ import { useTheme } from "next-themes";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface PlatformSelectorFormProps {
   defaultValues?: Partial<PlatformSelectorSchema>;
@@ -73,10 +74,13 @@ export function PlatformSelectorForm({ defaultValues, onSubmit, isPending, prevS
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, function(){
+      toast.error("Please select at least one platform.");
+    })} className="space-y-6">
       <div className="grid gap-4">
         {channels.map((platform) => {
-          const isSelected = selectedIds?.includes(platform.id) ?? false;
+          const platformId = platform.id.toString();
+          const isSelected = selectedIds?.includes(platformId) ?? false;
           const iconUrl = getPlatformIcon(platform.icon, theme);
           
           return (
@@ -86,7 +90,7 @@ export function PlatformSelectorForm({ defaultValues, onSubmit, isPending, prevS
                 "flex items-center space-x-4 border p-4 rounded-lg transition-colors cursor-pointer",
                 isSelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"
               )}
-              onClick={() => togglePlatform(platform.id)}
+              onClick={() => togglePlatform(platformId)}
             >
               <div className={cn(
                 "flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border  ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",

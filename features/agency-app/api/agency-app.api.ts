@@ -14,6 +14,9 @@ import type {
   ReviewAppResponse,
   ChannelListResponse,
   MyAgencyAppResponse,
+  VerifyCredentialsResponse,
+  VerifyCredentialsPayload,
+  Channel,
 } from "../types/agency-app.types";
 
 export async function getChannels() {
@@ -51,7 +54,13 @@ export async function updateAppCredentials(appId: string, payload: UpdateCredent
 
 export async function updatePlatformCredentials(appId: string, platformId: string, payload: { client_id: string; client_secret: string }) {
   const url = buildApiUrl(AGENCY_APP_API_ROUTES.UPDATE_APP_PLATFORMS_CREDENTIALS, { app: appId, platform: platformId });
-  const res = await api.post<{ message: string; channel: any }>(url, payload);
+  const res = await api.post<{ message: string; channel: Channel }>(url, payload);
+  return res.data;
+}
+
+export async function verifyPlatformCredentials(payload: VerifyCredentialsPayload) {
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.VERIFY_APP_PLATFORM_CREDENTIALS, {});
+  const res = await api.post<VerifyCredentialsResponse>(url, payload);
   return res.data;
 }
 
@@ -64,5 +73,11 @@ export async function activateApp(appId: string) {
 export async function sendAppToReview(appId: string) {
   const url = buildApiUrl(AGENCY_APP_API_ROUTES.SEND_TO_REVIEW, { app: appId });
   const res = await api.post<ReviewAppResponse>(url);
+  return res.data;
+}
+
+export async function removePlatformFromApp(appId: string, platformId: string) {
+  const url = buildApiUrl(AGENCY_APP_API_ROUTES.DELETE_APP_PLATFORM, { app: appId, platform: platformId });
+  const res = await api.delete<UpdateCredentialsResponse>(url);
   return res.data;
 }

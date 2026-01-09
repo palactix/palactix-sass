@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useCreateAppMutation, useMyAgencyApp } from "@/features/agency-app/api/agency-app.queries";
+import { useCreateAppMutation, useMyAgencyApp, useUpdateAppNameMutation } from "@/features/agency-app/api/agency-app.queries";
 import { useWizardStore } from "@/features/agency-app/stores/wizard.store";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ export function Step1BasicInfo() {
   const { setAppId, setStep } = useWizardStore();
   const { data: myApp } = useMyAgencyApp();
   const { mutate, isPending } = useCreateAppMutation();
+  const updateAppNameMutation = useUpdateAppNameMutation();
 
   
   const [appName, setAppName] = useState("");
@@ -32,8 +33,18 @@ export function Step1BasicInfo() {
 
   const handleStep1Submit = () => {
     if (myApp?.id) {
-        setAppId(myApp.id);
-        setStep(2);
+        updateAppNameMutation.mutate(
+          { appId: myApp.id, payload: { name: appName } },
+          {
+            onSuccess: (data) => {
+              setAppId(myApp.id);
+              setStep(2);
+            },
+            onError: (error) => {
+              toast.error(error.message || "Failed to update app name");
+            }
+          }
+        );
         return;
     }
 
@@ -76,8 +87,8 @@ export function Step1BasicInfo() {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="ghost" disabled>Back</Button>
-          <Button onClick={handleStep1Submit} disabled={!appName.trim() || isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button onClick={handleStep1Submit} disabled={!appName.trim() || isPending || updateAppNameMutation.isPending}>
+            {(isPending || updateAppNameMutation.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Next Step <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </CardFooter>

@@ -18,6 +18,7 @@ import Image from "next/image";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { Platform } from "@/types/platform";
 import { useUpdatePlatformCredentialsMutation } from "@/features/agency-app/api/agency-app.queries";
+import { toast } from "sonner";
 
 
 interface PlatformSetupDialogProps {
@@ -86,6 +87,15 @@ export function PlatformSetupDialog({
     }, 300);
   };
 
+  function handleCopy() {
+    const redirectUri = `https://api.palactix.com/channels/${selectedPlatform?.slug}/callback`;
+    navigator.clipboard.writeText(redirectUri).then(() => {
+      toast.success("Redirect URI copied to clipboard");
+    }).catch(() => {
+      toast.error("Failed to copy Redirect URI");
+    });
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -142,8 +152,8 @@ export function PlatformSetupDialog({
                 <div className="space-y-1">
                   <Label className="text-xs">Redirect URI</Label>
                   <div className="flex gap-2">
-                    <Input value={`https://palactix.com/channels/${selectedPlatform?.slug}/callback`} readOnly className="bg-muted text-xs font-mono" />
-                    <Button variant="outline" size="icon" className="h-9 w-9"><Copy className="h-4 w-4" /></Button>
+                    <Input value={`https://api.palactix.com/channels/${selectedPlatform?.slug}/callback`} readOnly className="bg-muted text-xs font-mono" />
+                    <Button onClick={handleCopy} variant="outline" size="icon" className="h-9 w-9"><Copy className="h-4 w-4" /></Button>
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -151,6 +161,8 @@ export function PlatformSetupDialog({
                   <Input
                     placeholder={`Paste ${selectedPlatform.name} App ID`}
                     value={clientId}
+                    name={`app_client_id_${selectedPlatform?.slug}`}
+                    autoComplete="new-password"
                     onChange={(e) => setClientId(e.target.value)}
                     required
                   />
@@ -161,6 +173,8 @@ export function PlatformSetupDialog({
                     type="password"
                     placeholder={`Paste ${selectedPlatform.name} App Secret`}
                     value={appSecret}
+                    name={`app_client_secret_${selectedPlatform?.slug}`}
+                    autoComplete="new-password"
                     onChange={(e) => setAppSecret(e.target.value)}
                     required
                   />

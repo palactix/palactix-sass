@@ -24,6 +24,8 @@ import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { PlatformSetupDialog } from "./PlatformSetupDialog";
 import { Platform } from "@/types/platform";
 import { ConnectedPlatform } from "./types";
+import { useRemovePlatformMutation } from "@/features/agency-app/api/agency-app.queries";
+import { useChannelConnect } from "@/hooks/use-channel-connect";
 
 interface ConnectedPlatformsProps {
   platforms: ConnectedPlatform[];
@@ -37,6 +39,10 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
   const [platformToEdit, setPlatformToEdit] = useState<Platform | null>(null);
   const { theme } = useTheme();
+  const removePlatformMutation = useRemovePlatformMutation();
+  const { connectChannel, connectingChannel } = useChannelConnect({
+      redirectPath: `dashboard`,
+    });
 
   useEffect(() => {
     setPlatforms(initialPlatforms);
@@ -45,20 +51,24 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
   const activePlatforms = platforms.filter(p => p.connected);
 
   const handleRemovePlatform = (id: string) => {
-    // TODO: Implement API call
-    setPlatforms(prev => prev.map(p => p.id === id ? { ...p, connected: false } : p));
-    toast.success("Platform removed");
+    removePlatformMutation.mutate(
+      { platformId: id, appId },
+      {
+        onSuccess: () => {
+          setPlatforms(prev => prev.map(p => p.id === id ? { ...p, connected: false } : p));
+          toast.success("Platform removed");
+        }
+      }
+    );
   };
 
   const handleAddPlatform = (id: string, appId: string) => {
-    // TODO: Implement API call
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, connected: true, appId, lastUsed: "Just now" } : p));
     setIsAddModalOpen(false);
     toast.success(`${platforms.find(p => p.id === id)?.name} connected successfully`);
   };
 
   const handleChangeCredentials = (id: string, appId: string) => {
-    // TODO: Implement API call
     setPlatforms(prev => prev.map(p => p.id === id ? { ...p, appId } : p));
     setEditingPlatformId(null);
     setPlatformToEdit(null);
@@ -72,6 +82,8 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
     setPlatformToEdit(platform);
     setIsWarningModalOpen(true);
   };
+
+
 
   return (
     <div className="space-y-4">
@@ -100,7 +112,12 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <h4 className="font-bold text-lg">{platform.name}</h4>
-                    <Badge variant="secondary" className="text-green-600 bg-green-50 hover:bg-green-50">Connected</Badge>
+                    {
+                      platform.is_verified && <Badge variant="secondary" className="text-green-600 bg-green-50 hover:bg-green-50">Verified</Badge>
+                    } 
+                    {
+                      !platform.is_verified && <Badge variant="secondary" className="text-yellow-600 bg-yellow-50 hover:bg-yellow-50">Unverified</Badge>
+                    }
                   </div>
                   <div className="text-sm text-muted-foreground flex items-center gap-2">
                     <span>Last used {platform.lastUsed}</span>
@@ -113,6 +130,14 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
                 <Button variant="outline" size="sm" className="w-full" onClick={() => initiateChangeCredentials(platform)}>
                   Change Credentials
                 </Button>
+                {
+                  !platform.is_verified && (
+                    <Button variant="warning" size="sm" className="w-full" onClick={() => connectChannel(platform)}>
+                      Verify Now
+                    </Button>
+                  )
+                }
+                
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

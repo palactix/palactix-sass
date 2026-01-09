@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useUpdateCredentialsMutation, useMyAgencyApp, useChannels } from "@/features/agency-app/api/agency-app.queries";
+import { useUpdateCredentialsMutation, useMyAgencyApp, useChannels, useVerifyPlatformCredentialsMutation } from "@/features/agency-app/api/agency-app.queries";
 import { useWizardStore } from "@/features/agency-app/stores/wizard.store";
 import { toast } from "sonner";
 import { getPlatformIcon } from "@/lib/utils/platform-icons";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import { Channel } from "@/features/agency-app/types/agency-app.types";
 
 
 
@@ -23,6 +24,8 @@ export function Step3Credentials() {
   const { data: myApp } = useMyAgencyApp();
   const { data: allChannels } = useChannels();
   const { mutate, isPending } = useUpdateCredentialsMutation();
+  const { mutate: verifyMutate, isPending: isVerifying } = useVerifyPlatformCredentialsMutation();
+  
   const { theme } = useTheme();
   
   const [credentials, setCredentials] = useState<Record<string, Record<string, string>>>({});
@@ -55,15 +58,30 @@ export function Step3Credentials() {
         [field]: value
       }
     }))
+    setVerified(prev => prev.filter(id => id !== platformId));
   }
 
-  const handleVerify = (platformId: string) => {
-    setVerifying(platformId)
-    // Mock verification for now
-    setTimeout(() => {
-      setVerifying(null)
-      setVerified(prev => [...prev, platformId])
-    }, 1500)
+  const handleVerify = (platform: Channel) => {
+    setVerifying(platform.id.toString());
+    verifyMutate({
+      platform: platform.slug,
+      client_id: credentials[platform.id]?.client_id || "",
+      client_secret: credentials[platform.id]?.client_secret || ""
+    }, {
+      onSuccess: (data) => {
+        setVerifying(null)
+        if (data.valid) {
+          setVerified(prev => [...prev, platform.id.toString()])
+          toast.success("Credentials verified")
+        } else {
+          toast.error("Invalid credentials, please check and try again.")
+        }
+      },
+      onError: (error) => {
+        setVerifying(null)
+        toast.error(error.message || "Failed to verify credentials")
+      }
+    });
   }
 
   const prevStep = () => setStep(2);
@@ -87,6 +105,15 @@ export function Step3Credentials() {
       },
       onError: (err) => toast.error(err.message)
     })
+  }
+
+  const handleCopy = (platformSlug: string) => () => {
+    const redirectUri = `https://api.palactix.com/channels/${platformSlug}/callback`;
+    navigator.clipboard.writeText(redirectUri).then(() => {
+      toast.success("Redirect URI copied to clipboard");
+    }).catch(() => {
+      toast.error("Failed to copy Redirect URI");
+    });
   }
 
 
@@ -154,8 +181,8 @@ export function Step3Credentials() {
                       <div className="grid gap-2">
                           <Label>Redirect URI (Copy this)</Label>
                           <div className="flex gap-2">
-                              <Input value="https://palactix.com/oauth/meta" readOnly className="bg-muted" />
-                              <Button variant="outline" size="icon"><Copy className="h-4 w-4" /></Button>
+                              <Input value={`https://api.palactix.com/channels/${channel.slug}/callback`} readOnly className="bg-muted" />
+                              <Button variant="outline" size="icon" onClick={handleCopy(channel.slug)}><Copy className="h-4 w-4" /></Button>
                           </div>
                       </div>
                       <div className="grid gap-2">
@@ -163,6 +190,8 @@ export function Step3Credentials() {
                           <Input 
                             placeholder={`Paste ${channel.name} App ID`} 
                             value={credentials[channelIdStr]?.client_id || ""}
+                            name={`app_client_id_${channelIdStr}`}
+                            autoComplete="new-password"
                             onChange={(e) => handleCredentialChange(channelIdStr, "client_id", e.target.value)}
                           />
                       </div>
@@ -171,6 +200,8 @@ export function Step3Credentials() {
                           <Input 
                             type="password" 
                             placeholder={`Paste ${channel.name} App Secret`} 
+                            name={`app_client_secret_${channelIdStr}`}
+                            autoComplete="new-password"
                             value={credentials[channelIdStr]?.client_secret || ""}
                             onChange={(e) => handleCredentialChange(channelIdStr, "client_secret", e.target.value)}
                           />
@@ -179,16 +210,16 @@ export function Step3Credentials() {
 
                     <div className="flex justify-end pt-2">
                       <Button 
-                          onClick={() => handleVerify(channelIdStr)} 
+                          onClick={() => handleVerify(channel)} 
                           disabled={isVerified || verifying === channelIdStr}
                           className={isVerified ? "bg-green-600 hover:bg-green-700" : ""}
                       >
                           {verifying === channelIdStr ? (
-                              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying...</>
+                              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validating...</>
                           ) : isVerified ? (
                               <><Check className="mr-2 h-4 w-4" /> Verified</>
                           ) : (
-                              "Verify Credentials"
+                              "Validate Credentials"
                           )}
                       </Button>
                     </div>

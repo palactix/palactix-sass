@@ -1,6 +1,11 @@
 import { ChannelIcon } from "@/features/agency-app/types/agency-app.types";
 
 export function getPlatformIcon(icon: ChannelIcon, theme: string | undefined): string {
+  if (theme === "system") {
+    const systemIsDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    theme = systemIsDark ? "dark" : "light";
+  }
+
   const isDark = theme === "dark";
 
   if (isDark) {

@@ -16,7 +16,7 @@ export type AppDetailsProps = {
   platforms: Platform[];
 };
 
-export interface ConnectedPlatform extends Platform {
+export interface ConnectedPlatform extends Platform{
   color: string;
   connected: boolean;
   lastUsed?: string;
@@ -25,4 +25,5 @@ export interface ConnectedPlatform extends Platform {
   disabled?: boolean;
   badge?: string;
   channelId: string;
+  is_verified: boolean;
 };

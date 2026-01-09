@@ -1,10 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { buildOrgUrl } from "@/lib/utils/index"
 import { Calendar, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp, Users } from "lucide-react"
-import Link from "next/link"
-import AgencyOnboard from "./AgencyOnbaord";
+import AgencyOnboard from "./agency-onbaord/AgencyOnbaord";
+import { usePermissionStore } from "@/features/organization/stores/permission.store";
 
 const recentPosts = [
   { id: 1, clientName: "Nike", platform: "instagram", time: "2 hours ago", status: "success" },
@@ -26,6 +25,8 @@ const tasks = [
 ]
 
 export default function AgencyDashboard() {
+  const { data: permissions } = usePermissionStore();
+  
   return (
     <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       {/* Welcome Section */}
@@ -44,7 +45,7 @@ export default function AgencyDashboard() {
       </div>
 
       {/* Agency App Banner */}
-      <AgencyOnboard />
+      { permissions?.onboard && <AgencyOnboard state={permissions?.onboard}/> }
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
