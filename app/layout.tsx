@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 import { ThemeProvider } from "@/components/home/ThemeProvider";
 import { Providers } from "@/components/Providers";
@@ -62,7 +63,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {API_BASE_URL != "http://127.0.0.1:8000/api/" &&  <GoogleAnalytics gaId="G-PQ7LDRR8T0" /> }
       <body
         className={`${spaceGrotesk.variable} antialiased`}
       >
@@ -71,7 +71,21 @@ export default function RootLayout({
             {children}
           </Providers>
         </ThemeProvider>
+         <AnalyticsWrapper />
       </body>
     </html>
   );
+}
+
+function AnalyticsWrapper() {
+  if(API_BASE_URL != "http://127.0.0.1:8000/api/") {
+    return (
+      <>
+        <GoogleAnalytics gaId="G-PQ7LDRR8T0" />
+        <Analytics />
+      </>
+    )
+  }
+  return null;
+  
 }
