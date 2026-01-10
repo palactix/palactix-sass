@@ -11,6 +11,7 @@ import {
   BarChart3,
   CreditCard,
   ChevronDown,
+  Lock,
 } from "lucide-react"
 
 import {
@@ -41,11 +42,14 @@ import { getOrganizationRole } from "@/features/organization/types/organization.
 import { cn } from "@/lib/utils"
 import { useRouter, usePathname } from "next/navigation"
 import { buildOrgSwitchUrl, useOrgPaths, buildOrgUrl } from "@/lib/utils/org-urls"
+import { usePermissionStore } from "@/features/organization/stores/permission.store"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { state } = useSidebar()
   const { data: user } = useUser()
   const { currentOrganization } = useOrganizationStore()
+  const { data: permissions } = usePermissionStore();
+  
   const router = useRouter()
   const pathname = usePathname()
   const orgPaths = useOrgPaths()
@@ -73,6 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Scheduler",
         url: orgPaths.scheduler,
         icon: Calendar,
+        locked: permissions?.plan === undefined
       },
       {
         title: "Staff",
@@ -195,7 +200,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {data.navMain.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title} isActive={item.isActive}>
-                    <Link href={orgPaths[item.url.slice(1) as keyof typeof orgPaths] || item.url}>
+                    <Link href={item.locked ?  "#" : (orgPaths[item.url.slice(1) as keyof typeof orgPaths] || item.url)}>
                       <item.icon />
                       <span>{item.title}</span>
                       {item.badge && (
@@ -203,6 +208,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           {item.badge}
                         </span>
                       )}
+                      { item.locked && <Lock/> }
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -235,16 +241,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-medium text-muted-foreground">Current Plan</span>
                 <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                  {data.agency.plan}
+                  {permissions?.plan.name || "No Plan"}
                 </span>
               </div>
               <div className="space-y-1">
                 <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[75%]" />
+                  <div className="h-full bg-primary" style={{ width: `${permissions ? Math.round((permissions.limits.clients.current / (permissions.limits.clients.max || 1)) * 100) : 0}%` }} />
                 </div>
                 <div className="flex justify-between text-[10px] text-muted-foreground">
-                  <span>35/50 Clients</span>
-                  <span>70%</span>
+                  <span>{permissions?.limits.clients.current}/{permissions?.limits.clients.max} Clients</span>
+                  <span> {permissions ? Math.round((permissions.limits.clients.current / (permissions.limits.clients.max || 1)) * 100) : 0} %</span>
                 </div>
               </div>
               <Button size="sm" variant="outline" className="w-full mt-3 h-7 text-xs">
@@ -253,7 +259,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
           ) : (
              <div className="flex justify-center py-2">
-                <div className="h-2 w-2 rounded-full bg-primary" title="Pro Plan Active" />
+                <div className="h-2 w-2 rounded-full bg-primary" title={`${permissions?.plan.name || "No Plan"} Active`} />
              </div>
           )}
         </div>

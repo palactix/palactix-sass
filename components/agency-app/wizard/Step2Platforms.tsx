@@ -25,7 +25,6 @@ export function Step2Platforms() {
   }, [myApp]);
 
   const handleStep2Submit = (data: PlatformSelectorSchema) => {
-    alert(23);
     if (!appId) {
       toast.error("App ID not found. Please restart.");
       return;
