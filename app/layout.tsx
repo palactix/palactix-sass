@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google'
 import "./globals.css";
 import { ThemeProvider } from "@/components/home/ThemeProvider";
 import { Providers } from "@/components/Providers";
+import { API_BASE_URL } from "@/utils/constants/api-routes";
 
 
 const spaceGrotesk = Space_Grotesk({
@@ -60,6 +62,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {API_BASE_URL != "http://127.0.0.1:8000/api/" &&  <GoogleAnalytics gaId="G-PQ7LDRR8T0" /> }
       <body
         className={`${spaceGrotesk.variable} antialiased`}
       >
