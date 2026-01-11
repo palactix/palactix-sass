@@ -7,56 +7,109 @@ import { motion } from "motion/react";
 import { Container } from "../Container";
 
 export function PricingSection({ hideHeader = false }: { hideHeader?: boolean }) {
-  const plans = [
-    {
-      name: "Starter",
-      price: "$199",
-      period: "/mo",
-      target: "For growing agencies",
-      features: [
-        "Up to 5 team seats",
-        "50 Clients",
-        "White-label Dashboard",
-        "BYO Keys Support",
-      ],
-      cta: "Get started",
-      ctaLink: "/auth/signup",
-      popular: false,
-    },
-    {
-      name: "Pro",
-      price: "$799",
-      period: "/mo",
-      target: "For established agencies",
-      features: [
-        "Everything in Starter",
-        "Unlimited Clients",
-        "Unlimited team seats",
-        "Priority Support",
-        "Custom Domain",
-      ],
-      cta: "Choose Pro",
-      ctaLink: "/auth/signup",
-      popular: true,
-    },
-    {
-      name: "Scale",
-      price: "$1,999+",
-      period: "/mo",
-      target: "For large enterprises",
-      features: [
-        "Everything in Pro",
-        "Dedicated Account Manager",
-        "SLA",
-        "Custom Integrations",
-        "On-premise Option",
-      ],
-      cta: "Talk to sales",
-      ctaLink: "/contact",
-      popular: false,
-    },
-  ];
+  // const plans = [
+  //   {
+  //     name: "Starter",
+  //     price: "$199",
+  //     period: "/mo",
+  //     target: "For growing agencies",
+  //     features: [
+  //       "Up to 5 team seats",
+  //       "50 Clients",
+  //       "White-label Dashboard",
+  //       "BYO Keys Support",
+  //     ],
+  //     cta: "Get started",
+  //     ctaLink: "/auth/signup",
+  //     popular: false,
+  //   },
+  //   {
+  //     name: "Pro",
+  //     price: "$799",
+  //     period: "/mo",
+  //     target: "For established agencies",
+  //     features: [
+  //       "Everything in Starter",
+  //       "Unlimited Clients",
+  //       "Unlimited team seats",
+  //       "Priority Support",
+  //       "Custom Domain",
+  //     ],
+  //     cta: "Choose Pro",
+  //     ctaLink: "/auth/signup",
+  //     popular: true,
+  //   },
+  //   {
+  //     name: "Scale",
+  //     price: "$1,999+",
+  //     period: "/mo",
+  //     target: "For large enterprises",
+  //     features: [
+  //       "Everything in Pro",
+  //       "Dedicated Account Manager",
+  //       "SLA",
+  //       "Custom Integrations",
+  //       "On-premise Option",
+  //     ],
+  //     cta: "Talk to sales",
+  //     ctaLink: "/contact",
+  //     popular: false,
+  //   },
+  // ];
 
+  const plans = [
+  {
+    name: "Starter",
+    price: "$199",
+    period: "/mo",
+    target: "For boutique agencies",
+    features: [
+      "Up to 5 team seats",
+      "50 Client Brands",
+      "White-label Dashboard",
+      "BYO Sovereign Keys Support",
+      "Standard Email Support",
+    ],
+    cta: "Start 14-Day Pilot",
+    ctaLink: "/auth/signup",
+    popular: false,
+  },
+  {
+    name: "Pro",
+    price: "$799",
+    period: "/mo",
+    target: "The Agency Powerhouse",
+    features: [
+      "Everything in Starter",
+      "Unlimited Clients & Brands",
+      "Unlimited Team Seats",
+      "Custom Domain (White-label)",
+      "Priority 4h Response Support",
+      "Basic Analytics Export",
+    ],
+    cta: "Scale Your Agency",
+    ctaLink: "/auth/signup",
+    popular: true,
+  },
+  {
+    name: "Scale",
+    price: "$1,999+",
+    period: "/mo",
+    target: "Enterprise Infrastructure",
+    features: [
+      "Everything in Pro",
+      "Hierarchical Approval Workflows (Beta)",
+      "Audit Logs & Activity Tracking (Beta)",
+      "SAML / SSO Support (Roadmap)",
+      "API Concierge (Hands-on Setup)",
+      "Dedicated Technical Lead",
+      "99.9% Uptime SLA",
+    ],
+    cta: "Talk to Sales",
+    ctaLink: "/contact",
+    popular: false,
+  },
+];
   return (
     <section id="pricing" className="py-20 px-6 scroll-mt-20">
       <Container className="mx-auto">

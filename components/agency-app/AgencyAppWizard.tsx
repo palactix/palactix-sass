@@ -19,12 +19,9 @@ export function AgencyAppWizard({ onComplete }: AgencyAppWizardProps) {
   const { currentStep, setAppId, setStep, setIsLive } = useWizardStore();
   const { data: myApp, isLoading } = useMyAgencyApp();
 
-  console.log({currentStep});
-
   useEffect(() => {
     
     if (myApp && !isEmpty(myApp)) {
-      console.log({myApp});
       setAppId(myApp.id);
       setIsLive(myApp.is_live);
       

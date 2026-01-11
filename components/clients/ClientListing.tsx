@@ -35,6 +35,7 @@ import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { AssignStaffDialog } from "./AssignStaffDialog";
 import { LinkedAccountsDialog } from "./LinkedAccountsDialog";
 import { UserStatus } from "@/types/user";
+import { canUseResource } from "@/features/organization/stores/permission.store";
 
 
 export function ClientListing() {
@@ -268,7 +269,10 @@ export function ClientListing() {
       <PageHeader 
         title="Clients" 
         description="Manage your organization's clients and their access."
-        actions={<CreateButton href={buildOrgUrl('/clients/create')} label="Invite Client" />}
+        actions={
+          canUseResource('clients') &&
+          <CreateButton href={buildOrgUrl('/clients/create')} label="Invite Client" />
+      }
       />
 
       <TableContainer

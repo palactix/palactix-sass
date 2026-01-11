@@ -2,6 +2,7 @@
 import { ClientListing } from "@/components/clients/ClientListing";
 import { CreateClientForm } from "@/components/clients/forms/CreateClientForm";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { canUseResource } from "@/features/organization/stores/permission.store";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,8 @@ export default function CreateClientPage() {
       }
     };
 
+    const canAddClient = canUseResource('clients');
+
   return (
     <div className="container py-10">
       {/* Client Listing in Background */}
@@ -35,15 +38,34 @@ export default function CreateClientPage() {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="w-full max-w-[600px]"
         >
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Invite New Client</CardTitle>
-              <CardDescription>
-                Send an invitation email to a new client. They will receive a link to set up their account.
-              </CardDescription>
-            </CardHeader>
-            <CreateClientForm onCancel={handleCancel} />
-          </Card>
+          {
+            !canAddClient && (
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle>Invite New Client</CardTitle>
+                  <CardDescription>
+                    <p className="pb-10 text-red-400">
+                      You had reach limit to add more clients. Please contact support to upgrade your plan.
+                    </p>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            )
+          }
+          {
+            canAddClient && (
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle>Invite New Client</CardTitle>
+                  <CardDescription>
+                    Send an invitation email to a new client. They will receive a link to set up their account.
+                  </CardDescription>
+                </CardHeader>
+                <CreateClientForm onCancel={handleCancel} />
+              </Card>
+            )
+          }
+          
         </motion.div>
       </div>
     </div>

@@ -4,15 +4,22 @@ import React from "react";
 import { Instagram, Linkedin, Facebook, Youtube } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "../Container";
+import { useChannels } from "@/features/agency-app/api/agency-app.queries";
+import { Channel } from "@/features/agency-app/types/agency-app.types";
+import { useChannelLogo } from "@/hooks/use-channel-logo";
+import Image from "next/image";
 
 export function PlatformsSection() {
+  const { data, isLoading } = useChannels();
+  const channelLogo = useChannelLogo();
+  
   const platforms = [
     { name: "Instagram", supported: true, Icon: Instagram },
     { name: "TikTok", supported: true, Icon: null },
     { name: "LinkedIn", supported: true, Icon: Linkedin },
     { name: "X (Twitter)", supported: true, Icon: null },
     { name: "Facebook", supported: true, Icon: Facebook },
-    { name: "YouTube", supported: false, Icon: Youtube },
+    { name: "YouTube", supported: true, Icon: Youtube },
   ];
 
   return (
@@ -31,35 +38,42 @@ export function PlatformsSection() {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {platforms.map((platform, index) => (
-            <motion.div
-              key={platform.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+           data !== undefined && data.map((platform: Channel, index: number) => (
+              <motion.div
+                key={platform.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
-              className={`relative group p-6 rounded-xl border transition-all ${
-                platform.supported
-                  ? "border-border bg-card hover:border-primary/50 hover:bg-card/80"
-                  : "border-border/50 bg-card/30 opacity-40 cursor-not-allowed"
-              }`}
+              // className={`relative group p-6 rounded-xl border transition-all ${
+              //   platform.supported
+              //     ? "border-border bg-card hover:border-primary/50 hover:bg-card/80"
+              //     : "border-border/50 bg-card/30 opacity-40 cursor-not-allowed"
+              // }`}
+              className={`relative group p-6 rounded-xl border transition-all border-border bg-card hover:border-primary/50 hover:bg-card/80`}
             >
               <div className="flex flex-col items-center gap-3">
                 {/* Icon */}
                 <div
-                  className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                    platform.supported
-                      ? "bg-primary/10 text-primary"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                  // className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                  //   platform.supported
+                  //     ? "bg-primary/10 text-primary"
+                  //     : "bg-muted text-muted-foreground"
+                  // }`}
+                  className={`w-12 h-12 rounded-lg flex items-center justify-center text-primary`}
                 >
-                  {platform.Icon ? (
-                    <platform.Icon className="w-6 h-6" />
-                  ) : (
-                    <span className="text-xl font-bold">
-                      {platform.name.charAt(0)}
-                    </span>
-                  )}
+                  <Image
+                    width={48}
+                    height={48}
+                    src={channelLogo(platform.icon)}
+                    alt={platform.name}
+                    className="w-10 h-10 object-contain"
+                    unoptimized
+                  />
+                 
                 </div>
 
                 {/* Name */}
@@ -67,24 +81,18 @@ export function PlatformsSection() {
                   {platform.name}
                 </span>
 
-                {/* Status Badge */}
-                {platform.supported ? (
-                  <span className="text-xs text-primary font-medium">
+                <span className="text-xs text-primary font-medium">
                     ✓ Supported
                   </span>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    Coming Soon
-                  </span>
-                )}
               </div>
 
               {/* Hover Glow Effect */}
-              {platform.supported && (
-                <div className="absolute -inset-0.5 bg-linear-to-r from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10 blur-sm" />
-              )}
+              
+              <div className="absolute -inset-0.5 bg-linear-to-r from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10 blur-sm" />
+             
             </motion.div>
-          ))}
+          ))
+          )}
         </div>
       </Container>
     </section>
