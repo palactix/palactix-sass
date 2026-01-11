@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Instagram, Linkedin, Facebook, Youtube } from "lucide-react";
+
 import { motion } from "motion/react";
 import { Container } from "../Container";
 import { useChannels } from "@/features/agency-app/api/agency-app.queries";
@@ -13,14 +13,6 @@ export function PlatformsSection() {
   const { data, isLoading } = useChannels();
   const channelLogo = useChannelLogo();
   
-  const platforms = [
-    { name: "Instagram", supported: true, Icon: Instagram },
-    { name: "TikTok", supported: true, Icon: null },
-    { name: "LinkedIn", supported: true, Icon: Linkedin },
-    { name: "X (Twitter)", supported: true, Icon: null },
-    { name: "Facebook", supported: true, Icon: Facebook },
-    { name: "YouTube", supported: true, Icon: Youtube },
-  ];
 
   return (
     <section className="py-20">
