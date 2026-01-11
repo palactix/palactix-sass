@@ -29,6 +29,7 @@ export const AGENCY_APP_API_ROUTES = {
 
 
 export const AGENCY_ROUTES = {
+  DASHBOARD: "/organizations/{orgId}/dashboard",
   PERMISSIONS: "/organizations/{orgId}/permissions",
   ONBOARD_INFO: "/organizations/{orgId}/onboard-info",
   CREATE_STAFF: "/organizations/{orgId}/staff",

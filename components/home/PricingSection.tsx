@@ -171,12 +171,33 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
 
               {/* Features */}
               <ul className="space-y-4 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
+                {plan.features.map((feature) => {
+                  // Parse feature for Beta/Roadmap tags
+                  const betaMatch = feature.match(/^(.*?)\s*\(Beta\)$/);
+                  const roadmapMatch = feature.match(/^(.*?)\s*\(Roadmap\)$/);
+                  
+                  const hasTag = betaMatch || roadmapMatch;
+                  const featureText = betaMatch ? betaMatch[1] : roadmapMatch ? roadmapMatch[1] : feature;
+                  const tagText = betaMatch ? "Beta" : roadmapMatch ? "Roadmap" : null;
+                  
+                  return (
+                    <li key={feature} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                      <span className="text-sm flex items-center gap-2 flex-wrap">
+                        <span>{featureText}</span>
+                        {tagText && (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            tagText === "Beta" 
+                              ? "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300" 
+                              : "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300"
+                          }`}>
+                            {tagText}
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  );
+                })}
               </ul>
 
               {/* CTA Button */}

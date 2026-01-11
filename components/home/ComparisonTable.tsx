@@ -134,7 +134,7 @@ export function ComparisonTable() {
           <h3 className="text-2xl font-bold mb-6 text-center">Monthly Software Cost Comparison</h3>
           
           <div className="overflow-x-auto">
-            <table className="w-full border border-border rounded-xl overflow-hidden bg-card">
+            <table className="w-full border border-border overflow-hidden bg-card">
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-left p-4 font-semibold border-b border-border">Cost Category</th>

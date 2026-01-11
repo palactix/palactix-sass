@@ -1,184 +1,239 @@
 "use client";
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, CheckCircle2, Clock, MoreHorizontal, Plus, TrendingUp, Users } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertTriangle,
+  FileText,
+  Link2,
+  Shield,
+  Users,
+  Calendar,
+  UserPlus,
+  CreditCard,
+  ChevronDown,
+  Settings,
+} from "lucide-react";
 import AgencyOnboard from "./agency-onbaord/AgencyOnbaord";
 import { usePermissionStore } from "@/features/organization/stores/permission.store";
-
-const recentPosts = [
-  { id: 1, clientName: "Nike", platform: "instagram", time: "2 hours ago", status: "success" },
-  { id: 2, clientName: "Adidas", platform: "tiktok", time: "5 hours ago", status: "success" },
-  { id: 3, clientName: "Coca Cola", platform: "linkedin", time: "1 day ago", status: "success" },
-  { id: 4, clientName: "Tesla", platform: "x", time: "2 days ago", status: "success" },
-]
-
-const upcomingPosts = [
-  { id: 1, title: "Summer Campaign Launch", time: "Tomorrow, 09:00 AM", duration: "1d 6h 12m" },
-  { id: 2, title: "Product Teaser Video", time: "14 Nov 2025, 09:00 AM", duration: "3h 30m" },
-  { id: 3, title: "Influencer Collab", time: "15 Nov 2025, 10:00 AM", duration: "5h 15m" },
-]
-
-const tasks = [
-  { id: 1, title: "Review Nike assets", due: "Today", completed: false },
-  { id: 2, title: "Approve Adidas copy", due: "Tomorrow", completed: false },
-  { id: 3, title: "Client meeting: Tesla", due: "Mon, 11 Nov", completed: true },
-]
+import { useDashboard } from "@/features/organization/hooks/useDashboard";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { StatWidget } from "./widgets/StatWidget";
+import { SectionHeader } from "./widgets/SectionHeader";
+import { AlertWidget } from "./widgets/AlertWidget";
+import { NoticeCard } from "./widgets/NoticeCard";
 
 export default function AgencyDashboard() {
   const { data: permissions } = usePermissionStore();
-  
+  const { data: dashboard, isLoading, error } = useDashboard();
+
+  if (error) {
+    return (
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load dashboard data. Please try refreshing the page.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+    <div className="flex flex-1 flex-col gap-8 p-4 md:p-8">
       {/* Welcome Section */}
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Welcome back, Alex 👋</h2>
-          <p className="text-muted-foreground">
-            Here&apos;s what&apos;s happening with your clients today.
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" /> New Post
-          </Button>
-        </div>
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground mt-1">
+          Operational snapshot for today
+        </p>
       </div>
 
       {/* Agency App Banner */}
-      { permissions?.onboard && <AgencyOnboard state={permissions?.onboard}/> }
+      {permissions?.onboard && <AgencyOnboard state={permissions?.onboard} />}
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">47</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Posts This Month</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">312</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-amber-500">89</div>
-            <p className="text-xs text-muted-foreground">Across 12 clients</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Plan</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Pro</div>
-            <p className="text-xs text-muted-foreground">Unlimited Clients</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        
-        {/* Activity Feed */}
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              You have 12 unread notifications from your clients.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-8">
-              {recentPosts.map((post) => (
-                <div key={post.id} className="flex items-center">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted border">
-                    <span className="text-xs font-bold">{post.platform[0].toUpperCase()}</span>
-                  </div>
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">{post.clientName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Posted to {post.platform}
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-xs text-muted-foreground">
-                    {post.time}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Right Column Widgets */}
-        <div className="col-span-3 space-y-4">
-          
-          {/* Upcoming Schedule */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming Posts</CardTitle>
-              <CardDescription>Next 24 hours</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {upcomingPosts.map((post, i) => (
-                <div key={post.id} className={`flex items-center justify-between p-3 rounded-lg border ${i === 0 ? 'bg-muted/50 border-primary/20' : 'bg-background'}`}>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">{post.title}</p>
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Clock className="mr-1 h-3 w-3" />
-                      {post.time}
-                    </div>
-                  </div>
-                  {i === 0 && (
-                     <div className="bg-primary/90 text-primary-foreground text-xs px-2 py-1 rounded">
-                       {post.duration}
-                     </div>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Tasks */}
-          <Card>
-             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="space-y-1">
-                    <CardTitle>Project Tasks</CardTitle>
-                    <CardDescription>3 pending tasks</CardDescription>
-                </div>
-                <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    {tasks.map((task) => (
-                        <div key={task.id} className="flex items-center space-x-2">
-                            <div className={`h-4 w-4 rounded border flex items-center justify-center ${task.completed ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground'}`}>
-                                {task.completed && <CheckCircle2 className="h-3 w-3" />}
-                            </div>
-                            <span className={`text-sm ${task.completed ? 'text-muted-foreground line-through' : ''}`}>{task.title}</span>
-                            <span className="ml-auto text-xs text-muted-foreground">{task.due}</span>
-                        </div>
-                    ))}
-                </div>
-            </CardContent>
-          </Card>
-
+      {/* Publishing Health Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader title="Publishing Health" />
+          <Button variant="outline" size="sm">
+            <Settings className="mr-2 h-4 w-4" />
+            Manage Credentials
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatWidget
+            title="Connected Platforms"
+            value={dashboard?.channels.connected || 0}
+            icon={Link2}
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Verified Platforms"
+            value={dashboard?.channels.verified || 0}
+            icon={Shield}
+            valueClassName="text-green-600"
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Connected Clients"
+            value={dashboard?.channels.connected_accounts || 0}
+            icon={Users}
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Active Social Accounts"
+            value={dashboard?.channels.total_social_accounts || 0}
+            icon={Users}
+            isLoading={isLoading}
+          />
         </div>
       </div>
+
+      {/* Scheduling Status */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader title="Scheduling Status" />
+          <div className="flex gap-2">
+            <Button size="sm">Open Scheduler</Button>
+            <Button variant="outline" size="sm">
+              View Drafts
+            </Button>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatWidget
+            title="Scheduled (next 7 days)"
+            value={dashboard?.schedules.upcoming_schedules || 0}
+            icon={Calendar}
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Drafts"
+            value={dashboard?.schedules.draft || 0}
+            icon={FileText}
+            valueClassName="text-amber-600"
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Needs Attention"
+            value={dashboard?.schedules.needing_attention || 0}
+            icon={AlertTriangle}
+            valueClassName="text-red-600"
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+
+      {/* Clients Overview */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader title="Clients Overview" />
+          <Button variant="outline" size="sm">
+            Manage Clients
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatWidget
+            title="Total Clients"
+            value={dashboard?.clients.used || 0}
+            icon={Users}
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Active"
+            value={
+              dashboard
+                ? dashboard.clients.used - dashboard.clients.pending_invitations
+                : 0
+            }
+            icon={Users}
+            valueClassName="text-green-600"
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Pending"
+            value={dashboard?.clients.pending_invitations || 0}
+            icon={Users}
+            valueClassName="text-amber-600"
+            isLoading={isLoading}
+          />
+        </div>
+        {!isLoading && dashboard?.clients.reached && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              You&apos;ve reached your client limit ({dashboard.clients.limit}).
+              Upgrade your plan to add more clients.
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
+
+      {/* Team Overview */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <SectionHeader title="Team Overview" />
+          <Button size="sm">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Invite Team Member
+          </Button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <StatWidget
+            title="Team Members"
+            value={dashboard?.staff.used || 0}
+            icon={Users}
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Available Seats"
+            value={dashboard?.staff.remaining || 0}
+            icon={Users}
+            valueClassName="text-green-600"
+            isLoading={isLoading}
+          />
+          <StatWidget
+            title="Pending Invites"
+            value={dashboard?.staff.pending_invitations || 0}
+            icon={Users}
+            valueClassName="text-amber-600"
+            isLoading={isLoading}
+          />
+        </div>
+      </div>
+
+      {/* Alerts & Attention Required */}
+      {!isLoading && dashboard?.alerts.items && dashboard.alerts.items.length > 0 && (
+        <AlertWidget alerts={dashboard.alerts.items} />
+      )}
+
+      {/* Subscription & Billing */}
+      <Card>
+        <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Subscription & Billing
+              </CardTitle>
+              <CardDescription>
+                Current Plan: <Badge variant="secondary">Pro</Badge> • Next
+                billing: Jan 20, 2026
+              </CardDescription>
+            </div>
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Platform Notice */}
+      <NoticeCard>
+        <strong>Palactix never uses shared platform apps.</strong>
+        <br />
+        All publishing occurs via your own developer credentials.
+      </NoticeCard>
     </div>
-  )
+  );
 }
