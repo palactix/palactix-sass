@@ -5,8 +5,8 @@ import { AlertWarning } from "@/components/shared/alert";
 export function ReviewStatusAlert() {
   return (
     <AlertWarning
-      title="App Under Review"
-      message="Your app has been submitted for review. We'll notify you once it's approved and live. You can view your configuration below, but changes are restricted during review."
+      title="Verification Required"
+      message="Your app setup is in progress. Platform credentials are pending verification. Please complete verification to enable the channel for your clients."
     />
   );
 }

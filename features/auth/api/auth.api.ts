@@ -31,9 +31,19 @@ export async function logout() {
   await api.post(AUTH_API_ROUTES.LOGOUT);
 }
 
-export async function getUser() {
-  const res = await api.get<UserResponse>(AUTH_API_ROUTES.CHECK_AUTH);
-  return res.data;
+export async function getUser(): Promise<UserResponse> {
+  try {
+    const res = await api.get<UserResponse>(AUTH_API_ROUTES.CHECK_AUTH);
+    return res?.data ?? null;
+  } catch (error: unknown) {
+    // Return null for unauthenticated users (401, 403)
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    if (status === 401 || status === 403) {
+      return null;
+    }
+    // Re-throw other errors
+    throw error;
+  }
 }
 
 export async function resendVerification(payload: ResendVerificationPayload) {

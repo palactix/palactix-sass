@@ -40,6 +40,7 @@ export interface Plan {
   app_creation_deadline: string | null;
   days_until_app_deadline: number | null;
   has_developer_app: boolean;
+  current_period_end: Date | null;
 }
 
 export interface OrganizationPermissions {

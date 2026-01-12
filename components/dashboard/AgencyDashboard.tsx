@@ -22,6 +22,8 @@ import { StatWidget } from "./widgets/StatWidget";
 import { SectionHeader } from "./widgets/SectionHeader";
 import { AlertWidget } from "./widgets/AlertWidget";
 import { NoticeCard } from "./widgets/NoticeCard";
+import Link from "next/link";
+import { buildOrgUrl } from "@/lib/utils/org-urls";
 
 export default function AgencyDashboard() {
   const { data: permissions } = usePermissionStore();
@@ -57,10 +59,12 @@ export default function AgencyDashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <SectionHeader title="Publishing Health" />
-          <Button variant="outline" size="sm">
-            <Settings className="mr-2 h-4 w-4" />
-            Manage Credentials
-          </Button>
+          <Link href={buildOrgUrl("agency-app")}>
+            <Button variant="outline" size="sm">
+              <Settings className="mr-2 h-4 w-4" />
+              Manage Credentials
+            </Button>
+          </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <StatWidget
@@ -130,9 +134,11 @@ export default function AgencyDashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <SectionHeader title="Clients Overview" />
-          <Button variant="outline" size="sm">
-            Manage Clients
-          </Button>
+          <Link href={buildOrgUrl("clients")}>
+            <Button variant="outline" size="sm">
+              Manage Clients
+            </Button>
+          </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <StatWidget
@@ -175,10 +181,12 @@ export default function AgencyDashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <SectionHeader title="Team Overview" />
-          <Button size="sm">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite Team Member
-          </Button>
+          <Link href={buildOrgUrl("staff/create")}>
+            <Button size="sm">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Invite Team Member
+            </Button>
+          </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <StatWidget
@@ -219,8 +227,8 @@ export default function AgencyDashboard() {
                 Subscription & Billing
               </CardTitle>
               <CardDescription>
-                Current Plan: <Badge variant="secondary">Pro</Badge> • Next
-                billing: Jan 20, 2026
+                Current Plan: <Badge variant="secondary">{permissions?.plan.name || "No Plan"}</Badge> 
+                {permissions?.plan.current_period_end && ` • Next billing: ${permissions.plan.current_period_end}`}
               </CardDescription>
             </div>
             <ChevronDown className="h-5 w-5 text-muted-foreground" />

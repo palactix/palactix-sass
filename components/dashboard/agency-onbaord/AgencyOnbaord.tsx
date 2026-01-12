@@ -45,11 +45,11 @@ export default function AgencyOnboard({ state }: AgencyOnboardProps) {
       title: "Add platform app credentials",
       description:
         "Add your own app credentials for the social platforms you want to use (e.g. Instagram, LinkedIn, X, YouTube).",
-      status: state.platformCredentialsVerified
+      status: state.agencyAppCreated ? (state.platformCredentialsVerified
         ? "completed"
         : state.platformCredentialsAdded
         ? "failed"
-        : "not-started",
+        : "not-started") : "blocked",
       actionLabel: state.platformCredentialsAdded ? "Verify platform credentials" : "Add platform credentials",
       actionHref: buildOrgUrl("/agency-app"),
       secondaryText:

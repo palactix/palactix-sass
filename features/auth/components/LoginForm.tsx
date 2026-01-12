@@ -13,14 +13,23 @@ import { useAuthStore } from "../stores/auth.store";
 import type { NormalizedApiError } from "@/lib/api/error-handler";
 import Link from "next/link";
 import { buildPostLoginRedirect } from "@/lib/utils/org-urls";
+import { useEffect } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl");
   const setAuthenticated = useAuthStore((s) => s.setAuthenticated);
-  const { refetch } = useUser();
+  const { data: user, refetch } = useUser();
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      const firstOrgSlug = user.organizations?.[0]?.slug;
+      const redirectUrl = buildPostLoginRedirect(returnUrl, firstOrgSlug);
+      router.push(redirectUrl);
+    }
+  }, [user, router, returnUrl]);
   const {
     register,
     handleSubmit,

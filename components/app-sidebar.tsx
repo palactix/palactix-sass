@@ -249,7 +249,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <div className="h-full bg-primary" style={{ width: `${permissions ? Math.round((permissions.limits.clients.current / (permissions.limits.clients.max || 1)) * 100) : 0}%` }} />
                 </div>
                 <div className="flex justify-between text-[10px] text-muted-foreground">
-                  <span>{permissions?.limits.clients.current}/{permissions?.limits.clients.max} Clients</span>
+                  <span>{permissions?.limits.clients.current}/{permissions?.limits.clients.max ?? 0} Clients</span>
                   <span> {permissions ? Math.round((permissions.limits.clients.current / (permissions.limits.clients.max || 1)) * 100) : 0} %</span>
                 </div>
               </div>

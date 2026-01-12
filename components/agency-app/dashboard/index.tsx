@@ -12,7 +12,7 @@ import { ConnectedPlatform } from "./types";
 
 
 export function AgencyAppDashboard() {
-  const { data: myApp, isLoading: isAppLoading } = useMyAgencyApp();
+  const { data: myApp, isLoading: isAppLoading, refetch } = useMyAgencyApp();
   const { data: allChannels, isLoading: isChannelsLoading } = useChannels();
 
   const platforms: ConnectedPlatform[] = useMemo(() => {
@@ -52,7 +52,7 @@ export function AgencyAppDashboard() {
       
       {myApp.status === AppStatus.REVIEW && <ReviewStatusAlert />}
       
-      <ConnectedPlatforms platforms={platforms} appId={myApp.id} />
+      <ConnectedPlatforms platforms={platforms} appId={myApp.id} refetchApp={refetch} />
       
       <AppDetails />
     </div>

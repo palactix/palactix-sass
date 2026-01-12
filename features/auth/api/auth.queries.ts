@@ -22,12 +22,15 @@ export const authKeys = {
   user: ["auth", "user"] as const,
 };
 
-export function useUser() {
+export function useUser(options?: { enabled?: boolean }) {
   return useQuery<UserResponse, Error>({
     queryKey: authKeys.user,
     queryFn: getUser,
     retry: false,
     staleTime: Infinity, // Cache forever (until hard refresh or invalidation)
+    enabled: options?.enabled ?? true,
+    // Don't throw errors for 401/403 - these are expected on auth pages
+    throwOnError: false,
   });
 }
 

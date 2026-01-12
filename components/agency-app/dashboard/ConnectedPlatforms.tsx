@@ -30,9 +30,10 @@ import { useChannelConnect } from "@/hooks/use-channel-connect";
 interface ConnectedPlatformsProps {
   platforms: ConnectedPlatform[];
   appId: string;
+  refetchApp: () => void;
 }
 
-export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: ConnectedPlatformsProps) {
+export function ConnectedPlatforms({ platforms: initialPlatforms, appId, refetchApp }: ConnectedPlatformsProps) {
   const [platforms, setPlatforms] = useState<ConnectedPlatform[]>(initialPlatforms);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPlatformId, setEditingPlatformId] = useState<string | null>(null);
@@ -42,6 +43,9 @@ export function ConnectedPlatforms({ platforms: initialPlatforms, appId }: Conne
   const removePlatformMutation = useRemovePlatformMutation();
   const { connectChannel, connectingChannel } = useChannelConnect({
       redirectPath: `dashboard`,
+      onSuccess: () => {
+        refetchApp();
+      },
     });
 
   useEffect(() => {
