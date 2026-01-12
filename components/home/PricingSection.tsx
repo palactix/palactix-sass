@@ -106,7 +106,7 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
       "99.9% Uptime SLA",
     ],
     cta: "Talk to Sales",
-    ctaLink: "/contact",
+    ctaLink: "/contact-us",
     popular: false,
   },
 ];

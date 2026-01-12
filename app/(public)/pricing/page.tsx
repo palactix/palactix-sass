@@ -199,7 +199,7 @@ export default function PricingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <CTAButton href="/auth/signup">Start Free Evaluation</CTAButton>
-              <CTAButton href="/contact" variant="outline">
+              <CTAButton href="/contact-us" variant="outline">
                 Talk to Sales
               </CTAButton>
             </div>
