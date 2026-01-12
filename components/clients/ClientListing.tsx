@@ -36,11 +36,14 @@ import { AssignStaffDialog } from "./AssignStaffDialog";
 import { LinkedAccountsDialog } from "./LinkedAccountsDialog";
 import { UserStatus } from "@/types/user";
 import { canUseResource } from "@/features/organization/stores/permission.store";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 export function ClientListing() {
   const [assignStaffClient, setAssignStaffClient] = useState<Client | null>(null);
   const [linkedAccountsClient, setLinkedAccountsClient] = useState<Client | null>(null);
+  const router = useRouter();
   
   const {
     sortConfig,
@@ -122,13 +125,38 @@ export function ClientListing() {
     });
   }, [exportMutation]);
 
+
+  const goToScheduler = useCallback((client: Client) => {
+    router.push(buildOrgUrl(`clients/${client.id}/scheduler`));
+  }, [router]);
+
+  const goToCalendar = useCallback((client: Client) => {
+    router.push(buildOrgUrl(`clients/${client.id}/calendar`));
+  }, [router]);
+
   // Actions
   const rowActions = useMemo<RowAction<Client>[]>(() => [
-    { label: "Copy Email", onClick: (c) => navigator.clipboard.writeText(c.email), separator: true  },
-    { label: "Edit Details", onClick: (c) => console.log("Edit", c.id), separator: true },
+    { label: "Copy Email", onClick: (c) => {
+      navigator.clipboard.writeText(c.email);
+      toast.success("Email copied to clipboard");
+    }, separator: true  },
+    // { label: "Edit Details", onClick: (c) => console.log("Edit", c.id), separator: true },
+
+    { 
+      label: "Scheduler", 
+      onClick: (c) => {
+        goToScheduler(c);
+      },
+      separator: true
+    },
+    { 
+      label: "Calendar", 
+      onClick: (c) => goToCalendar(c),
+    },
     { 
       label: "Assign Staff", 
-      onClick: (c) => setAssignStaffClient(c)
+      onClick: (c) => setAssignStaffClient(c),
+      separator: true
     },
     { 
       label: "View Accounts", 
@@ -193,7 +221,10 @@ export function ClientListing() {
       separator: true
     },
     { label: "Delete Client", onClick: handleDelete, className: "text-destructive" }
-  ], [handleDelete, activateMutation, deactivateMutation, resendInviteMutation, cancelInviteMutation]);
+  ], [
+    handleDelete, activateMutation, deactivateMutation, resendInviteMutation, 
+    cancelInviteMutation, goToScheduler, goToCalendar
+  ]);
 
   const breadcrumbItems = useMemo(() => [
     { label: "Dashboard", href: buildOrgUrl("/dashboard") },

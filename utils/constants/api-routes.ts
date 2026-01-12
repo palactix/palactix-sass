@@ -44,6 +44,9 @@ export const AGENCY_ROUTES = {
   SEARCH_STAFF: "/organizations/{orgId}/staff/search",
   ASSIGN_CLIENTS: "/organizations/{orgId}/staff/{userId}/assign-clients",
   ASSIGNED_CLIENTS: "/organizations/{orgId}/staff/{userId}/assigned-clients",
+
+  RECENT_CLIENTS: "/organizations/{orgId}/staff/recent-clients",
+  TRACK_RECENT_CLIENT: "/organizations/{orgId}/staff/track-client-access",
 };
 
 export const CLIENT_ROUTES = {

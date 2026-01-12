@@ -142,7 +142,7 @@ export function useSearchClients(query: string) {
   return useQuery({
     queryKey: ['clients-search', query],
     queryFn: () => searchClients(query),
-    enabled: query.length > 0,
+    enabled: query.trim().length > 0,
     staleTime: 30000, // 30 seconds
   });
 }

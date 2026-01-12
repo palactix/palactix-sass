@@ -22,6 +22,7 @@ import { useLogoutMutation, useUser } from "@/features/auth/api/auth.queries"
 import { useAuthStore } from "@/features/auth/stores/auth.store"
 import { useRouter } from "next/navigation"
 import { NotificationDropdown } from "@/components/shared/NotificationDropdown"
+import { ClientSelector } from "@/components/shared/ClientSelector"
 
 export function SiteHeader() {
   const { setTheme } = useTheme()
@@ -58,6 +59,9 @@ export function SiteHeader() {
         {/* Right Actions */}
         <div className="flex items-center gap-2 ml-auto">
           
+          {/* Client Selector - Only visible on scheduler/calendar pages */}
+          <ClientSelector />
+
           <NotificationDropdown />
 
           <div className="h-8 w-px bg-border mx-2 hidden md:block" />

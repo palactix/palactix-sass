@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useWatch, useFormContext } from "react-hook-form";
 import { Clock, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ import { useSchedulePostMutation } from "@/features/scheduler/api/scheduler.quer
 import { Platform, LinkedAccount } from "@/types/platform";
 import { ChannelPost, SchedulePostPayload } from "@/features/scheduler/types";
 import { toast } from "sonner";
+import { useClientPageAccess } from "@/hooks/use-client-page-access";
 
 export default function SchedulerPage({clientId}: {clientId: string}) {
   const MAX_MEDIA = 10;
@@ -30,14 +31,21 @@ export default function SchedulerPage({clientId}: {clientId: string}) {
   const defaultTimezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
   const { form, updateAccounts } = useSchedulerForm(defaultTimezone, MAX_MEDIA);
   const schedulePostMutation = useSchedulePostMutation();
+  const { trackAccess } = useClientPageAccess({
+    pageModule: "scheduler",
+  });
 
   const selectedAccounts = useWatch({ control: form.control, name: "selected_accounts" }) as string[];
 
   const { data: user } = useUser();
-  const { data: linkedData, isLoading: linkedLoading } = useLinkedAccounts(15);
+  const { data: linkedData, isLoading: linkedLoading } = useLinkedAccounts(Number(clientId));
 
   const linkedAccounts = useMemo(() => linkedData?.linked_accounts ?? [], [linkedData]);
   const channels = useMemo(() => linkedData?.channels ?? [], [linkedData]);
+
+  useEffect(() => {
+    trackAccess();
+  }, []);
 
   const channelMap = useMemo(() => {
     const map = new Map<string, Platform>();
@@ -182,7 +190,7 @@ export default function SchedulerPage({clientId}: {clientId: string}) {
               </div>
             </div>
 
-            <div className="w-20 border-l bg-muted/50 p-3 sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
+            <div className="w-20 border-l bg-muted/50 p-3 sticky top-[150px] h-[calc(100vh-150px)] overflow-y-auto">
               <AccountPreviewRail accountsMap={accountMap} channelMap={channelMap} />
             </div>
           </div>

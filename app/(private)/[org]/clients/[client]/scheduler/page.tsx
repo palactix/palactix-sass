@@ -7,11 +7,11 @@ type PageProps = {
   }
 }
 
-export default function ClientSchedulerPage({ params }: PageProps) {
+export default async function ClientSchedulerPage({ params }: PageProps) {
  
-  const clientId = params.client as string;
+  const { client } = await params;
 
   return (
-    <SchedulerPage clientId={clientId} />
+    <SchedulerPage clientId={client} />
   );
 }
