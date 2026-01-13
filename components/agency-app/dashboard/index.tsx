@@ -54,7 +54,7 @@ export function AgencyAppDashboard() {
       
       <ConnectedPlatforms platforms={platforms} appId={myApp.id} refetchApp={refetch} />
       
-      <AppDetails />
+      {/* <AppDetails /> */}
     </div>
   );
 }

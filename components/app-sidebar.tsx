@@ -88,18 +88,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Clients",
         url: orgPaths.clients,
         icon: Users,
+        badge: false
       },
-      {
-        title: "Inbox",
-        url: orgPaths.inbox,
-        icon: Inbox,
-        badge: "10",
-      },
-      {
-        title: "Analytics",
-        url: orgPaths.analytics,
-        icon: BarChart3,
-      },
+      // {
+      //   title: "Inbox",
+      //   url: orgPaths.inbox,
+      //   icon: Inbox,
+      //   badge: "10",
+      // },
+      // {
+      //   title: "Analytics",
+      //   url: orgPaths.analytics,
+      //   icon: BarChart3,
+      // },
     ],
     navSecondary: [
       {

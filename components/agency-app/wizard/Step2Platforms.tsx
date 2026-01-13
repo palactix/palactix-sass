@@ -19,7 +19,7 @@ export function Step2Platforms() {
   const defaultValues = useMemo(() => {
     const channels = myApp?.channels;
     if (channels) {
-      return { platform_ids: channels.map(c => c.channel_id) };
+      return { platform_ids: channels.map(c => c.channel_id.toString()) };
     }
     return { platform_ids: [] };
   }, [myApp]);

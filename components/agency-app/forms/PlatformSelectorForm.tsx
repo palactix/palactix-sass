@@ -42,6 +42,8 @@ export function PlatformSelectorForm({ defaultValues, onSubmit, isPending, prevS
     },
   });
 
+  console.log({defaultValues})
+
   const selectedIds = useWatch({
     control,
     name: "platform_ids",
