@@ -37,13 +37,13 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
         publishedTime: blog.date,
         authors: [blog.author],
         tags: blog.tags,
-        images: [`/images/blog/${blog.slug}.jpg`],
+        images: [`/images/blog/${blog.slug}.png`],
       },
       twitter: {
         card: "summary_large_image",
         title: blog.title,
         description: blog.description,
-        images: [`/images/blog/${blog.slug}.jpg`],
+        images: [`/images/blog/${blog.slug}.png`],
       },
     };
   } catch {
