@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { BlogListVertical } from "@/features/blog/components/BlogListVertical";
 import { BlogPagination } from "@/features/blog/components/BlogPagination";
-import { BlogListClientWrapper } from "@/features/blog/components/BlogListClientWrapper";
 import { fetchBlogsWithPagination } from "@/features/blog/api/blog.api";
 //import { organizationSchema } from "@/lib/seo/organizationSchema";
 
@@ -29,12 +28,12 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
   const currentPage = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
 
   let blogData;
-  let error = null;
+  let error: string | null = null;
 
   try {
     blogData = await fetchBlogsWithPagination(currentPage);
   } catch (err) {
-    error = err;
+    error = "Failed to load blogs. Please try again later.";
     console.error("Failed to fetch blogs:", err);
   }
 
@@ -44,18 +43,16 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
         <Container>
           <div className="py-16 md:py-24">
-            {/* Header with Client-side animation wrapper */}
-            <BlogListClientWrapper>
-              <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                  Blog
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Insights, updates, and stories from the Palactix team. Learn about
-                  social media management, agency growth, and platform updates.
-                </p>
-              </div>
-            </BlogListClientWrapper>
+            {/* Header */}
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                Blog
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Insights, updates, and stories from the Palactix team. Learn about
+                social media management, agency growth, and platform updates.
+              </p>
+            </div>
 
             {/* Error State */}
             {error && (
