@@ -19,6 +19,7 @@ const footerLinks = [
   { href: "/refund-policy", label: "Refund" },
   { href: "/developers", label: "Developers" },
   { href: "/contact-us", label: "Contact Us" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export function Footer() {
