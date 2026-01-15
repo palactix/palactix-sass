@@ -11,7 +11,7 @@ import {
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pricing - Palactix",
+  title: "Plan and Pricing - Palactix",
   description:
     "Transparent pricing for Palactix. Start with a 14-day evaluation and scale as your agency grows",
 };

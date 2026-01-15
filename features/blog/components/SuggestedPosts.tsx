@@ -37,7 +37,7 @@ export function SuggestedPosts({ blogs }: SuggestedPostsProps) {
                 {/* Image */}
                 <div className="relative h-40 w-full overflow-hidden bg-muted">
                   <Image
-                    src={`/images/blog/${blog.slug}.jpg`}
+                    src={blog.image}
                     alt={blog.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -49,7 +49,7 @@ export function SuggestedPosts({ blogs }: SuggestedPostsProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Calendar className="h-3 w-3" />
                     <span>
-                      {new Date(blog.date).toLocaleDateString("en-US", {
+                      {new Date(blog.created_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",

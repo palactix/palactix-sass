@@ -1,5 +1,7 @@
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { BLOG_CONFIG } from "../constants";
 import type { BlogPost, BlogListItem, BlogPaginationData } from "../types/blog.types";
 
@@ -69,7 +71,14 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
   const { data, content: rawContent } = matter(markdown);
 
   // Compile MDX content
-  const { content: compiledContent } = await compileMDX({ source: rawContent });
+  const { content: compiledContent } = await compileMDX({
+    source: rawContent,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm, remarkBreaks],
+      },
+    },
+  });
 
   // Calculate read time (avg 200 words per minute)
   const wordCount = rawContent.trim().split(/\s+/).length;
@@ -84,6 +93,8 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
     image: data.image as string,
     author: data.author as string,
     faqs: data.faqs,
+    created_at: data.created_at as string,
+    updated_at: data.updated_at as string,
     content: compiledContent,
     readTime,
   };
@@ -125,10 +136,12 @@ export async function fetchAllBlogs(): Promise<BlogListItem[]> {
         : plainText.substring(0, BLOG_CONFIG.EXCERPT_LENGTH).trim() + "...";
       
       return {
-        slug,
+        slug: data.slug,
         title: data.title as string,
         description: data.description as string,
         date: data.date as string,
+        created_at: data.created_at as string,
+        updated_at: data.updated_at as string,
         tags: data.tags as string[],
         image: data.image as string,
         author: data.author as string,
@@ -139,7 +152,7 @@ export async function fetchAllBlogs(): Promise<BlogListItem[]> {
   );
 
   // Sort by date (newest first)
-  return blogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return blogs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 /**

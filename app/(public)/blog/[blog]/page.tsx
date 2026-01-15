@@ -34,16 +34,16 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
         title: blog.title,
         description: blog.description,
         type: "article",
-        publishedTime: blog.date,
+        publishedTime: blog.created_at,
         authors: [blog.author],
         tags: blog.tags,
-        images: [`/images/blog/${blog.slug}.png`],
+        images: [blog.image],
       },
       twitter: {
         card: "summary_large_image",
         title: blog.title,
         description: blog.description,
-        images: [`/images/blog/${blog.slug}.png`],
+        images: [blog.image],
       },
     };
   } catch {
@@ -107,7 +107,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         />
       )}
 
-      <div className="min-h-screen bg-linear-to-b from-background to-muted/30">
+      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 py-12">
       <Container>
         <div className="py-12">
           {/* Hero Section */}
@@ -115,10 +115,10 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             title={blog.title}
             description={blog.description}
             author={blog.author}
-            date={blog.date}
+            date={blog.created_at}
             readTime={blog.readTime || 5}
             tags={blog.tags}
-            image={blog.slug}
+            image={blog.image}
           />
 
           {/* Main Content */}
@@ -128,6 +128,12 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               {/* Social Share */}
               <SocialShare title={blog.title} url={blogUrl} />
               <BlogContent content={blog.content} />
+
+               {/* FAQs Section */}
+              {transformedFaqs.length > 0 && (
+                <FAQs faqs={transformedFaqs} />
+              )}
+              
             </BlogDetailClientWrapper>
 
             {/* Navigation */}
@@ -146,10 +152,6 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         </div>
       </Container>
 
-      {/* FAQs Section */}
-      {transformedFaqs.length > 0 && (
-        <FAQs faqs={transformedFaqs} />
-      )}
       </div>
     </>
   );

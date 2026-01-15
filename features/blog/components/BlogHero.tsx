@@ -32,7 +32,7 @@ export function BlogHero({ title, description, author, date, readTime, tags, ima
         className="relative h-[400px] md:h-[500px] w-full overflow-hidden rounded-2xl"
       >
         <Image
-          src={`/images/blog/${image}.png`}
+          src={image}
           alt={title}
           fill
           className="object-cover"
@@ -51,7 +51,7 @@ export function BlogHero({ title, description, author, date, readTime, tags, ima
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
               {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="bg-white/20 text-white border-white/30">
+                <Badge key={tag} variant="secondary" className="bg-primary text-white border-white/30">
                   {tag}
                 </Badge>
               ))}

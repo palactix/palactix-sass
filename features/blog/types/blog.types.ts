@@ -13,6 +13,8 @@ export interface BlogMetadata {
   image: string;
   author: string;
   faqs?: BlogFAQ[];
+  created_at: string; // ISO date string
+  updated_at: string; // ISO date string
 }
 
 export interface BlogPost extends BlogMetadata {

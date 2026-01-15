@@ -1,7 +1,10 @@
+//const branch = "main";
+const branch = "2-day-2---the-success-tax-why-per-seat-pricing-is-a-penalty-on-your-growth";
+
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
-  GITHUB_CONTENT_BASE_URL: "https://raw.githubusercontent.com/palactix/content/refs/heads/main/blog",
-  GITHUB_API_BASE_URL: "https://api.github.com/repos/palactix/content/contents/blog",
+  GITHUB_CONTENT_BASE_URL: `https://raw.githubusercontent.com/palactix/content/refs/heads/${branch}/blog`,
+  GITHUB_API_BASE_URL: "https://api.github.com/repos/palactix/content/contents/blog?ref=" + branch,
   CACHE_REVALIDATE_SECONDS: 60 * 60, // 1 hour
   SUGGESTED_POSTS_COUNT: 3,
   EXCERPT_LENGTH: 150, // characters

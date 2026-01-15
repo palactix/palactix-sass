@@ -15,11 +15,13 @@ interface BlogListItemCardProps {
 }
 
 export function BlogListItemCard({ blog, index, isFeatured = false }: BlogListItemCardProps) {
-  const formattedDate = new Date(blog.date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(blog.updated_at).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
+  console.log(formattedDate, blog.updated_at);
+  
 
   return (
     <motion.article
@@ -31,7 +33,7 @@ export function BlogListItemCard({ blog, index, isFeatured = false }: BlogListIt
       {/* Image */}
       <div className={`relative ${isFeatured ? 'md:w-1/2' : 'md:w-1/3'} ${isFeatured ? 'h-[400px]' : 'h-[200px]'} w-full overflow-hidden rounded-lg bg-muted shrink-0`}>
         <Image
-          src={`/images/blog/${blog.slug}.png`}
+          src={blog.image}
           alt={blog.title}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"

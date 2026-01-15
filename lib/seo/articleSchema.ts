@@ -7,8 +7,8 @@ export function generateArticleSchema(blog: BlogPost, url: string) {
     "headline": blog.title,
     "description": blog.description,
     "image": `/images/blog/${blog.slug}.jpg`,
-    "datePublished": blog.date,
-    "dateModified": blog.date,
+    "datePublished": blog.created_at,
+    "dateModified": blog.updated_at,
     "author": {
       "@type": "Person",
       "name": blog.author,
@@ -18,7 +18,7 @@ export function generateArticleSchema(blog: BlogPost, url: string) {
       "name": "Palactix",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.palactix.com/logo.png",
+        "url": "https://www.palactix.com/images/p-logo.svg",
       },
     },
     "mainEntityOfPage": {

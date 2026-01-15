@@ -17,7 +17,7 @@ const footerLinks = [
   { href: "/privacy-policy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
   { href: "/refund-policy", label: "Refund" },
-  { href: "/developers", label: "Developers" },
+  { href: "#", label: "Developers" },
   { href: "/contact-us", label: "Contact Us" },
   { href: "/blog", label: "Blog" },
 ];
