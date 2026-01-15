@@ -81,7 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const blogs = await fetchAllBlogs();
     blogRoutes = blogs.map((b) => ({
       url: buildUrl(siteUrl, `/blog/${b.slug}`),
-      lastModified: b.date ? new Date(b.date) : undefined,
+      lastModified: b.updated_at ? new Date(b.updated_at) : undefined,
     }));
   } catch (err) {
     // Fail-soft: if blogs cannot be fetched, skip adding them

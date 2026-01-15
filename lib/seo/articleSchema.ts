@@ -1,17 +1,25 @@
 import type { BlogPost } from "@/features/blog/types/blog.types";
 
+
+function dateToTimeZoneString(dateStr: string) {
+  return new Date(dateStr.replace(" ", "T") + "Z").toISOString();
+}
+
 export function generateArticleSchema(blog: BlogPost, url: string) {
+
+
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": blog.title,
     "description": blog.description,
-    "image": `/images/blog/${blog.slug}.jpg`,
-    "datePublished": blog.created_at,
-    "dateModified": blog.updated_at,
+    "image": blog.image,
+    "datePublished": dateToTimeZoneString(blog.created_at),
+    "dateModified": dateToTimeZoneString(blog.updated_at),
     "author": {
       "@type": "Person",
       "name": blog.author,
+      "url": "https://x.com/_JitendraM",
     },
     "publisher": {
       "@type": "Organization",
@@ -27,6 +35,6 @@ export function generateArticleSchema(blog: BlogPost, url: string) {
     },
     "keywords": blog.tags.join(", "),
     "articleSection": "Blog",
-    "wordCount": 100 // blog.content.trim().split(/\s+/).length,
+    "wordCount": blog.wordCount // blog.content.trim().split(/\s+/).length,
   };
 }

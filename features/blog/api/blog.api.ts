@@ -97,6 +97,7 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
     updated_at: data.updated_at as string,
     content: compiledContent,
     readTime,
+    wordCount
   };
 }
 

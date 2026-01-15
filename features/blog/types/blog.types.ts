@@ -21,6 +21,7 @@ export interface BlogPost extends BlogMetadata {
   slug: string;
   content: ReactNode; // Compiled MDX content
   readTime?: number; // in minutes
+  wordCount: number;
 }
 
 export interface BlogListItem extends BlogMetadata {
