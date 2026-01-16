@@ -2,6 +2,8 @@ import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import remarkSmartypants from "remark-smartypants";
+
 import { BLOG_CONFIG } from "../constants";
 import type { BlogPost, BlogListItem, BlogPaginationData } from "../types/blog.types";
 
@@ -75,7 +77,7 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
     source: rawContent,
     options: {
       mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkBreaks],
+        remarkPlugins: [remarkGfm, remarkBreaks, remarkSmartypants],
       },
     },
   });
