@@ -1,5 +1,5 @@
-//const branch = "main";
-const branch = "4-day-3-the-middleman-risk-why-renting-your-infrastructure-is-a-liability";
+const branch = "main";
+//const branch = "4-day-3-the-middleman-risk-why-renting-your-infrastructure-is-a-liability";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
