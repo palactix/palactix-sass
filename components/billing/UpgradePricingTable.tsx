@@ -53,7 +53,7 @@ export function UpgradePricingTable() {
         userId: user.id.toString(),
         organizationSlug: currentOrganization.slug
       },
-      focusedVia: "upgrade-page"
+      //focusedVia: "upgrade-page"
     });
   };
 
