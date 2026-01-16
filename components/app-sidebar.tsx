@@ -254,8 +254,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span> {permissions ? Math.round((permissions.limits.clients.current / (permissions.limits.clients.max || 1)) * 100) : 0} %</span>
                 </div>
               </div>
-              <Button size="sm" variant="outline" className="w-full mt-3 h-7 text-xs">
-                Upgrade Plan
+              <Button size="sm" variant="outline" className="w-full mt-3 h-7 text-xs" asChild>
+                <Link href={orgPaths.upgrade || "#"}>Upgrade Plan</Link>
               </Button>
             </div>
           ) : (

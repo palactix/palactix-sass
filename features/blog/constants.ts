@@ -1,5 +1,5 @@
-//const branch = "main";
-const branch = "2-day-2---the-success-tax-why-per-seat-pricing-is-a-penalty-on-your-growth";
+const branch = "main";
+//const branch = "2-day-2---the-success-tax-why-per-seat-pricing-is-a-penalty-on-your-growth";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
