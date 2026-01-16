@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "../Container";
-import { initializePaddle, Paddle } from "@paddle/paddle-js";
 
 export function PricingSection({ hideHeader = false }: { hideHeader?: boolean }) {
   // const plans = [
@@ -60,19 +58,7 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
 
 
   // You should move these to env variables
-  const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || ""; 
-  const PADDLE_ENV = (process.env.NEXT_PUBLIC_PADDLE_ENV || "sandbox") as "sandbox" | "production";
-
-  // Map your plan names to Paddle Price IDs
-  const PLAN_PRICE_IDS = {
-    "Starter": "pri_01kew3ab5yxxqe57pbrdpz3mfy", // Replace with actual ID
-    "Pro": "pri_01kew3b243t99e9fzb6ajfmddh",         // Replace with actual ID
-    "Scale": "pri_scale_month_price_id"      // Replace with actual ID
-  };
-
-  const [paddle, setPaddle] = useState<Paddle | null>(null);
-
-
+  
   const plans = [
     {
       name: "Starter",
@@ -89,7 +75,6 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
       cta: "Start 14-Day Pilot",
       ctaLink: "/auth/signup",
       popular: false,
-      priceId: PLAN_PRICE_IDS["Starter"],
     },
     {
       name: "Pro",
@@ -107,7 +92,6 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
       cta: "Scale Your Agency",
       ctaLink: "/auth/signup",
       popular: true,
-      priceId: PLAN_PRICE_IDS["Pro"],
     },
     {
       name: "Scale",
@@ -126,35 +110,8 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
       cta: "Talk to Sales",
       ctaLink: "/contact-us",
       popular: false,
-      priceId: PLAN_PRICE_IDS["Scale"],
     },
   ];
-
-  // Initialize Paddle
-  useEffect(() => {
-    if (PADDLE_CLIENT_TOKEN) {
-        initializePaddle({ 
-            environment: PADDLE_ENV, 
-            token: PADDLE_CLIENT_TOKEN 
-        }).then((paddleInstance) => {
-            if (paddleInstance) {
-                setPaddle(paddleInstance);
-            }
-        });
-    }
-  }, []);
-
-
-  const handleCheckout = (priceId: string) => {
-   if (!paddle) return;
-    paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      customer: {
-        email: "jitu@palactix.com",
-      },
-      
-    });
-  };
 
   return (
     <section id="pricing" className="py-20 px-6 scroll-mt-20">
@@ -258,7 +215,7 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
                 asChild
                 
               >
-                <a href={"#"} onClick={() => handleCheckout(plan.priceId)}>{plan.cta}</a>
+                <a href={plan.ctaLink}>{plan.cta}</a>
                 
               </Button>
             </motion.div>
