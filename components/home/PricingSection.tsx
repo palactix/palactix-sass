@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Check } from "lucide-react";
 import { motion } from "motion/react";
 import { Container } from "../Container";
+import { initializePaddle, Paddle } from "@paddle/paddle-js";
 
 export function PricingSection({ hideHeader = false }: { hideHeader?: boolean }) {
   // const plans = [
@@ -57,59 +58,104 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
   //   },
   // ];
 
+
+  // You should move these to env variables
+  const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || ""; 
+  const PADDLE_ENV = (process.env.NEXT_PUBLIC_PADDLE_ENV || "sandbox") as "sandbox" | "production";
+
+  // Map your plan names to Paddle Price IDs
+  const PLAN_PRICE_IDS = {
+    "Starter": "pri_01kew3ab5yxxqe57pbrdpz3mfy", // Replace with actual ID
+    "Pro": "pri_01kew3b243t99e9fzb6ajfmddh",         // Replace with actual ID
+    "Scale": "pri_scale_month_price_id"      // Replace with actual ID
+  };
+
+  const [paddle, setPaddle] = useState<Paddle | null>(null);
+
+
   const plans = [
-  {
-    name: "Starter",
-    price: "$199",
-    period: "/mo",
-    target: "For boutique agencies",
-    features: [
-      "Up to 5 team seats",
-      "50 Client Brands",
-      "White-label Dashboard",
-      "BYO Sovereign Keys Support",
-      "Standard Email Support",
-    ],
-    cta: "Start 14-Day Pilot",
-    ctaLink: "/auth/signup",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    price: "$799",
-    period: "/mo",
-    target: "The Agency Powerhouse",
-    features: [
-      "Everything in Starter",
-      "Unlimited Clients & Brands",
-      "Unlimited Team Seats",
-      "Custom Domain (White-label)",
-      "Priority 4h Response Support",
-      "Basic Analytics Export",
-    ],
-    cta: "Scale Your Agency",
-    ctaLink: "/auth/signup",
-    popular: true,
-  },
-  {
-    name: "Scale",
-    price: "$1,999+",
-    period: "/mo",
-    target: "Enterprise Infrastructure",
-    features: [
-      "Everything in Pro",
-      "Hierarchical Approval Workflows (Beta)",
-      "Audit Logs & Activity Tracking (Beta)",
-      "SAML / SSO Support (Roadmap)",
-      "API Concierge (Hands-on Setup)",
-      "Dedicated Technical Lead",
-      "99.9% Uptime SLA",
-    ],
-    cta: "Talk to Sales",
-    ctaLink: "/contact-us",
-    popular: false,
-  },
-];
+    {
+      name: "Starter",
+      price: "$199",
+      period: "/mo",
+      target: "For boutique agencies",
+      features: [
+        "Up to 5 team seats",
+        "50 Client Brands",
+        "White-label Dashboard",
+        "BYO Sovereign Keys Support",
+        "Standard Email Support",
+      ],
+      cta: "Start 14-Day Pilot",
+      ctaLink: "/auth/signup",
+      popular: false,
+      priceId: PLAN_PRICE_IDS["Starter"],
+    },
+    {
+      name: "Pro",
+      price: "$799",
+      period: "/mo",
+      target: "The Agency Powerhouse",
+      features: [
+        "Everything in Starter",
+        "Unlimited Clients & Brands",
+        "Unlimited Team Seats",
+        "Custom Domain (White-label)",
+        "Priority 4h Response Support",
+        "Basic Analytics Export",
+      ],
+      cta: "Scale Your Agency",
+      ctaLink: "/auth/signup",
+      popular: true,
+      priceId: PLAN_PRICE_IDS["Pro"],
+    },
+    {
+      name: "Scale",
+      price: "$1,999+",
+      period: "/mo",
+      target: "Enterprise Infrastructure",
+      features: [
+        "Everything in Pro",
+        "Hierarchical Approval Workflows (Beta)",
+        "Audit Logs & Activity Tracking (Beta)",
+        "SAML / SSO Support (Roadmap)",
+        "API Concierge (Hands-on Setup)",
+        "Dedicated Technical Lead",
+        "99.9% Uptime SLA",
+      ],
+      cta: "Talk to Sales",
+      ctaLink: "/contact-us",
+      popular: false,
+      priceId: PLAN_PRICE_IDS["Scale"],
+    },
+  ];
+
+  // Initialize Paddle
+  useEffect(() => {
+    if (PADDLE_CLIENT_TOKEN) {
+        initializePaddle({ 
+            environment: PADDLE_ENV, 
+            token: PADDLE_CLIENT_TOKEN 
+        }).then((paddleInstance) => {
+            if (paddleInstance) {
+                setPaddle(paddleInstance);
+            }
+        });
+    }
+  }, []);
+
+
+  const handleCheckout = (priceId: string) => {
+   if (!paddle) return;
+    paddle.Checkout.open({
+      items: [{ priceId, quantity: 1 }],
+      customer: {
+        email: "jitu@palactix.com",
+      },
+      
+    });
+  };
+
   return (
     <section id="pricing" className="py-20 px-6 scroll-mt-20">
       <Container className="mx-auto">
@@ -210,8 +256,10 @@ export function PricingSection({ hideHeader = false }: { hideHeader?: boolean })
                 variant={plan.popular ? "default" : "outline"}
                 size="lg"
                 asChild
+                
               >
-                <a href={plan.ctaLink}>{plan.cta}</a>
+                <a href={"#"} onClick={() => handleCheckout(plan.priceId)}>{plan.cta}</a>
+                
               </Button>
             </motion.div>
           ))}
