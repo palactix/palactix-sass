@@ -1,5 +1,5 @@
 const branch = "main";
-//const branch = "4-day-3-the-middleman-risk-why-renting-your-infrastructure-is-a-liability";
+//const branch = "8-day-5-the-real-cost-of-legacy-tools-a-2026-price-comparison-sprout-vs-palactix";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
