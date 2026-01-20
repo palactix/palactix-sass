@@ -51,9 +51,19 @@ export function HeroSection() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="text-xl text-muted-foreground leading-relaxed"
             >
-              Your clients authorize your brand — not a third-party tool. 
+              {/* Your clients authorize your brand — not a third-party tool. 
               Zero third-party branding. Zero shared keys. Flat
-              pricing.
+              pricing. */}
+
+              <span className="block">
+                Your clients authorize your brand — not a third-party tool.
+                Zero third-party branding. Zero shared keys. Flat pricing.
+              </span>
+
+              <span className="block text-base text-muted-foreground/80">
+                Palactix lets agencies schedule and publish client content under their own brand,
+                without shared tools or per-seat pricing.
+              </span>
             </motion.p>
 
             {/* Buttons */}
@@ -69,7 +79,7 @@ export function HeroSection() {
                 asChild
               >
                 <Link href={"/auth/signup"} className="flex items-center gap-2">
-                    Start 14-Day Evaluation
+                    Get your own branded publishing platform
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -79,7 +89,7 @@ export function HeroSection() {
                 className="text-base"
                 asChild
               >
-                <a href="#pricing">See Pricing</a>
+                <Link href="/pricing">See Pricing</Link>
               </Button>
             </motion.div>
 
