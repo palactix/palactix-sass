@@ -8,6 +8,7 @@ import { usePermissionStore } from "@/features/organization/stores/permission.st
 import { useUser } from "@/features/auth/api/auth.queries";
 import { useOrganizationStore } from "@/features/organization/stores/organization.store";
 import { initializePaddle, Paddle } from "@paddle/paddle-js";
+import { startBilling } from "@/features/organization/api/billing.api";
 
 // You should move these to env variables
 const PADDLE_CLIENT_TOKEN = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || ""; 
@@ -40,21 +41,29 @@ export function UpgradePricingTable() {
     }
   }, []);
 
-  const handleCheckout = (priceId: string) => {
+  const handleCheckout = async (priceId: string) => {
     if (!paddle || !user || !currentOrganization) return;
+    const paddleConfig = await startBilling(currentOrganization.slug, priceId);
+    console.log("Redirecting to checkout URL:", paddleConfig);
 
-    paddle.Checkout.open({
-      items: [{ priceId, quantity: 1 }],
-      customer: {
-        email: user.email,
-      },
-      customData: {
-        organizationId: currentOrganization.id.toString(),
-        userId: user.id.toString(),
-        organizationSlug: currentOrganization.slug
-      },
-      //focusedVia: "upgrade-page"
-    });
+    // paddle.Checkout.open({
+    //   items: [{ priceId, quantity: 1 }],
+    //   customer: {
+    //     email: user.email,
+    //   },
+    //   customData: {
+    //     organizationId: currentOrganization.id.toString(),
+    //     userId: user.id.toString(),
+    //     organizationSlug: currentOrganization.slug
+    //   },
+    //   //focusedVia: "upgrade-page"
+    // });
+
+    if (paddleConfig.settings) {
+      delete paddleConfig.settings.displayMode;
+      delete paddleConfig.settings.frameStyle;
+    }
+    paddle.Checkout.open(paddleConfig);
   };
 
   const plans = [
@@ -112,6 +121,7 @@ export function UpgradePricingTable() {
     <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
       {plans.map((plan, index) => {
         const isCurrentPlan = permissions?.plan?.name === plan.name;
+        console.log("Rendering plan:", plan.name, "Is current plan:", isCurrentPlan);
         
         return (
             <motion.div

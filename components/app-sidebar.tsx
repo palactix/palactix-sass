@@ -77,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Scheduler",
         url: orgPaths.scheduler,
         icon: Calendar,
-        locked: permissions?.plan === undefined
+        locked: permissions?.plan?.name === null,
       },
       {
         title: "Staff",

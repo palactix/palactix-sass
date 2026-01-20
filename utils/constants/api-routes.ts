@@ -47,6 +47,8 @@ export const AGENCY_ROUTES = {
 
   RECENT_CLIENTS: "/organizations/{orgId}/staff/recent-clients",
   TRACK_RECENT_CLIENT: "/organizations/{orgId}/staff/track-client-access",
+
+  START_BILLING: "/organizations/{orgId}/billing/start-checkout/{price}",
 };
 
 export const CLIENT_ROUTES = {

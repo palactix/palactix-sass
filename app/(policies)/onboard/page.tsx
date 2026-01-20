@@ -11,6 +11,7 @@ import { useOnboardInfo } from "@/features/onboard/api/onboard.queries";
 import { useChannelLogo } from "@/hooks/use-channel-logo";
 import { useChannelConnect } from "@/hooks/use-channel-connect";
 import { toast } from "sonner";
+import Link from "next/link";
 
 function OnboardPageContent() {
   const searchParams = useSearchParams();
@@ -22,6 +23,9 @@ function OnboardPageContent() {
   const getChannelLogo = useChannelLogo();
   const { connectChannel, connectingChannel } = useChannelConnect({
     redirectPath: `/${orgSlug}/dashboard`,
+    onSuccess: () => {
+      toast.success("Account connected successfully!");
+    }
   });
 
   const isLoading = isUserLoading || isOnboardLoading;
@@ -206,13 +210,33 @@ function OnboardPageContent() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.5 }}
-              className="flex items-center justify-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20"
+              className="space-y-4"
             >
-              <Lock className="w-5 h-5 text-primary shrink-0" />
-              <p className="text-sm text-muted-foreground">
-                Your data is encrypted and only used to publish on your behalf. 
-                You can revoke access anytime.
-              </p>
+              <div className="flex items-center justify-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+                <Lock className="w-5 h-5 text-primary shrink-0" />
+                <p className="text-sm text-muted-foreground">
+                  Your data is encrypted and only used to publish on your behalf. 
+                  You can revoke access anytime.
+                </p>
+              </div>
+
+               {/* Account Actions */}
+               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 px-2">
+                 <button 
+                  onClick={() => router.push("/auth/reset-password")}
+                  className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
+                >
+                  Create or Reset Password
+                </button>
+
+                <Link 
+                  href={'/dashboard'}
+                  className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  Go to Dashboard 
+                  <span aria-hidden="true">&rarr;</span>
+                </Link>
+              </div>
             </motion.div>
 
             {/* Glow Effect */}
