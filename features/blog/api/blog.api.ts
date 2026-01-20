@@ -58,10 +58,9 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
   if (!response.ok) {
     url = `${BLOG_CONFIG.GITHUB_CONTENT_BASE_URL}/${slug}.md`;
     response = await fetch(url, {
-      cache: 'no-store',
-      // next: { 
-      //   revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS 
-      // },
+      next: { 
+        revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS 
+      },
       headers: {
         Accept: "text/plain",
       },
