@@ -58,7 +58,10 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
   if (!response.ok) {
     url = `${BLOG_CONFIG.GITHUB_CONTENT_BASE_URL}/${slug}.md`;
     response = await fetch(url, {
-      next: { revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS },
+      cache: 'no-store',
+      // next: { 
+      //   revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS 
+      // },
       headers: {
         Accept: "text/plain",
       },
@@ -71,6 +74,7 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
 
   const markdown = await response.text();
   const { data, content: rawContent } = matter(markdown);
+  console.log("Fetched blog data:", data);
 
   // Compile MDX content
   const { content: compiledContent } = await compileMDX({
