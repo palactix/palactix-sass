@@ -180,6 +180,8 @@ export function getOrgPaths(orgSlug?: string) {
       analytics: '/analytics',
       clients: '/clients',
       scheduler: '/scheduler',
+      calendar: '/calendar',
+      posts: '/posts',
       inbox: '/inbox',
       upgrade: '/upgrade',
     };
@@ -195,6 +197,8 @@ export function getOrgPaths(orgSlug?: string) {
     analytics: `/${slug}/analytics`,
     clients: `/${slug}/clients`,
     scheduler: `/${slug}/scheduler`,
+    calendar: `/${slug}/calendar`,
+    posts: `/${slug}/posts`,
     inbox: `/${slug}/inbox`,
     upgrade: `/${slug}/upgrade`,
   };
@@ -219,7 +223,8 @@ export function useOrgPaths(orgSlug?: string) {
       analytics: '/analytics',
       clients: '/clients',
       scheduler: '/scheduler',
-      inbox: '/inbox',
+      calendar: '/calendar',
+      posts: '/posts',
       upgrade: '/upgrade',
     };
   }
@@ -234,7 +239,8 @@ export function useOrgPaths(orgSlug?: string) {
     analytics: `/${slug}/analytics`,
     clients: `/${slug}/clients`,
     scheduler: `/${slug}/scheduler`,
-    inbox: `/${slug}/inbox`,
+    calendar: `/${slug}/calendar`,
+    posts: `/${slug}/posts`,
     upgrade: `/${slug}/upgrade`,
   };
 }

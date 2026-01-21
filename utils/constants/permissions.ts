@@ -27,6 +27,13 @@ export const PERMISSIONS = {
   ANALYTICS: {
     VIEW: 'analytics.view',
   },
+  POSTS: {
+    CREATE: 'posts.create',
+    VIEW: 'posts.view',
+    UPDATE: 'posts.update',
+    DELETE: 'posts.delete',
+    EXPORT: 'posts.export',
+  },
 } as const;
 
 // Extract all permission string values from the nested PERMISSIONS object
