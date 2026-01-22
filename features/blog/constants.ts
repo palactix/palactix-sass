@@ -1,5 +1,5 @@
-//const branch = "main";
-const branch = "14-day-8-the-sovereign-agency-moving-from-renter-to-owner";
+const branch = "main";
+//const branch = "14-day-8-the-sovereign-agency-moving-from-renter-to-owner";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
