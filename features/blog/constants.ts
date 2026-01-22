@@ -1,5 +1,5 @@
-const branch = "main";
-//const branch = "8-day-5-the-real-cost-of-legacy-tools-a-2026-price-comparison-sprout-vs-palactix";
+//const branch = "main";
+const branch = "14-day-8-the-sovereign-agency-moving-from-renter-to-owner";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,

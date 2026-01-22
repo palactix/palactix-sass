@@ -73,7 +73,7 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
 
   const markdown = await response.text();
   const { data, content: rawContent } = matter(markdown);
-  console.log("Fetched blog data:", data);
+
 
   // Compile MDX content
   const { content: compiledContent } = await compileMDX({
