@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     const blog = await fetchBlogBySlug(resolvedParams.blog);
     
     return {
-      title: `${blog.title} - Palactix Blog`,
+      title: `${blog.title}`,
       description: blog.description,
       keywords: blog.tags.join(", "),
       authors: [{ name: blog.author }],
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
     };
   } catch {
     return {
-      title: "Blog Post Not Found - Palactix",
+      title: "Blog Post Not Found",
       description: "The blog post you're looking for doesn't exist.",
     };
   }

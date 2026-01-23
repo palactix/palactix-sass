@@ -1,5 +1,5 @@
-const branch = "main";
-//const branch = "14-day-8-the-sovereign-agency-moving-from-renter-to-owner";
+//const branch = "main";
+const branch = "16-day-9-what-is-a-byo-api-model-the-non-technical-ceo-guide";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,

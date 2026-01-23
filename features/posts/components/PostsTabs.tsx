@@ -1,12 +1,11 @@
 "use client";
 
 import { memo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 export interface PostsTabsProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
   counts?: {
     all: number;
     my_drafts: number;
@@ -18,12 +17,27 @@ export interface PostsTabsProps {
 }
 
 export const PostsTabs = memo(function PostsTabs({
-  activeTab,
-  onTabChange,
   counts,
 }: PostsTabsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get("tab") || "all";
+
+  const handleTabChange = (tab: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === "all") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tab);
+    }
+    // Reset to page 1 when tab changes
+    params.delete("page");
+    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    router.push(newUrl, { scroll: false });
+  };
+
   return (
-    <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
       <TabsList className="grid w-full grid-cols-6 lg:w-auto">
         <TabsTrigger value="all" className="relative">
           All Posts
