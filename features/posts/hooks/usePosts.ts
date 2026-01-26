@@ -16,6 +16,7 @@ export const useGetPosts = (params?: GetPostsParams) => {
 };
 
 export const useGetPost = (postId: string) => {
+  const queryClient = useQueryClient();
   const { currentOrganization } = useOrganizationStore();
   const orgId = currentOrganization?.id;
 
@@ -23,6 +24,26 @@ export const useGetPost = (postId: string) => {
     queryKey: ["post", orgId, postId],
     queryFn: () => getPost(String(orgId), postId),
     enabled: !!orgId && !!postId,
+    initialData: () => {
+      // Check if the post exists in any cached posts list
+      const cachedQueries = queryClient.getQueriesData({ queryKey: ["posts", orgId] });
+      
+      for (const [, data] of cachedQueries) {
+        if (data && typeof data === "object" && "data" in data) {
+          const posts = (data as any).data;
+          if (Array.isArray(posts)) {
+            const post = posts.find((p: any) => p.id === postId);
+            if (post) {
+              return post;
+            }
+          }
+        }
+      }
+      
+      return undefined;
+    },
+    // Only refetch from API if data is stale or not found in cache
+    staleTime: 30000, // Consider data fresh for 30 seconds
   });
 };
 

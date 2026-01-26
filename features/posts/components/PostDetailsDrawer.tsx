@@ -21,6 +21,7 @@ import { format } from "date-fns";
 export interface PostDetailsDrawerProps {
   post: Post | null;
   isOpen: boolean;
+  isLoading?: boolean;
   onClose: () => void;
   onApprove?: (postId: string) => void;
   onReject?: (postId: string, reason: string) => void;
@@ -30,6 +31,7 @@ export interface PostDetailsDrawerProps {
 export const PostDetailsDrawer = memo(function PostDetailsDrawer({
   post,
   isOpen,
+  isLoading = false,
   onClose,
   onApprove,
   onReject,
@@ -50,6 +52,22 @@ export const PostDetailsDrawer = memo(function PostDetailsDrawer({
       }
     }
   }, [isOpen, post]);
+
+  // Show loading state if drawer is open and data is loading
+  if (isOpen && isLoading) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto p-0">
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading post details...</p>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   if (!post) return null;
 

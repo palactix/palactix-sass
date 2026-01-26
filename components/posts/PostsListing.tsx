@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { TableBreadcrumb, TablePagination } from "@/components/shared/table";
 import { ChevronDown, Calendar, CheckCircle2, Trash2 } from "lucide-react";
-import { useGetPosts } from "@/features/posts/hooks/usePosts";
+import { useGetPosts, useGetPost } from "@/features/posts/hooks/usePosts";
 import { Post } from "@/features/posts/types";
 import { buildOrgUrl } from "@/lib/utils/org-urls";
 import { toast } from "sonner";
@@ -81,13 +81,30 @@ export function PostsListing() {
   const totalItems = data?.total || 0;
   const failedPosts = useMemo(() => postsData.filter((p) => p.status === "failed"), [postsData]);
 
+  // Fetch single post if postId is in URL (for direct link/refresh)
+  const { data: singlePostData, isLoading: isSinglePostLoading } = useGetPost(postIdFromUrl || "");
+
   // Find post to display in drawer
   const postToDisplay = useMemo(() => {
-    if (postIdFromUrl && postsData.length > 0) {
-      return postsData.find((p) => p.id === postIdFromUrl) || selectedPost;
+    // If we clicked a post from the table, use that
+    if (selectedPost) {
+      return selectedPost;
     }
-    return selectedPost;
-  }, [postIdFromUrl, postsData, selectedPost]);
+    
+    // If we have a postId in URL, try to find it in the list first
+    if (postIdFromUrl) {
+      const postFromList = postsData.find((p) => p.id === postIdFromUrl);
+      if (postFromList) {
+        return postFromList;
+      }
+      // If not in list but we fetched it directly, use that
+      if (singlePostData) {
+        return singlePostData;
+      }
+    }
+    
+    return null;
+  }, [postIdFromUrl, postsData, selectedPost, singlePostData]);
 
   // Update URL params
   const updateUrl = (updates: Record<string, string | null>) => {
@@ -289,6 +306,7 @@ export function PostsListing() {
       <PostDetailsDrawer
         post={postToDisplay}
         isOpen={!!postToDisplay || !!postIdFromUrl}
+        isLoading={!!postIdFromUrl && !postToDisplay && isSinglePostLoading}
         onClose={() => {
           setSelectedPost(null);
           updateUrl({ postId: null });
