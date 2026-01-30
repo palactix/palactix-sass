@@ -1,5 +1,5 @@
-//const branch = "main";
-const branch = "20-day-11-white-label-20-why-your-logo-isnt-enough-anymore";
+const branch = "main";
+//const branch = "20-day-11-white-label-20-why-your-logo-isnt-enough-anymore";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
