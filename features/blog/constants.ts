@@ -1,5 +1,5 @@
-const branch = "main";
-//const branch = "16-day-9-what-is-a-byo-api-model-the-non-technical-ceo-guide";
+//const branch = "main";
+const branch = "20-day-11-white-label-20-why-your-logo-isnt-enough-anymore";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
