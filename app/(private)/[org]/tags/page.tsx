@@ -1,6 +1,6 @@
 "use client";
 import { CreateButton, PageHeader, TableBreadcrumb } from "@/components/shared/table";
-import TagsListing from "@/components/tags/TagsListing";
+// import TagsListing from "@/components/tags/TagsListing";
 import { buildOrgUrl } from "@/lib/utils/index";
 
 
@@ -22,7 +22,7 @@ export default function Page() {
             <CreateButton href={buildOrgUrl('/tags/create')} label="Create Tag" />
           } 
         />
-      <TagsListing />
+      
     </div>
   );
 }

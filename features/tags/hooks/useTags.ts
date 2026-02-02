@@ -5,7 +5,8 @@ import {
   updateTag,
   deleteTag,
   activateTag,
-  deactivateTag
+  deactivateTag,
+  getTagsForListing
 } from "../api/tags.api";
 import { CreateTagPayload, CreateTagResponse, UpdateTagPayload, UpdateTagResponse } from "../types";
 import { PaginationParams } from "@/types/api";
@@ -113,7 +114,7 @@ export function useTagsListing(params?: PaginationParams) {
 
   return useQuery({
     queryKey: tagsKeys.tags(currentOrgId?.toString() || "", params),
-    queryFn: () => getTags(params),
+    queryFn: () => getTagsForListing(params),
     enabled: !!currentOrgId,
     placeholderData: (prev) => prev,
   });
