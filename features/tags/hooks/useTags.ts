@@ -107,3 +107,14 @@ export function useDeactivateTagMutation() {
     },
   });
 }
+
+export function useTagsListing(params?: PaginationParams) {
+  const currentOrgId = useOrganizationStore((state) => state.currentOrganization?.id);
+
+  return useQuery({
+    queryKey: tagsKeys.tags(currentOrgId?.toString() || "", params),
+    queryFn: () => getTags(params),
+    enabled: !!currentOrgId,
+    placeholderData: (prev) => prev,
+  });
+}

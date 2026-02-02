@@ -226,6 +226,7 @@ export function useOrgPaths(orgSlug?: string) {
       calendar: '/calendar',
       posts: '/posts',
       upgrade: '/upgrade',
+      tags: '/tags',
     };
   }
   
@@ -241,6 +242,7 @@ export function useOrgPaths(orgSlug?: string) {
     scheduler: `/${slug}/scheduler`,
     calendar: `/${slug}/calendar`,
     posts: `/${slug}/posts`,
+    tags: `/${slug}/tags`,
     upgrade: `/${slug}/upgrade`,
   };
 }

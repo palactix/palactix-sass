@@ -18,8 +18,7 @@ export async function createTag(payload: CreateTagPayload) {
 }
 
 export async function getTags(params?: PaginationParams) {
-  console.log("Fetching tags with params:",TAGS_ROUTES.TAGS,  params);
-  const res = await api.get<Array<Tag>>(TAGS_ROUTES.TAGS, { params });
+  const res = await api.get<Array<Tag> | LaravelPagination<Tag>>(TAGS_ROUTES.TAGS, { params });
   return res.data;
 }
 

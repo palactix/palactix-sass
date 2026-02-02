@@ -3,6 +3,7 @@ export type Tag = {
   name: string;
   type: "system" | "user";
   color: string;
+  created_at: string;
 }
 
 export interface CreateTagPayload {

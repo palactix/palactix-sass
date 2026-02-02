@@ -293,6 +293,11 @@ export function ClientListing() {
     }
   ], [rowActions]);
 
+  const onTableRowSelect = useCallback((selectedIds: (string | number)) => {
+    // Handle row selection if needed
+    alert(`Selected IDs: ${selectedIds}`);
+  }, []);
+
   return (
     <div className="space-y-6">
       <TableBreadcrumb items={breadcrumbItems} />
@@ -340,6 +345,7 @@ export function ClientListing() {
           sortConfig={sortConfig}
           onSort={handleSort}
           isLoading={isLoading && !isPlaceholderData}
+          onRowSelect={onTableRowSelect}
         />
       </TableContainer>
 

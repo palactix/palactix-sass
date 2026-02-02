@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Lock,
   NotebookPenIcon,
+  Tag,
 } from "lucide-react"
 
 import {
@@ -101,6 +102,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Clients",
         url: orgPaths.clients,
         icon: Users,
+        badge: false
+      },
+      {
+        title: "Tags",
+        url: orgPaths.tags,
+        icon: Tag,
         badge: false
       },
       // {
