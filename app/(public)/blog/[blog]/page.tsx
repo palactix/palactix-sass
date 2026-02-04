@@ -1,17 +1,20 @@
 import Script from "next/script";
+import Link from "next/link";
+import Image from "next/image";
+import { Calendar, Clock } from "lucide-react";
 import { Container } from "@/components/Container";
-import { BlogHero } from "@/features/blog/components/BlogHero";
-import { BlogContent } from "@/features/blog/components/BlogContent";
-import { BlogNavigation } from "@/features/blog/components/BlogNavigation";
-import { SuggestedPosts } from "@/features/blog/components/SuggestedPosts";
-import { BlogDetailClientWrapper } from "@/features/blog/components/BlogDetailClientWrapper";
-import { SocialShare } from "@/features/blog/components/SocialShare";
-import { FAQs } from "@/components/shared/FAQs";
-import { fetchBlogBySlug, fetchSuggestedBlogs, fetchAdjacentBlogs } from "@/features/blog";
+import { fetchBlogBySlug } from "@/features/blog";
 import { generateArticleSchema } from "@/lib/seo/articleSchema";
-import { generateFAQSchema } from "@/lib/seo/faqSchema";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { BlogSidebar } from "./components/BlogSidebar";
+import { ShareButtons } from "./components/ShareButtons";
+import { BlogContent } from "@/features/blog/components/BlogContent";
+
 
 interface BlogDetailPageProps {
   params: {
@@ -59,29 +62,15 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   const slug = blogparams.blog;
 
   let blog;
-  let suggestedBlogs;
-  let adjacentBlogs;
 
   try {
     blog = await fetchBlogBySlug(slug);
-    [suggestedBlogs, adjacentBlogs] = await Promise.all([
-      fetchSuggestedBlogs(slug, blog.tags),
-      fetchAdjacentBlogs(slug),
-    ]);
   } catch (error) {
     console.error("Failed to fetch blog:", error);
     notFound();
   }
 
-  // Transform FAQs to match the FAQs component format
-  const transformedFaqs = blog.faqs?.map((faq) => ({
-    question: faq.q,
-    answer: faq.a,
-  })) || [];
-
   const blogUrl = `https://www.palactix.com/blog/${slug}`;
-
-  
 
   return (
     <>
@@ -95,63 +84,115 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         }}
       />
 
-      {/* FAQ Schema */}
-      {transformedFaqs.length > 0 && (
-        <Script
-          id="faq-schema"
-          type="application/ld+json"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateFAQSchema(transformedFaqs)),
-          }}
-        />
-      )}
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 pt-20">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content - Left Section */}
+            <div className="lg:col-span-8">
+              {/* Series Context Strip */}
+              <div className="mb-4 px-4 py-3 bg-muted/50 border border-border/30 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  This article is part of an ongoing series on infrastructure ownership for social media agencies.
+                  <Link href="/blog/series/infrastructure-ownership" className="ml-2 text-primary hover:text-primary/80 underline underline-offset-2">
+                    View the full series →
+                  </Link>
+                </p>
+              </div>
 
-      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 py-12">
-      <Container>
-        <div className="py-12">
-          {/* Hero Section */}
-          <BlogHero
-            title={blog.title}
-            description={blog.description}
-            author={blog.author}
-            date={blog.created_at}
-            readTime={blog.readTime || 5}
-            tags={blog.tags}
-            image={blog.image}
-          />
+              <article className="bg-card rounded-lg shadow-sm border border-border/40 overflow-hidden">
+                {/* Featured Image */}
+                <div className="relative w-full h-[400px] bg-muted">
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
 
-          {/* Main Content */}
-          <div className="max-w-4xl mx-auto mt-12">
-            <BlogDetailClientWrapper>
-              
-              {/* Social Share */}
-              <SocialShare title={blog.title} url={blogUrl} />
-              <BlogContent content={blog.content} />
+                <div className="p-8 md:p-12">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {blog.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
 
-               {/* FAQs Section */}
-              {transformedFaqs.length > 0 && (
-                <FAQs faqs={transformedFaqs} />
-              )}
-              
-            </BlogDetailClientWrapper>
+                  {/* Title */}
+                  <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                    {blog.title}
+                  </h1>
 
-            {/* Navigation */}
-            <BlogNavigation
-              prev={adjacentBlogs?.prev || null}
-              next={adjacentBlogs?.next || null}
-            />
+
+                  {/* Description */}
+                  <p className="text-xl text-muted-foreground mb-6">
+                    {blog.description}
+                  </p>
+
+                  {/* Meta Information */}
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <time dateTime={blog.date}>
+                        {new Date(blog.date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </time>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span>{blog.readTime || 5} minutes read</span>
+                    </div>
+                  </div>
+
+                  <Separator className="mb-8" />
+
+                  {/* Blog Content */}
+                  <BlogContent content={blog.content} />
+                  <Separator className="my-8" />
+
+                  {/* Author Info */}
+                  <div className="mb-8 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+                    <p className="font-semibold text-foreground mb-1">Written by {blog.author}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Building Palactix — infrastructure ownership for social media agencies.
+                    </p>
+                  </div>
+
+                  {/* Share Section */}
+                  <ShareButtons title={blog.title} url={blogUrl} />
+                </div>
+              </article>
+            </div>
+
+            {/* Sidebar - Right Section (Client Component) */}
+            <BlogSidebar blog={blog} />
           </div>
 
-          {/* Suggested Posts */}
-          {suggestedBlogs && suggestedBlogs.length > 0 && (
-            <div className="max-w-7xl mx-auto mt-16">
-              <SuggestedPosts blogs={suggestedBlogs} />
-            </div>
-          )}
-        </div>
-      </Container>
-
+          {/* CTA Section */}
+          <div className="mt-16 mb-8">
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5">
+              <CardContent className="p-8 md:p-12 text-center">
+                <p className="text-lg md:text-xl text-foreground/90 mb-6 max-w-3xl mx-auto leading-relaxed">
+                  Palactix is being built for social media agencies that want to own their publishing infrastructure instead of renting it per seat.
+                </p>
+                <p className="text-base text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  This blog is part of that thinking — written publicly, before the product is finished.
+                </p>
+                <Button size="lg" className="font-semibold" asChild>
+                  <Link href="/about">
+                    Why Palactix exists →
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </Container>
       </div>
     </>
   );

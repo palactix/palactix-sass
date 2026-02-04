@@ -3,6 +3,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import remarkSmartypants from "remark-smartypants";
+import rehypeSlug from "rehype-slug";
 
 import { BLOG_CONFIG } from "../constants";
 import type { BlogPost, BlogListItem, BlogPaginationData } from "../types/blog.types";
@@ -81,6 +82,7 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
     options: {
       mdxOptions: {
         remarkPlugins: [remarkGfm, remarkBreaks, remarkSmartypants],
+        rehypePlugins: [rehypeSlug],
       },
     },
   });
@@ -102,7 +104,8 @@ async function fetchBlogContent(slug: string): Promise<BlogPost> {
     updated_at: data.updated_at as string,
     content: compiledContent,
     readTime,
-    wordCount
+    wordCount,
+    table_of_contents: getBlogPostTableOfContents(rawContent),
   };
 }
 
@@ -237,4 +240,15 @@ export async function fetchAdjacentBlogs(currentSlug: string): Promise<{
     prev: currentIndex > 0 ? allBlogs[currentIndex - 1] : null,
     next: currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null,
   };
+}
+
+export function getBlogPostTableOfContents(content: string): { title: string; id: string; level: number }[] {
+  
+  const headings = content.match(/^(#{2,3})\s+(.*)$/gm) || [];
+  return headings.map((heading: string) => {
+    const level = heading.startsWith("###") ? 3 : 2;
+    const text = heading.replace(/^(#{2,3})\s+/, "");
+    const id = text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    return { title: text, id, level };
+  });
 }

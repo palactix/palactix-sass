@@ -20,7 +20,7 @@ export function BlogListItemCard({ blog, index, isFeatured = false }: BlogListIt
     day: "numeric",
     year: "numeric",
   });
-  console.log(formattedDate, blog.updated_at);
+
   
 
   return (
