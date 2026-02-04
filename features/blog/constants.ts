@@ -1,5 +1,5 @@
 const branch = "main";
-//const branch = "20-day-11-white-label-20-why-your-logo-isnt-enough-anymore";
+//const branch = "23-day-14-why-social-media-tools-were-built-for-freelancers-not-agencies";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
