@@ -1,5 +1,5 @@
 const branch = "main";
-//const branch = "23-day-14-why-social-media-tools-were-built-for-freelancers-not-agencies";
+//const branch = "29-day-15-blog";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
