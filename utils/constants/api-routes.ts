@@ -13,6 +13,13 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 export const CHANNEL_LIST = "v1/channels";
 export const ROLES_LIST = "v1/roles";
 
+
+const BLOG_URLS = {
+  FETCH_POSTS: "/blog/posts",
+  FETCH_POST_BY_SLUG: "/blog/posts/{slug}"
+} as const;
+
+
 export const AGENCY_APP_API_ROUTES = {
   CREATE_APP: "/organizations/{orgId}/developer-apps",
   MY_AGENCY_APP: "/organizations/{orgId}/developer-apps/my-agency-app",

@@ -240,11 +240,11 @@ const TableOfContents = ({blog}: {blog: BlogPost}) => {
 
   return (
     <div className="space-y-2">
-      {blog.table_of_contents.map((item: { level: number; title: string; id: string }) => (
+      {blog.table_of_contents.map((item: { level: number; title: string; slug: string }) => (
         <a
-          key={item.id}
-          href={`#${item.id}`}
-          onClick={(e) => handleTOCClick(e, item.id)}
+          key={item.slug}
+          href={`#${item.slug}`}
+          onClick={(e) => handleTOCClick(e, item.slug)}
           className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${item.level === 2 ? 'pl-4' : 'pl-8'} py-1`}
         >
           {item.title}
