@@ -1,5 +1,5 @@
 const branch = "main";
-//const branch = "29-day-15-blog";
+//const branch = "31-day-16-blog";
 
 export const BLOG_CONFIG = {
   POSTS_PER_PAGE: 9,
