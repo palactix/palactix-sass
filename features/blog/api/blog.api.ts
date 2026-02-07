@@ -1,240 +1,168 @@
-import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import remarkSmartypants from "remark-smartypants";
+import rehypeSlug from "rehype-slug";
+import { unstable_cache } from "next/cache";
 
+import { BLOG_URLS } from "@/utils/constants/api-routes";
+import { api } from "@/lib/api/client";
+import { LaravelPagination } from "@/types/api";
 import { BLOG_CONFIG } from "../constants";
-import type { BlogPost, BlogListItem, BlogPaginationData } from "../types/blog.types";
+import type { BlogPost, BlogPaginationData, BlogCategoryPosts, BlogNavPost } from "../types/blog.types";
 
-interface GitHubFileItem {
-  name: string;
-  path: string;
-  sha: string;
-  size: number;
-  url: string;
-  html_url: string;
-  git_url: string;
-  download_url: string;
-  type: string;
-}
+type ApiPost = BlogPost & { 
+  content: string
+};
 
-/**
- * Fetch list of blog files from GitHub API
- */
-async function fetchBlogFiles(): Promise<GitHubFileItem[]> {
-  const response = await fetch(BLOG_CONFIG.GITHUB_API_BASE_URL, {
-    next: { revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS },
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-    },
-  });
+const ONE_DAY_SECONDS = 60 * 60 * 24;
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch blog files: ${response.status}`);
-  }
+const getReadStats = (markdown: string) => {
+  const wordCount = markdown.trim().length === 0 ? 0 : markdown.trim().split(/\s+/).length;
+  const readTime = wordCount === 0 ? 0 : Math.max(1, Math.ceil(wordCount / 200));
+  return { wordCount, readTime };
+};
 
-  const files = await response.json() as GitHubFileItem[];
-  
-  // Filter only files (not directories) - files may or may not have .md extension
-  return files.filter((file) => file.type === "file" && file.download_url);
-}
-
-/**
- * Fetch and parse a single blog post
- */
-async function fetchBlogContent(slug: string): Promise<BlogPost> {
-  // Try without extension first, then with .md
-  let url = `${BLOG_CONFIG.GITHUB_CONTENT_BASE_URL}/${slug}`;
-  
-  let response = await fetch(url, {
-    next: { revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS },
-    headers: {
-      Accept: "text/plain",
-    },
-  });
-
-  // If failed, try with .md extension
-  if (!response.ok) {
-    url = `${BLOG_CONFIG.GITHUB_CONTENT_BASE_URL}/${slug}.md`;
-    response = await fetch(url, {
-      next: { 
-        revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS 
-      },
-      headers: {
-        Accept: "text/plain",
-      },
-    });
-  }
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch blog: ${slug}`);
-  }
-
-  const markdown = await response.text();
-  const { data, content: rawContent } = matter(markdown);
-
-
-  // Compile MDX content
-  const { content: compiledContent } = await compileMDX({
-    source: rawContent,
-    options: {
-      mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkBreaks, remarkSmartypants],
-      },
-    },
-  });
-
-  // Calculate read time (avg 200 words per minute)
-  const wordCount = rawContent.trim().split(/\s+/).length;
-  const readTime = Math.ceil(wordCount / 200);
-
-  return {
-    slug,
-    title: data.title as string,
-    description: data.description as string,
-    date: data.date as string,
-    tags: data.tags as string[],
-    image: data.image as string,
-    author: data.author as string,
-    faqs: data.faqs,
-    created_at: data.created_at as string,
-    updated_at: data.updated_at as string,
-    content: compiledContent,
-    readTime,
-    wordCount
-  };
-}
-
-/**
- * Fetch all blog posts with metadata
- */
-export async function fetchAllBlogs(): Promise<BlogListItem[]> {
-  const files = await fetchBlogFiles();
-  
-  const blogs = await Promise.all(
-    files.map(async (file) => {
-      // Remove .md extension if present, otherwise use name as-is
-      const slug = file.name;
-      
-      // Fetch raw content for excerpt
-      const url = `${BLOG_CONFIG.GITHUB_CONTENT_BASE_URL}/${slug}`;
-      const response = await fetch(url, {
-        next: { revalidate: BLOG_CONFIG.CACHE_REVALIDATE_SECONDS },
-        headers: { Accept: "text/plain" },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch blog metadata: ${slug}`);
-      }
-      
-      const markdown = await response.text();
-      const { data, content: rawContent } = matter(markdown);
-      
-      // Extract excerpt from raw content
-      const plainText = rawContent
-        .replace(/#{1,6}\s+/g, "")
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .replace(/[*_~`]/g, "")
-        .trim();
-      const excerpt = plainText.length <= BLOG_CONFIG.EXCERPT_LENGTH 
-        ? plainText 
-        : plainText.substring(0, BLOG_CONFIG.EXCERPT_LENGTH).trim() + "...";
-      
-      return {
-        slug: data.slug,
-        title: data.title as string,
-        description: data.description as string,
-        date: data.date as string,
-        created_at: data.created_at as string,
-        updated_at: data.updated_at as string,
-        tags: data.tags as string[],
-        image: data.image as string,
-        author: data.author as string,
-        faqs: data.faqs,
-        excerpt,
-      };
-    })
-  );
-
-  // Sort by date (newest first)
-  return blogs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-}
-
-/**
- * Fetch blog posts with pagination
- */
 export async function fetchBlogsWithPagination(page = 1): Promise<BlogPaginationData> {
-  const allBlogs = await fetchAllBlogs();
-  const totalBlogs = allBlogs.length;
-  const totalPages = Math.ceil(totalBlogs / BLOG_CONFIG.POSTS_PER_PAGE);
-  
-  // Validate page number
-  const currentPage = Math.max(1, Math.min(page, totalPages));
-  
-  const startIndex = (currentPage - 1) * BLOG_CONFIG.POSTS_PER_PAGE;
-  const endIndex = startIndex + BLOG_CONFIG.POSTS_PER_PAGE;
-  
-  const blogs = allBlogs.slice(startIndex, endIndex);
-  
+  const { data: json } = await api.get<LaravelPagination<ApiPost>>(BLOG_URLS.FETCH_POSTS, {
+    params: { page },
+  });
+
+  const blogs = (json.data || []) as BlogPost[];
+
+  const totalPages = json.last_page || json.meta?.last_page || 1;
+  const currentPage = json.current_page || json.meta?.current_page || page;
+
   return {
     blogs,
     currentPage,
     totalPages,
-    totalBlogs,
+    totalBlogs: json.total || blogs.length,
     hasNext: currentPage < totalPages,
     hasPrev: currentPage > 1,
   };
 }
 
-/**
- * Fetch a single blog post by slug
- */
-export async function fetchBlogBySlug(slug: string): Promise<BlogPost> {
-  return fetchBlogContent(slug);
-}
+export async function fetchAllBlogs(): Promise<BlogPost[]> {
+  const firstPage = await fetchBlogsWithPagination(1);
+  const blogs = [...firstPage.blogs];
 
-/**
- * Get suggested/related blog posts by tags
- */
-export async function fetchSuggestedBlogs(currentSlug: string, tags: string[]): Promise<BlogListItem[]> {
-  const allBlogs = await fetchAllBlogs();
-  
-  // Filter out current blog and score by matching tags
-  const scoredBlogs = allBlogs
-    .filter((blog) => blog.slug !== currentSlug)
-    .map((blog) => {
-      const matchingTags = blog.tags.filter((tag) => tags.includes(tag));
-      return {
-        blog,
-        score: matchingTags.length,
-      };
-    })
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score);
-
-  // Return top N blogs
-  return scoredBlogs
-    .slice(0, BLOG_CONFIG.SUGGESTED_POSTS_COUNT)
-    .map((item) => item.blog);
-}
-
-/**
- * Get previous and next blog posts
- */
-export async function fetchAdjacentBlogs(currentSlug: string): Promise<{
-  prev: BlogListItem | null;
-  next: BlogListItem | null;
-}> {
-  const allBlogs = await fetchAllBlogs();
-  const currentIndex = allBlogs.findIndex((blog) => blog.slug === currentSlug);
-  
-  if (currentIndex === -1) {
-    return { prev: null, next: null };
+  if (firstPage.totalPages > 1) {
+    for (let page = 2; page <= firstPage.totalPages; page += 1) {
+      const pageData = await fetchBlogsWithPagination(page);
+      blogs.push(...pageData.blogs);
+    }
   }
+
+  return blogs;
+}
+
+type CachedBlog = Omit<BlogPost, "content"> & { content_markdown: string; content?: string };
+
+async function fetchBlogBySlugUncached(slug: string): Promise<CachedBlog> {
+  const { data } = await api.get<{data: ApiPost, 
+  next_post: BlogNavPost, 
+  prev_post: BlogNavPost 
+}>(
+    BLOG_URLS.FETCH_POST_BY_SLUG.replace("{slug}", encodeURIComponent(slug))
+  );
+
+  const post = data.data;
+  const { next_post, prev_post } = data;
   
+  const markdown = post.content || "";
+  const { wordCount, readTime } = getReadStats(markdown);
+
   return {
-    prev: currentIndex > 0 ? allBlogs[currentIndex - 1] : null,
-    next: currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null,
+    ...post,
+    content: markdown, // keep markdown string in cache-friendly shape
+    content_markdown: markdown,
+    table_of_contents: (post.table_of_contents || []).map((t) => ({ ...t, id: t.slug })),
+    faqs: post.faqs || [],
+    readTime,
+    wordCount,
+    next_post: next_post || null,
+    prev_post: prev_post || null,
   };
+}
+
+export async function fetchBlogBySlug(slug: string, options?: { bypassCache?: boolean }): Promise<BlogPost> {
+  const loader = options?.bypassCache
+    ? () => fetchBlogBySlugUncached(slug)
+    : unstable_cache(
+        () => fetchBlogBySlugUncached(slug),
+        ["blog-by-slug", slug],
+        { revalidate: ONE_DAY_SECONDS, tags: ["blog-by-slug", slug] }
+      );
+
+  const cached = await loader();
+  const markdown = cached.content_markdown || cached.content || "";
+
+  const { content: compiledContent } = await compileMDX({
+    source: markdown,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm, remarkBreaks, remarkSmartypants],
+        rehypePlugins: [rehypeSlug],
+      },
+    },
+  });
+
+  return {
+    ...cached,
+    content: compiledContent,
+    content_markdown: markdown,
+  };
+}
+
+export async function fetchSuggestedBlogs(currentSlug: string, tags: string[]): Promise<BlogPost[]> {
+  const all = await fetchAllBlogs();
+  const lowerTags = tags.map((t) => t.toLowerCase());
+  return all
+    .filter((b) => b.slug !== currentSlug)
+    .map((b) => {
+      const bTags = (b.tags || []).map((t) => t.toLowerCase());
+      const score = bTags.filter((t) => lowerTags.includes(t)).length;
+      return { b, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, BLOG_CONFIG.SUGGESTED_POSTS_COUNT)
+    .map(({ b }) => b);
+}
+
+export async function fetchAdjacentBlogs(currentSlug: string): Promise<{ prev: BlogPost | null; next: BlogPost | null; }> {
+  const all = await fetchAllBlogs();
+  const index = all.findIndex((b) => b.slug === currentSlug);
+  if (index === -1) return { prev: null, next: null };
+  return {
+    prev: index > 0 ? all[index - 1] : null,
+    next: index < all.length - 1 ? all[index + 1] : null,
+  };
+}
+
+export async function fetchBlogTags(): Promise<{ id: number; name: string; slug: string }[]> {
+  const { data } = await api.get(BLOG_URLS.TAGS);
+  return Array.isArray(data) ? data : [];
+}
+
+export async function fetchBlogCategories(): Promise<{ id: number; name: string; slug?: string }[]> {
+  const { data } = await api.get(BLOG_URLS.CATEGORIES);
+  return Array.isArray(data) ? data : [];
+}
+
+export async function fetchBlogCategoriesWithPosts(): Promise<BlogCategoryPosts[]> {
+  const { data } = await api.get<BlogCategoryPosts[]>(BLOG_URLS.CATEGORY_POSTS);
+  return Array.isArray(data) ? data : [];
+}
+
+export function getBlogPostTableOfContents(content: string): { title: string; slug: string; level: number; id: string }[] {
+  // Fallback TOC from markdown if API misses it
+  const headings = content.match(/^(#{2,3})\s+(.*)$/gm) || [];
+  return headings.map((heading: string) => {
+    const level = heading.startsWith("###") ? 3 : 2;
+    const text = heading.replace(/^(#{2,3})\s+/, "");
+    const slug = text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    return { title: text, slug, level, id: slug };
+  });
 }

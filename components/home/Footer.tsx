@@ -17,7 +17,7 @@ const footerLinks = [
   { href: "/privacy-policy", label: "Privacy" },
   { href: "/terms", label: "Terms" },
   { href: "/refund-policy", label: "Refund" },
-  { href: "#", label: "Developers" },
+  { href: "/why-palactix-exists", label: "Why Palactix" },
   { href: "/contact-us", label: "Contact Us" },
   { href: "/blog", label: "Blog" },
 ];

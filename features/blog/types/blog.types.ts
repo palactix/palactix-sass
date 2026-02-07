@@ -1,36 +1,54 @@
 import { ReactNode } from "react";
 
 export interface BlogFAQ {
-  q: string;
-  a: string;
+  question: string;
+  answer: string;
+}
+
+export interface BlogNavPost {
+  id: number;
+  slug: string;
+  title: string;
+}
+
+export interface BlogCategoryPosts {
+  id: number;
+  name: string;
+  posts: BlogNavPost[];
 }
 
 export interface BlogMetadata {
+  id: number;
   title: string;
-  description: string;
-  date: string; // YYYY-MM-DD format
-  tags: string[];
-  image: string;
-  author: string;
+  slug: string;
+  excerpt: string;
+  description?: string;
+  featured_image_url: string;
+  image?: string; // optional legacy image field
+  author_name: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords?: string[];
+  tags: string[]; // optional legacy / derived tags
+  categories?: string[];
   faqs?: BlogFAQ[];
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
+  next_post?: BlogNavPost | null;
+  prev_post?: BlogNavPost | null;
 }
 
 export interface BlogPost extends BlogMetadata {
-  slug: string;
-  content: ReactNode; // Compiled MDX content
+  content?: ReactNode; // compiled MDX content from markdown
+  content_markdown?: string; // raw markdown content
   readTime?: number; // in minutes
-  wordCount: number;
-}
-
-export interface BlogListItem extends BlogMetadata {
-  slug: string;
-  excerpt: string;
+  wordCount?: number;
+  table_of_contents?: { title: string; slug: string; level: number; id?: string }[];
 }
 
 export interface BlogPaginationData {
-  blogs: BlogListItem[];
+  blogs: BlogPost[];
   currentPage: number;
   totalPages: number;
   totalBlogs: number;

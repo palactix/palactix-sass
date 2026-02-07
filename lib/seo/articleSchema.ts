@@ -1,25 +1,21 @@
 import type { BlogPost } from "@/features/blog/types/blog.types";
 
-
-function dateToTimeZoneString(dateStr: string) {
-  return new Date(dateStr.replace(" ", "T") + "Z").toISOString();
-}
-
 export function generateArticleSchema(blog: BlogPost, url: string) {
-
+  const keywords = blog.tags?.length ? blog.tags : blog.seo_keywords || [];
+  const wordCount = blog.wordCount || (blog.content_markdown ? blog.content_markdown.trim().split(/\s+/).length : undefined);
 
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": blog.title,
     "description": blog.description,
-    "image": blog.image,
-    "datePublished": dateToTimeZoneString(blog.created_at),
-    "dateModified": dateToTimeZoneString(blog.updated_at),
+    "image": blog.featured_image_url,
+    "datePublished": blog.published_at,
+    "dateModified": blog.updated_at,
     "author": {
       "@type": "Person",
-      "name": blog.author,
-      "url": "https://x.com/_JitendraM",
+      "name": blog.author_name,
+      "url": "https://www.linkedin.com/in/jitendrameena",
     },
     "publisher": {
       "@type": "Organization",
@@ -33,8 +29,9 @@ export function generateArticleSchema(blog: BlogPost, url: string) {
       "@type": "WebPage",
       "@id": url,
     },
-    "keywords": blog.tags.join(", "),
+    "keywords": keywords.join(", "),
     "articleSection": "Blog",
-    "wordCount": blog.wordCount // blog.content.trim().split(/\s+/).length,
+    "wordCount": wordCount,
+    "url": url,
   };
 }
