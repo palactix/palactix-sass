@@ -1,9 +1,8 @@
 import { Metadata } from "next";
+import Script from "next/script";
 import { Container } from "@/components/Container";
-import { BlogListVertical } from "@/features/blog/components/BlogListVertical";
-import { BlogPagination } from "@/features/blog/components/BlogPagination";
-import { fetchBlogsWithPagination } from "@/features/blog/api/blog.api";
-//import { organizationSchema } from "@/lib/seo/organizationSchema";
+import { fetchBlogsWithPagination, fetchBlogTags, fetchBlogCategories } from "@/features/blog/api/blog.api";
+import { BlogLanding } from "@/components/blog-v2/BlogLanding";
 
 export const metadata: Metadata = {
   title: "Blog | Palactix - Social Media Management Insights",
@@ -28,67 +27,97 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
   const currentPage = resolvedParams.page ? parseInt(resolvedParams.page, 10) : 1;
 
   let blogData;
+  let tags;
+  let categories;
   let error: string | null = null;
 
   try {
-    blogData = await fetchBlogsWithPagination(currentPage);
+    const [blogsResp, tagsResp, categoriesResp] = await Promise.all([
+      fetchBlogsWithPagination(currentPage),
+      fetchBlogTags(),
+      fetchBlogCategories(),
+    ]);
+    blogData = blogsResp;
+    tags = tagsResp;
+    categories = categoriesResp;
   } catch (err) {
     error = "Failed to load blogs. Please try again later.";
     console.error("Failed to fetch blogs:", err);
   }
 
+  const blogs = blogData?.blogs || [];
+  const featured = currentPage === 1 && blogs.length > 0 ? blogs[0] : null;
+  const remainingBlogs = currentPage === 1 && blogs.length > 0 ? blogs.slice(1) : blogs;
+  const tagsList = tags ? tags : [];
+  const categoriesList = categories ? categories : [];
+  const listItems = (featured ? [featured, ...remainingBlogs] : blogs).map((post, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    url: `https://www.palactix.com/blog/${post.slug}`,
+    name: post.title,
+  }));
+
   return (
-    <>
-     
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-        <Container>
-          <div className="py-16 md:py-24">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                Blog
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Insights, updates, and stories from the Palactix team. Learn about
-                social media management, agency growth, and platform updates.
-              </p>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <Container>
+        <Script
+          id="blog-breadcrumb-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://www.palactix.com/",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Blog",
+                  item: "https://www.palactix.com/blog",
+                },
+              ],
+            }),
+          }}
+        />
+        {listItems.length > 0 && (
+          <Script
+            id="blog-itemlist-schema"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: "Palactix Blog Posts",
+                numberOfItems: listItems.length,
+                itemListOrder: "Descending",
+                itemListElement: listItems,
+              }),
+            }}
+          />
+        )}
+        <div className="py-16 md:py-24">
+          {error ? (
+            <div className="rounded-2xl border border-border/60 bg-card p-8 text-center text-destructive">
+              Failed to load blogs. Please try again later.
             </div>
-
-            {/* Error State */}
-            {error && (
-              <div className="text-center py-12">
-                <p className="text-destructive">
-                  Failed to load blogs. Please try again later.
-                </p>
-              </div>
-            )}
-
-            {/* Blog Vertical List */}
-            {blogData && blogData.blogs.length > 0 && (
-              <>
-                <BlogListVertical blogs={blogData.blogs} />
-
-                {/* Pagination */}
-                {blogData.totalPages > 1 && (
-                  <BlogPagination
-                    currentPage={blogData.currentPage}
-                    totalPages={blogData.totalPages}
-                    hasNext={blogData.hasNext}
-                    hasPrev={blogData.hasPrev}
-                  />
-                )}
-              </>
-            )}
-
-            {/* Empty State */}
-            {blogData && blogData.blogs.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No blogs found.</p>
-              </div>
-            )}
-          </div>
-        </Container>
-      </div>
-    </>
+          ) : (
+            <BlogLanding
+              blogs={remainingBlogs}
+              featured={featured}
+              tags={tagsList}
+              categories={categoriesList}
+              pagination={blogData || null}
+            />
+          )}
+        </div>
+      </Container>
+    </div>
   );
 }

@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { BlogSidebar } from "./components/BlogSidebar";
 import { ShareButtons } from "./components/ShareButtons";
 import { BlogContent } from "@/features/blog/components/BlogContent";
+import { generateFAQSchema } from "@/lib/seo/faqSchema";
+import { FAQs } from "@/components/shared/FAQs";
 
 
 interface BlogDetailPageProps {
@@ -32,21 +34,21 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       title: `${blog.title}`,
       description: blog.description,
       keywords: blog.tags.join(", "),
-      authors: [{ name: blog.author }],
+      authors: [{ name: blog.author_name }],
       openGraph: {
         title: blog.title,
         description: blog.description,
         type: "article",
-        publishedTime: blog.created_at,
-        authors: [blog.author],
+        publishedTime: blog.published_at,
+        authors: [blog.author_name],
         tags: blog.tags,
-        images: [blog.image],
+        images: [blog.featured_image_url],
       },
       twitter: {
         card: "summary_large_image",
         title: blog.title,
         description: blog.description,
-        images: [blog.image],
+        images: [blog.featured_image_url],
       },
     };
   } catch {
@@ -71,6 +73,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
   }
 
   const blogUrl = `https://www.palactix.com/blog/${slug}`;
+  const keywords = blog.tags?.length ? blog.tags : blog.seo_keywords || [];
 
   return (
     <>
@@ -80,7 +83,52 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
         type="application/ld+json"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(generateArticleSchema(blog, blogUrl)),
+          __html: JSON.stringify(generateArticleSchema({ ...blog, tags: keywords }, blogUrl)),
+        }}
+      />
+
+      {/* FAQ Schema */}
+      {blog.faqs && blog.faqs.length > 0 && (
+        <Script
+          id="faq-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(generateFAQSchema(blog.faqs)),
+          }}
+        />
+      )}
+
+      {/* Breadcrumb Schema */}
+      <Script
+        id="breadcrumb-schema"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.palactix.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Blog",
+                item: "https://www.palactix.com/blog",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: blog.title,
+                item: blogUrl,
+              },
+            ],
+          }),
         }}
       />
 
@@ -103,7 +151,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                 {/* Featured Image */}
                 <div className="relative w-full h-[400px] bg-muted">
                   <Image
-                    src={blog.image}
+                    src={blog.featured_image_url}
                     alt={blog.title}
                     fill
                     className="object-cover"
@@ -136,8 +184,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                   <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4" />
-                      <time dateTime={blog.date}>
-                        {new Date(blog.date).toLocaleDateString("en-US", {
+                      <time dateTime={blog.published_at}>
+                        {new Date(blog.published_at).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "long",
                           day: "numeric",
@@ -158,7 +206,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
                   {/* Author Info */}
                   <div className="mb-8 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                    <p className="font-semibold text-foreground mb-1">Written by {blog.author}</p>
+                    <p className="font-semibold text-foreground mb-1">Written by {blog.author_name}</p>
                     <p className="text-sm text-muted-foreground">
                       Building Palactix — infrastructure ownership for social media agencies.
                     </p>
@@ -173,6 +221,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             {/* Sidebar - Right Section (Client Component) */}
             <BlogSidebar blog={blog} />
           </div>
+
+          { blog.faqs && blog.faqs.length > 0 && <FAQs faqs={blog.faqs} /> }
 
           {/* CTA Section */}
           <div className="mt-16 mb-8">

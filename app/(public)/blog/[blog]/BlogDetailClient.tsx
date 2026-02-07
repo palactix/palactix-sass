@@ -180,7 +180,7 @@ export function BlogDetailClient({ blog, blogUrl, faqs }: BlogDetailClientProps)
               {/* Featured Image */}
               <div className="relative w-full h-[400px] bg-muted">
                 <Image
-                  src={blog.image}
+                  src={blog.featured_image_url}
                   alt={blog.title}
                   fill
                   className="object-cover"
@@ -235,7 +235,7 @@ export function BlogDetailClient({ blog, blogUrl, faqs }: BlogDetailClientProps)
 
                 {/* Author Info */}
                 <div className="mb-8 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
-                  <p className="font-semibold text-foreground mb-1">Written by {blog.author}</p>
+                  <p className="font-semibold text-foreground mb-1">Written by {blog.author_name}</p>
                   <p className="text-sm text-muted-foreground">
                     Building Palactix — infrastructure ownership for social media agencies.
                   </p>

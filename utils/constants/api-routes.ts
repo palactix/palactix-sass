@@ -14,9 +14,11 @@ export const CHANNEL_LIST = "v1/channels";
 export const ROLES_LIST = "v1/roles";
 
 
-const BLOG_URLS = {
+export const BLOG_URLS = {
   FETCH_POSTS: "/blog/posts",
-  FETCH_POST_BY_SLUG: "/blog/posts/{slug}"
+  FETCH_POST_BY_SLUG: "/blog/posts/{slug}",
+  CATEGORIES: "/blog/categories",
+  TAGS: "/blog/tags",
 } as const;
 
 

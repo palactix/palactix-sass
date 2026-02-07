@@ -6,41 +6,35 @@ export interface BlogFAQ {
 }
 
 export interface BlogMetadata {
+  id: number;
   title: string;
-  description: string;
+  slug: string;
   excerpt: string;
-  date: string; // YYYY-MM-DD format
-
-  // !deprecated - use seo_keywords instead
-  tags: string[];
-  seo_keywords: string[];
-  // !deprecated - use featured_image_url instead
-  image: string;
+  description?: string;
+  featured_image_url: string;
+  image?: string; // optional legacy image field
+  author_name: string;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
   seo_title: string;
   seo_description: string;
-  featured_image_url: string;
-  author: string;
+  seo_keywords?: string[];
+  tags: string[]; // optional legacy / derived tags
+  categories?: string[];
   faqs?: BlogFAQ[];
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
 }
 
 export interface BlogPost extends BlogMetadata {
-  slug: string;
-  content: ReactNode; // Compiled MDX content
-  content_html: string; // Raw HTML content
+  content?: ReactNode; // compiled MDX content from markdown
+  content_markdown?: string; // raw markdown content
   readTime?: number; // in minutes
-  wordCount: number;
-  table_of_contents: { title: string; slug: string; level: number }[];
-}
-
-export interface BlogListItem extends BlogMetadata {
-  slug: string;
-  excerpt: string;
+  wordCount?: number;
+  table_of_contents?: { title: string; slug: string; level: number; id?: string }[];
 }
 
 export interface BlogPaginationData {
-  blogs: BlogListItem[];
+  blogs: BlogPost[];
   currentPage: number;
   totalPages: number;
   totalBlogs: number;

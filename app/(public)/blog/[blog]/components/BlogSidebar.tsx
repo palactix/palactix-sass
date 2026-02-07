@@ -7,7 +7,7 @@ import {
   ChevronRight,
   CheckCircle2
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BlogPost, solutionMap } from "@/features/blog";
 
 // Accordion Component
@@ -124,14 +124,16 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
       
       
       {/* Table of Contents */}
-      <CollapsibleSection
-        title="Table of Contents"
-        isOpen={sidebarSections.tableOfContents}
-        onToggle={() => toggleSidebarSection('tableOfContents')}
-        >
-          <TableOfContents blog={blog} />
-      </CollapsibleSection>
-      
+      {
+        blog.table_of_contents !== undefined && 
+          <CollapsibleSection
+            title="Table of Contents"
+            isOpen={sidebarSections.tableOfContents}
+            onToggle={() => toggleSidebarSection('tableOfContents')}
+            >
+              <TableOfContents blog={blog} />
+          </CollapsibleSection>
+      }
 
       {/* The Solutions Map */}
 
@@ -240,7 +242,7 @@ const TableOfContents = ({blog}: {blog: BlogPost}) => {
 
   return (
     <div className="space-y-2">
-      {blog.table_of_contents.map((item: { level: number; title: string; slug: string }) => (
+      {blog.table_of_contents && blog.table_of_contents.map((item: { level: number; title: string; slug: string }) => (
         <a
           key={item.slug}
           href={`#${item.slug}`}
