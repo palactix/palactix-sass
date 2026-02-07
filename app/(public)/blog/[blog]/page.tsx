@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Calendar, Clock } from "lucide-react";
 import { Container } from "@/components/Container";
-import { fetchBlogBySlug } from "@/features/blog";
+import { fetchBlogBySlug, fetchBlogCategoriesWithPosts, BlogPost, BlogCategoryPosts } from "@/features/blog";
 import { generateArticleSchema } from "@/lib/seo/articleSchema";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -22,6 +22,7 @@ interface BlogDetailPageProps {
   params: {
     blog: string;
   };
+  searchParams?: Promise<{ refresh?: string }> | { refresh?: string };
 }
 
 export async function generateMetadata({ params }: BlogDetailPageProps): Promise<Metadata> {
@@ -59,17 +60,28 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   }
 }
 
-export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
-  const blogparams = await params;
-  const slug = blogparams.blog;
+export default async function BlogDetailPage({ params, searchParams }: BlogDetailPageProps) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const slug = resolvedParams.blog;
+  const refreshParam = (resolvedSearchParams as { refresh?: string } | undefined)?.refresh;
+  const bypassCache = refreshParam === "true" || refreshParam === "1";
 
-  let blog;
+  let blog: BlogPost;
+  let categories: BlogCategoryPosts[] = [];
 
   try {
-    blog = await fetchBlogBySlug(slug);
+    blog = await fetchBlogBySlug(slug, { bypassCache });
   } catch (error) {
     console.error("Failed to fetch blog:", error);
     notFound();
+  }
+
+  try {
+    categories = await fetchBlogCategoriesWithPosts();
+  } catch (error) {
+    console.error("Failed to fetch blog categories:", error);
+    categories = [];
   }
 
   const blogUrl = `https://www.palactix.com/blog/${slug}`;
@@ -141,7 +153,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               <div className="mb-4 px-4 py-3 bg-muted/50 border border-border/30 rounded-lg">
                 <p className="text-sm text-muted-foreground">
                   This article is part of an ongoing series on infrastructure ownership for social media agencies.
-                  <Link href="/blog/series/infrastructure-ownership" className="ml-2 text-primary hover:text-primary/80 underline underline-offset-2">
+                  <Link href="/blog" className="ml-2 text-primary hover:text-primary/80 underline underline-offset-2">
                     View the full series →
                   </Link>
                 </p>
@@ -219,7 +231,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
             </div>
 
             {/* Sidebar - Right Section (Client Component) */}
-            <BlogSidebar blog={blog} />
+            <BlogSidebar blog={blog} categories={categories} />
           </div>
 
           { blog.faqs && blog.faqs.length > 0 && <FAQs faqs={blog.faqs} /> }

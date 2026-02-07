@@ -8,7 +8,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BlogPost, solutionMap } from "@/features/blog";
+import { BlogPost, BlogCategoryPosts } from "@/features/blog";
 
 // Accordion Component
 function AccordionItem({ 
@@ -53,19 +53,25 @@ function AccordionItem({
   );
 }
 
-export function BlogSidebar({blog}: {blog: BlogPost}) {
-  
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    economics: false,
-    infrastructure: true,
+export function BlogSidebar({blog, categories}: {blog: BlogPost; categories: BlogCategoryPosts[]}) {
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    categories.forEach((c, index) => {
+      const sectionId = c.name || String(c.id);
+      const containsActive = (c.posts || []).some((p) => p.slug === blog.slug);
+      initial[sectionId] = containsActive || index === 0; // open the active section or first by default
+    });
+    return initial;
   });
 
   const [sidebarSections, setSidebarSections] = useState({
     whyYouAreHere: true,
-    tableOfContents: false,
+    tableOfContents: true,
     solutionsMap: false,
     nextMove: false,
   });
+
+  const [activeHeading, setActiveHeading] = useState<string | null>(null);
 
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -77,23 +83,51 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
       const progress = (scrolled / documentHeight) * 100;
       setScrollProgress(progress);
 
-      // Auto-expand based on scroll
-      if (progress > 30 && !sidebarSections.tableOfContents) {
-        setSidebarSections(prev => ({ ...prev, tableOfContents: true }));
-      }
-      if (progress > 70) {
-        if (!sidebarSections.solutionsMap) {
-          setSidebarSections(prev => ({ ...prev, solutionsMap: true }));
+      // Auto-expand for remaining widgets
+      setSidebarSections(prev => {
+        const next = { ...prev };
+        if (progress > 30) {
+          next.solutionsMap = true;
         }
-        if (!sidebarSections.nextMove) {
-          setSidebarSections(prev => ({ ...prev, nextMove: true }));
+        if (progress > 70) {
+          next.nextMove = true;
         }
-      }
+        return next;
+      });
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [sidebarSections]);
+  }, []);
+
+  // Observe headings to highlight active TOC item
+  useEffect(() => {
+    const ids = blog.table_of_contents?.map((t) => t.slug).filter(Boolean) || [];
+    if (ids.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+        if (visible[0]) {
+          setActiveHeading(visible[0].target.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px -70% 0px",
+        threshold: [0, 0.25, 0.5, 1],
+      }
+    );
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [blog.table_of_contents]);
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => ({
@@ -103,6 +137,8 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
   };
 
   const toggleSidebarSection = (section: keyof typeof sidebarSections) => {
+    // First two remain always open
+    if (section === 'whyYouAreHere' || section === 'tableOfContents') return;
     setSidebarSections(prev => ({
       ...prev,
       [section]: !prev[section],
@@ -114,8 +150,8 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
       {/* Why You Are Here */}
       <CollapsibleSection
         title="Why You Are Here"
-        isOpen={sidebarSections.whyYouAreHere}
-        onToggle={() => toggleSidebarSection('whyYouAreHere')}
+        isOpen={true}
+        onToggle={() => {}}
       >
         <p className="text-sm">
           You&apos;re exploring whether owning your social media infrastructure makes more sense than renting it.
@@ -128,10 +164,10 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
         blog.table_of_contents !== undefined && 
           <CollapsibleSection
             title="Table of Contents"
-            isOpen={sidebarSections.tableOfContents}
-            onToggle={() => toggleSidebarSection('tableOfContents')}
+            isOpen={true}
+            onToggle={() => {}}
             >
-              <TableOfContents blog={blog} />
+              <TableOfContents blog={blog} activeHeading={activeHeading} />
           </CollapsibleSection>
       }
 
@@ -144,21 +180,22 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
       >
         
         <div className="divide-y divide-border/40">
-          {/* THE ECONOMICS */}
-
-          {
-            solutionMap.map(section => (
+          {categories.map((section) => {
+            const sectionId = section.name || String(section.id);
+            const posts = (section.posts || []).slice(0, 8);
+            const sectionActive = posts.some((p) => p.slug === blog.slug);
+            return (
               <AccordionItem
-                key={section.label}
-                title={section.label.toLocaleUpperCase()}
-                isOpen={openSections[section.id]}
-                onToggle={() => toggleSection(section.id)}
-                isActive={section.id === blog.slug}
+                key={sectionId}
+                title={section.name.toLocaleUpperCase()}
+                isOpen={openSections[sectionId]}
+                onToggle={() => toggleSection(sectionId)}
+                isActive={sectionActive}
               >
-                {section.posts.map(post => (
+                {posts.map((post) => (
                   <Link 
                     key={post.slug}
-                    href={post.slug} 
+                    href={`/blog/${post.slug}`} 
                     className={`block text-sm ${
                       post.slug === blog.slug ?
                       "text-primary hover:text-primary/80 font-medium" :
@@ -170,8 +207,8 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
                   </Link>
                 ))}
               </AccordionItem>
-            ))
-          }
+            );
+          })}
         </div>
       </CollapsibleSection>
 
@@ -181,12 +218,27 @@ export function BlogSidebar({blog}: {blog: BlogPost}) {
         isOpen={sidebarSections.nextMove}
         onToggle={() => toggleSidebarSection('nextMove')}
       >
-        <Link 
-          href="/blog/hidden-risk-shared-app-ids"
-          className="text-sm font-medium text-primary hover:text-primary/80 transition-colors underline underline-offset-4"
-        >
-          Read: The Hidden Risk of Shared App IDs
-        </Link>
+        <div className="space-y-2 text-sm">
+          {blog.next_post ? (
+            <div>
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Next</p>
+              <Link href={`/blog/${blog.next_post.slug}`} className="font-medium text-primary hover:text-primary/80 transition-colors underline underline-offset-4">
+                {blog.next_post.title}
+              </Link>
+            </div>
+          ) : null}
+          {blog.prev_post ? (
+            <div>
+              <p className="text-muted-foreground text-xs uppercase tracking-wide">Previous</p>
+              <Link href={`/blog/${blog.prev_post.slug}`} className="font-medium text-primary hover:text-primary/80 transition-colors underline underline-offset-4">
+                {blog.prev_post.title}
+              </Link>
+            </div>
+          ) : null}
+          {!blog.next_post && !blog.prev_post ? (
+            <p className="text-muted-foreground">No adjacent articles.</p>
+          ) : null}
+        </div>
       </CollapsibleSection>
     </div>
   );
@@ -228,7 +280,7 @@ function CollapsibleSection({
   );
 }
 
-const TableOfContents = ({blog}: {blog: BlogPost}) => {
+const TableOfContents = ({blog, activeHeading}: {blog: BlogPost; activeHeading: string | null}) => {
   // Smooth scroll handler for TOC links (client-side)
   const handleTOCClick = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
@@ -247,7 +299,11 @@ const TableOfContents = ({blog}: {blog: BlogPost}) => {
           key={item.slug}
           href={`#${item.slug}`}
           onClick={(e) => handleTOCClick(e, item.slug)}
-          className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${item.level === 2 ? 'pl-4' : 'pl-8'} py-1`}
+          className={`block text-sm transition-colors ${item.level === 2 ? 'pl-4' : 'pl-8'} py-1 ${
+            activeHeading === item.slug
+              ? 'text-foreground font-semibold border-l-2 border-primary pl-[14px]'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
           {item.title}
         </a>

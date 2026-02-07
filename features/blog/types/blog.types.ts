@@ -5,6 +5,18 @@ export interface BlogFAQ {
   answer: string;
 }
 
+export interface BlogNavPost {
+  id: number;
+  slug: string;
+  title: string;
+}
+
+export interface BlogCategoryPosts {
+  id: number;
+  name: string;
+  posts: BlogNavPost[];
+}
+
 export interface BlogMetadata {
   id: number;
   title: string;
@@ -23,6 +35,8 @@ export interface BlogMetadata {
   tags: string[]; // optional legacy / derived tags
   categories?: string[];
   faqs?: BlogFAQ[];
+  next_post?: BlogNavPost | null;
+  prev_post?: BlogNavPost | null;
 }
 
 export interface BlogPost extends BlogMetadata {
