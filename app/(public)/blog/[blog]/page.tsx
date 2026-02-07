@@ -247,7 +247,7 @@ export default async function BlogDetailPage({ params, searchParams }: BlogDetai
                   This blog is part of that thinking — written publicly, before the product is finished.
                 </p>
                 <Button size="lg" className="font-semibold" asChild>
-                  <Link href="/about">
+                  <Link href="/why-palactix-exists">
                     Why Palactix exists →
                   </Link>
                 </Button>

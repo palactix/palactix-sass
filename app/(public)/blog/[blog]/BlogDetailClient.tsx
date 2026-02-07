@@ -444,7 +444,7 @@ export function BlogDetailClient({ blog, blogUrl, faqs }: BlogDetailClientProps)
                 This blog is part of that thinking — written publicly, before the product is finished.
               </p>
               <Button size="lg" className="font-semibold" asChild>
-                <Link href="/why-palactix">
+                <Link href="/why-palactixp-exists">
                   Why Palactix exists →
                 </Link>
               </Button>

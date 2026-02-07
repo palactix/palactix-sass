@@ -12,6 +12,7 @@ export const STATIC_PAGES_CONTENT_URLS = {
   PRIVACY_POLICY: "https://raw.githubusercontent.com/palactix/content/refs/heads/main/policy/privacy.md",
   COOKIE_POLICY: "https://raw.githubusercontent.com/palactix/content/refs/heads/main/policy/cookie-policy.md",
   REFUND_POLICY: "https://raw.githubusercontent.com/palactix/content/refs/heads/main/policy/refund-policy.md",
+  WHY_PALACTIX_EXISTS: "https://raw.githubusercontent.com/palactix/content/refs/heads/main/policy/why-palactix-exists.md",
 } as const;
 
 
