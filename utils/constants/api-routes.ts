@@ -1,3 +1,7 @@
+import { buildOrgUrl } from "@/lib/utils/org-urls";
+
+export const DASHBAORD_ROUTE = buildOrgUrl("/dashboard");
+
 export const AUTH_API_ROUTES = {
   SIGNUP: "/auth/register",
   LOGIN: "/auth/login",

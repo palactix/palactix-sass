@@ -12,7 +12,7 @@ export const CreateButton = memo(({ href, label }: CreateButtonProps) => {
   return (
     <Button asChild>
       <Link href={href}>
-        <Plus className="mr-2 h-4 w-4" /> {label}
+        <Plus className="h-4 w-4" /> {label}
       </Link>
     </Button>
   );

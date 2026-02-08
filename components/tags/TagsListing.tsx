@@ -9,48 +9,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import {
-    MoreHorizontal,
-    ChevronDown,
-    Plus,
-    Download,
-    Upload,
-    Trash2,
-    Calendar as CalendarIcon,
-    RefreshCw,
-    Filter,
-    Search,
-    X
-} from "lucide-react";
+import { Trash2, MoreHorizontal } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import TagFilters from "./TagFilters";
 
 // --- Types & Mock Data ---
 
@@ -164,15 +133,6 @@ export default function TagsListing() {
     }
   };
 
-  const resetFilters = () => {
-    setSearchQuery("");
-    setStatusFilter("all");
-    setTypeFilters([]);
-    setSingleDate(undefined);
-    setDateRange(undefined);
-    setCurrentPage(1);
-  };
-
   const handleBulkAction = (action: string) => {
       alert(`Performing bulk action: ${action} on ${selectedIds.size} items`);
       setSelectedIds(new Set());
@@ -184,179 +144,6 @@ export default function TagsListing() {
 
   return (
     <div className="space-y-6">
-      
-      {/* --- Action Bar --- */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-         <h1 className="text-2xl font-bold tracking-tight">Tags Listing</h1>
-         <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Button variant="outline" className="gap-2">
-                <Upload className="items-center h-4 w-4" />
-                Import
-            </Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2">
-                        <Download className="h-4 w-4" />
-                        Export
-                        <ChevronDown className="h-3 w-3 opacity-50" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Export as CSV</DropdownMenuItem>
-                    <DropdownMenuItem>Export as Excel</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-                <Plus className="h-4 w-4" />
-                Create Tag
-            </Button>
-         </div>
-      </div>
-
-      {/* --- Filters --- */}
-      <div className="bg-card p-4 rounded-lg border shadow-sm space-y-4">
-        <div className="flex flex-wrap gap-4 items-center">
-            {/* Search */}
-            <div className="relative flex-1 min-w-[200px]">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    placeholder="Search tags..." 
-                    className="pl-9 bg-background"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
-            
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px] bg-background">
-                    <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-            </Select>
-
-             {/* Type Filter (Multi-select simulated with Dropdown) */}
-             <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="border-dashed gap-2 bg-background">
-                        <Filter className="h-4 w-4" />
-                        Type
-                        {typeFilters.length > 0 && (
-                            <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
-                                {typeFilters.length}
-                            </Badge>
-                        )}
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-[200px]">
-                    <DropdownMenuLabel>Filter by Type</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {["marketing", "product", "support", "internal"].map((type) => (
-                        <DropdownMenuCheckboxItem
-                            key={type}
-                            checked={typeFilters.includes(type)}
-                            onCheckedChange={(checked) => {
-                                if (checked) setTypeFilters([...typeFilters, type]);
-                                else setTypeFilters(typeFilters.filter(t => t !== type));
-                            }}
-                        >
-                            <span className="capitalize">{type}</span>
-                        </DropdownMenuCheckboxItem>
-                    ))}
-                    {typeFilters.length > 0 && (
-                         <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                                onSelect={() => setTypeFilters([])}
-                                className="justify-center text-center"
-                            >
-                                Clear filters
-                            </DropdownMenuItem>
-                         </>
-                    )}
-                </DropdownMenuContent>
-             </DropdownMenu>
-
-            {/* Single Date Picker */}
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                            "w-[180px] justify-start text-left font-normal bg-background",
-                            !singleDate && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {singleDate ? format(singleDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={singleDate}
-                        onSelect={setSingleDate}
-                        initialFocus
-                    />
-                </PopoverContent>
-            </Popover>
-
-            {/* Date Range Picker */}
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button
-                        id="date"
-                        variant={"outline"}
-                        className={cn(
-                        "w-[240px] justify-start text-left font-normal bg-background",
-                        !dateRange && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateRange?.from ? (
-                        dateRange.to ? (
-                            <>
-                            {format(dateRange.from, "LLL dd, y")} -{" "}
-                            {format(dateRange.to, "LLL dd, y")}
-                            </>
-                        ) : (
-                            format(dateRange.from, "LLL dd, y")
-                        )
-                        ) : (
-                        <span>Date Range</span>
-                        )}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={dateRange?.from}
-                        selected={dateRange}
-                        onSelect={setDateRange}
-                        numberOfMonths={2}
-                    />
-                </PopoverContent>
-            </Popover>
-
-
-            {/* Reset Filters */}
-            <Button 
-                variant="ghost" 
-                onClick={resetFilters}
-                className="gap-2 text-muted-foreground hover:text-foreground"
-            >
-                <X className="h-4 w-4" />
-                Reset
-            </Button>
-        </div>
-      </div>
-
       {/* --- Bulk Actions Bar --- */}
       {isBulkActionsVisible && (
         <div className="sticky top-0 z-10 bg-primary/5 border rounded-md p-2 flex items-center justify-between animate-in fade-in slide-in-from-top-1">
