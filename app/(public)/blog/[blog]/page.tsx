@@ -31,14 +31,15 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
   try {
     const blog = await fetchBlogBySlug(resolvedParams.blog);
     
+    
     return {
       title: `${blog.title}`,
-      description: blog.description,
+      description: blog.seo_description,
       keywords: blog.tags.join(", "),
       authors: [{ name: blog.author_name }],
       openGraph: {
         title: blog.title,
-        description: blog.description,
+        description: blog.seo_description,
         type: "article",
         publishedTime: blog.published_at,
         authors: [blog.author_name],
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: BlogDetailPageProps): Promise
       twitter: {
         card: "summary_large_image",
         title: blog.title,
-        description: blog.description,
+        description: blog.seo_description,
         images: [blog.featured_image_url],
       },
     };
